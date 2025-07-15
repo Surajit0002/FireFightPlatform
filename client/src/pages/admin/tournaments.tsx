@@ -63,7 +63,7 @@ export default function AdminTournaments() {
     queryKey: ["/api/tournaments"],
   });
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
 
   const createTournamentMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -130,11 +130,11 @@ export default function AdminTournaments() {
   const onSubmit = (data: any) => {
     const tournamentData = {
       ...data,
-      prizePool: parseFloat(data.prizePool),
-      entryFee: parseFloat(data.entryFee),
-      maxSlots: parseInt(data.maxSlots),
-      teamSize: parseInt(data.teamSize),
-      startTime: new Date(data.startTime).toISOString(),
+      prizePool: data.prizePool?.toString() || "0",
+      entryFee: data.entryFee?.toString() || "0",
+      maxSlots: parseInt(data.maxSlots) || 0,
+      teamSize: parseInt(data.teamSize) || 1,
+      startTime: new Date(data.startTime),
     };
 
     if (selectedTournament) {
@@ -176,7 +176,11 @@ export default function AdminTournaments() {
         
         <div>
           <Label htmlFor="game">Game</Label>
-          <Select defaultValue={selectedTournament?.game}>
+          <Select 
+            defaultValue={selectedTournament?.game}
+            onValueChange={(value) => setValue("game", value)}
+            {...register("game", { required: "Game is required" })}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select game" />
             </SelectTrigger>
@@ -188,6 +192,7 @@ export default function AdminTournaments() {
               <SelectItem value="pubg">PUBG</SelectItem>
             </SelectContent>
           </Select>
+          {errors.game && <p className="text-sm text-red-600 mt-1">{errors.game.message}</p>}
         </div>
       </div>
 
@@ -242,7 +247,11 @@ export default function AdminTournaments() {
         
         <div>
           <Label htmlFor="format">Format</Label>
-          <Select defaultValue={selectedTournament?.format}>
+          <Select 
+            defaultValue={selectedTournament?.format}
+            onValueChange={(value) => setValue("format", value)}
+            {...register("format", { required: "Format is required" })}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select format" />
             </SelectTrigger>
@@ -252,6 +261,7 @@ export default function AdminTournaments() {
               <SelectItem value="squad">Squad</SelectItem>
             </SelectContent>
           </Select>
+          {errors.format && <p className="text-sm text-red-600 mt-1">{errors.format.message}</p>}
         </div>
         
         <div>
