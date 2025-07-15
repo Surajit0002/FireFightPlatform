@@ -1,0 +1,213 @@
+# FireFight Website: Full Frontend Master Plan & Feature Documentation
+
+## ✨ Project Name: FireFight
+
+**Type:** Esports Tournament Platform with Cash-Based Rewards
+**Audience:** Gamers, Tournament Organizers, Teams
+**Scope:** Web & Mobile Responsive Frontend (React/React Native compatible)
+**Objective:** Seamless, dynamic, and cash-rewarded gaming tournament experience with full user & admin interfaces
+
+---
+
+## 🔴 ADMIN SIDE – FULL WEBSITE OVERVIEW (SEPARATE PORTAL)
+
+### 🔐 Admin Portal Overview
+
+* Admin Login (with 2FA & Role Permissions)
+* Super Admin, Moderator, Finance Officer, Support Agent Roles
+* Separate Panel: `admin.firefight.gg`
+* Dashboard Widgets: Total Matches, Daily Players, Top Earning Users, System Health
+
+---
+
+### 1. 🧭 Admin Dashboard
+
+* Graphs: Player Growth, Earnings, Withdrawal Stats
+* KPI Cards: Total Matches, Completed Matches, New Users, Active Wallets
+* Filter by: Game, Time Period, Region
+* Quick Actions: Create Tournament, Approve Withdrawal, Review Flags
+* Notification Feed: System alerts, user reports, pending actions
+
+---
+
+### 2. 🧾 Tournament Management
+
+#### Pages:
+
+* View All Tournaments
+* Create/Edit/Delete Tournaments
+* Assign Moderators to Events
+* Tournament Types: Solo/Duo/Squad/Knockout/Bracket
+* Organizer View: Approve/Reject Organizer Submitted Matches
+
+#### Features:
+
+* Multi-step Tournament Creation Wizard:
+
+  1. Basic Info
+  2. Entry & Prize Structure
+  3. Format & Rules
+  4. Room Info (Auto or Manual)
+  5. Review & Publish
+* Bulk Actions: Publish, Archive, Copy
+* Real-time Participant Tracker
+* Flagged Player Review System
+
+---
+
+### 3. 📄 Match Result Management
+
+* Match Status View: Ongoing, Pending Verification, Completed
+* Screenshot Review Table:
+
+  * Player/Team, Screenshot, Kill Count, Timestamp
+  * Approve / Disqualify / Edit Kill Count
+* AI Screenshot Validation Toggle
+* Batch Verification for Fast Admins
+* Manual Score Entry (if screenshot missing)
+* Remarks System
+
+---
+
+### 4. 💰 Wallet & Finance Panel
+
+#### Withdrawals:
+
+* All Withdrawal Requests
+* KYC Verified Tag
+* Approve / Reject with Reason
+* Auto-check UPI Verification
+* Daily Withdrawal Report Export
+
+#### Bonus Control:
+
+* Manage Referral Payouts
+* Upload Campaign Coupons
+* Assign Promo Balances
+
+#### Ledger View:
+
+* User-wise transaction list
+* System-wide logs
+* Audit Trail + Logs
+
+---
+
+### 5. 🧑‍🤝‍🧑 User & Team Management
+
+* View All Users
+* View by Game, KYC Status, Active/Inactive
+* Ban / Suspend / Warn User
+* Edit Username, Phone, Email, UPI
+* User Game Stats View
+* Full Player History & Match Stats
+
+#### Team Management:
+
+* View All Teams
+* View Player Composition
+* Disband / Merge Teams
+* View Team Rankings
+
+---
+
+### 6. 🧾 KYC Management
+
+* All Pending Approvals
+* Aadhaar/PAN Image Viewer
+* Auto-OCR System
+* Approve / Reject / Flag
+* KYC History Logs
+* Status Filtering (Verified, Rejected, Review Again)
+
+---
+
+### 7. 📢 Announcement & Notification Center
+
+* Create Broadcast Announcements
+* Push via: In-App, Email, SMS, WhatsApp
+* Target by: Game, Rank, User Group, Region
+* Draft Mode + Scheduled Push
+* Translation Support (multi-language)
+
+---
+
+### 8. 📦 Content Management (CMS)
+
+* Edit Home Page Banners
+* Manage Game Cards, Tournament Cards
+* Add/Edit Blogs, Tutorials
+* Manage Policy Pages (Terms, Privacy, Refund)
+* App Banners / Popup Campaign Creatives
+
+---
+
+### 9. 📈 Analytics & Reporting
+
+* User Growth Analytics
+* Earnings & Payouts
+* Tournament Participation
+* Game Popularity Trends
+* Export to Excel/CSV/PDF
+
+---
+
+### 10. 📋 Admin Logs & System Monitor
+
+* Who Changed What: Logs of admin actions
+* Tournament Change Log
+* Withdrawal Log
+* Login History
+* IP Monitoring
+
+---
+
+### 11. ⚙️ Admin Settings
+
+* Manage Roles & Permissions
+* Theme Configuration (Light/Dark)
+* Add Custom Fields
+* API Keys for Developers
+* Webhooks Integration
+
+---
+
+### 12. 🔍 Advanced Tools
+
+* Duplicate Account Detection
+* Suspicious UPI Tracker
+* AI-Fraud Detector Logs
+* Emergency Broadcast Panel
+
+---
+
+### 13. 🧑‍💼 Staff & Moderator Tools
+
+* Assign Match Review
+* Track Moderator Performance
+* Escalation Flow
+* Internal Notes Per Match/User
+
+---
+
+### 14. 🛠️ Support Tickets System
+
+* View & Assign Tickets
+* Auto-Categorization
+* SLA Timer per Ticket
+* View Chat Logs
+* Merge Tickets
+* Export Reports
+
+---
+
+### 15. 🧠 Admin AI Assistant Panel (Optional)
+
+* Generate Tournament Ideas by Game Trend
+* Predict Fraud Score per User
+* Suggest Match Result based on Screenshot
+* Auto-fill Tournament Setup via Voice
+
+---
+
+Would you like a UI wireframe, role-based routing plan, or component breakdown next?

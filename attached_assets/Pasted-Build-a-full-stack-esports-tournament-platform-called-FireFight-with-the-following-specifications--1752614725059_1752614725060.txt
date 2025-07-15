@@ -1,0 +1,171 @@
+Build a full-stack esports tournament platform called "FireFight" with the following specifications:
+
+🧩 General System Requirements:
+- Two separate portals: User Portal and Admin Portal
+- Responsive design (desktop + mobile)
+- All layouts in light theme with solid accent colors (red, blue, green)
+- All components should be styled in card/grid view format
+- Build UI with dynamic and animated transitions using TailwindCSS, Framer Motion, or similar
+- Use modern design principles (Material 3, Fluent, or Neobrutalism optional themes)
+- Solid color blocks, icon-rich buttons, consistent UI language
+- Ensure full accessibility and fast load times
+
+---
+
+🔵 USER PORTAL (firefight.gg)
+
+**Layout & Theme**:
+- Responsive UI with grid views, sticky headers, floating action buttons, and dropdowns
+- Styled cards for tournaments, wallets, leaderboards, teams
+- Color scheme: Light background, red/blue action buttons, solid headers
+
+**Pages & Components**:
+1. Home Page:
+   - Hero sliders (auto-scroll banners)
+   - Tournament listings (carousel & grid)
+   - Quick Actions (join match, withdraw, refer)
+   - Featured players & teams
+   - Wallet preview, notifications, profile hover menu
+
+2. Tournament Listing Page:
+   - Top filter/sort/search row
+   - Tournaments in grid cards (game icon, type, prize, entry, time)
+   - Game-specific hero banners
+   - Infinite scroll or pagination
+
+3. Tournament Details Page:
+   - Join Flow (solo/team)
+   - Room ID/password reveal
+   - Live status & countdown
+   - Upload screenshot, chat module
+
+4. Match Center:
+   - Tabs: Live, Upcoming, Completed
+   - Cards for each match with upload/join/chat
+
+5. My Tournaments:
+   - Joined history, results, withdrawal buttons
+   - Track match status per tournament
+
+6. Wallet Page:
+   - Add money modal
+   - Withdraw modal
+   - Bonus, promo, linked UPI info
+   - Wallet logs in a grid table
+
+7. Teams Page:
+   - Create/join team modals
+   - Add player popup (upload pic, role, contact)
+   - View teams with team card (logo, players, actions)
+   - Share/join team options
+
+8. Leaderboard:
+   - Player, team, region tabs
+   - Grid view of rankings with avatars and match stats
+   - Real-time ticker
+
+9. Profile & Settings:
+   - Edit profile + UPI
+   - KYC flow
+   - Notifications
+   - Match history logs
+
+10. Support Center:
+    - Raise ticket form
+    - Ticket status list
+    - Bot/live chat option
+
+11. Announcements / Blog / Replays:
+    - Embedded YouTube
+    - Articles with filters
+    - Saved match clips
+
+---
+
+🔴 ADMIN PORTAL (admin.firefight.gg)
+
+**Layout & Theme**:
+- Left sidebar navigation (collapsible)
+- Light theme, solid icons and color accents (teal, black, red)
+- Top-level metrics shown as cards
+
+**Pages & Functional Modules**:
+1. Dashboard:
+   - KPI Cards: Users, Matches, Revenue
+   - Graphs (player activity, cashflow, growth)
+   - Quick actions panel
+
+2. Tournament Management:
+   - Multi-step creation wizard
+   - View & edit tournaments
+   - Assign moderators
+   - Set format, prize pool, slots, room settings
+
+3. Match Result Management:
+   - Upload screenshot review table
+   - AI-assisted result prediction
+   - Approve/disqualify with notes
+
+4. Wallet & Transactions:
+   - Approve/reject withdrawal requests
+   - Transaction history log
+   - Export reports
+   - Manage coupons/referral bonuses
+
+5. Users & Teams Manager:
+   - Full user list with filters
+   - Ban/suspend, edit UPI/email
+   - Team breakdown and disband options
+
+6. KYC Manager:
+   - Auto-OCR Aadhaar/PAN validator
+   - View pending/approved/rejected
+   - Logs & audit trails
+
+7. Notifications/Announcements:
+   - Create push/WhatsApp/email messages
+   - Target by role/game/location
+   - Draft, schedule, translate
+
+8. Content Management System (CMS):
+   - Home page editor
+   - Tournament card editor
+   - Update policies/blogs/images
+
+9. Analytics & Reports:
+   - Exportable reports for finance, usage, tournament stats
+   - Game trend insights
+
+10. Logs & Admin Activity:
+   - Track edits, match actions, login history
+   - Device/IP info
+
+11. Roles & Permissions:
+   - Role-based access control (RBAC)
+   - Manage staff, assign permissions
+
+12. Support Center (Admin View):
+   - Assign tickets
+   - Chat with users
+   - Export ticket reports
+
+13. AI Panel:
+   - Fraud score predictor
+   - Suggest tournaments based on trends
+   - Auto-fill basic tournament data from voice command
+
+---
+
+💡 Bonus Enhancements:
+- Use Redux/Context for global state
+- PWA with offline support
+- Firebase or WebSocket for live updates
+- API ready for third-party streaming embed & Discord integration
+- Backend with Node.js + MongoDB/PostgreSQL + Appwrite/Firebase for auth
+
+---
+
+🧠 Prompt Use:
+- Use this to generate a production-ready design system and UI/UX for both portals
+- Break down into tasks per module for AI assistant or codegen
+- Use each section as the base for API & database structure planning

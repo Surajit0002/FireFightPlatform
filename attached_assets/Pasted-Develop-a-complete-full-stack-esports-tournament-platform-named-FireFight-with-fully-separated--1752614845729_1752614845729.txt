@@ -1,0 +1,159 @@
+Develop a complete full-stack esports tournament platform named **FireFight**, with fully separated **User** and **Admin** portals.
+
+---
+
+🧩 GENERAL REQUIREMENTS:
+
+- Use modern, responsive frontend (React + TailwindCSS / NativeWind for mobile)
+- Backend with Node.js, Express, MongoDB or PostgreSQL
+- Authentication via Appwrite or Firebase (token-based, with role access)
+- Real-time updates via WebSockets or Firebase
+- Admin and User systems must be **fully integrated** with shared database but **separate UIs**
+- All components must follow **light theme**, **solid color palette** (red, blue, teal, green accents)
+- Layouts in **grid view** with modular sections and high responsiveness
+
+---
+
+🔵 USER PORTAL – `firefight.gg`
+
+✅ Core Pages:
+1. **Home Page**
+   - Hero slider banners
+   - Upcoming tournaments (carousel + grid)
+   - Quick actions (Join Now, Wallet, Refer)
+   - Notifications, profile hover menu
+
+2. **Tournament Listing**
+   - Filter by game, entry fee, region, time
+   - Sort dropdown (newest, prize pool)
+   - Grid view of styled tournament cards
+
+3. **Tournament Details**
+   - Full match info
+   - Join (solo/team), room info, upload results
+   - Countdown timer, match chat
+
+4. **Match Center**
+   - Tabs for Live, Upcoming, Completed
+   - Room ID, Upload, Live Status
+
+5. **My Tournaments**
+   - Full match history with result timelines
+   - Uploads, withdrawals, rank view
+
+6. **Wallet**
+   - Add Money (modal), Withdraw (modal)
+   - Transaction logs, promo codes, linked UPI
+
+7. **My Teams**
+   - Create/Join team (modals)
+   - Add player (image, game ID, role)
+   - View/edit team grid cards
+
+8. **Leaderboard**
+   - Top players/teams per game & region
+   - XP-based gamification
+
+9. **Profile & Settings**
+   - Edit info, manage UPI
+   - KYC submission
+   - Preferences (language, dark mode)
+
+10. **Support Center**
+    - Raise ticket, track status
+    - FAQ, bot/live agent
+
+11. **Announcements / News / Blogs**
+    - Tournament updates, patch notes
+
+12. **Optional Pages**
+    - Saved Match Replays
+    - Referral Dashboard
+    - Community Chat (basic)
+
+---
+
+🔴 ADMIN PORTAL – `admin.firefight.gg`
+
+✅ Core Modules:
+
+1. **Dashboard**
+   - KPIs: Matches, players, payouts
+   - Graphs: earnings, growth, tournament health
+
+2. **Tournament Management**
+   - Create/edit/delete tournaments
+   - Assign moderators
+   - Multi-step setup wizard
+   - Auto-prize calculation, room ID handling
+   - Templates, public/private visibility
+
+3. **Match Result Management**
+   - Screenshot verification UI
+   - AI screenshot analysis toggle
+   - Approve/Disqualify players
+
+4. **Wallet & Finance**
+   - Review withdrawals (KYC)
+   - Manage bonuses, referral campaigns
+   - Logs & export reports
+
+5. **User & Team Manager**
+   - Full user table
+   - Ban/suspend, edit info
+   - Team management panel
+
+6. **KYC System**
+   - View pending docs
+   - Auto-OCR Aadhaar/PAN reader
+   - History + flag logs
+
+7. **Announcements**
+   - Push notifications
+   - Filter by audience: game, role, region
+   - Schedule future pushes
+
+8. **Content Management**
+   - Manage home banners, blogs, legal docs
+   - Game/tournament cards
+
+9. **Reports & Analytics**
+   - Usage reports
+   - Exportable tournament history
+   - Game popularity, leaderboard trends
+
+10. **Admin Logs**
+    - Track edits, logins, role changes
+    - IP & device logs
+
+11. **Settings & Access Control**
+    - Role-based permissions
+    - Add/remove staff accounts
+
+12. **Advanced Tools**
+    - Duplicate UPI check
+    - Emergency announcement
+    - Fraud detection flags
+
+13. **Support Ticket Center**
+    - Assign/merge/resolve tickets
+    - Export ticket data
+    - SLA dashboard
+
+14. **AI Assistant Panel (optional)**
+    - Suggest match results
+    - Auto-generate tournaments from trend
+    - Voice-to-fill forms
+
+---
+
+🛠️ DEVELOPMENT GUIDE:
+
+- Use modular React components for all cards, popups, and forms
+- Apply Tailwind grid utilities for layout
+- Apply form validation using React Hook Form or Formik
+- Protect all routes with auth middleware
+- Role separation: Users vs Admins via JWT roles
+- Deploy via Vercel (frontend) + Railway/Render (backend)
+- Optional: Add Discord login or social auth
+

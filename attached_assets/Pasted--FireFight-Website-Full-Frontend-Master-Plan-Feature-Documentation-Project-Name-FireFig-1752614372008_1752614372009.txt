@@ -1,0 +1,312 @@
+# FireFight Website: Full Frontend Master Plan & Feature Documentation
+
+## ✨ Project Name: FireFight
+
+**Type:** Esports Tournament Platform with Cash-Based Rewards
+**Audience:** Gamers, Tournament Organizers, Teams
+**Scope:** Web & Mobile Responsive Frontend (React/React Native compatible)
+**Objective:** Seamless, dynamic, and cash-rewarded gaming tournament experience with full user & admin interfaces
+
+---
+
+## 🔵 USER SIDE – FULL WEBSITE OVERVIEW
+
+---
+
+### 1. 🏠 Home Page
+
+#### 🧩 Header Section:
+
+* Logo + Website Name
+* Navigation Menu: Home, Tournaments, Teams, Leaderboard, News, Support, About
+* Wallet Balance (₹): Click to go to Wallet Page
+* Search Bar: Keyword-based game/tournament search
+* Notification Bell: Click to open recent alerts in a popup
+* Profile Icon: Hover dropdown - My Profile, My Tournaments, Game History, Wallet, Settings, Logout
+* Language Toggle, Dark Mode Toggle
+
+#### 🎯 Hero Slider:
+
+* Rotating banners with CTAs: "Join Now", "Upcoming Match", "Winner Story"
+* Slides include game themes (Free Fire, BGMI, Valorant)
+* Slide navigation: auto-scroll + swipe/manual arrows
+
+#### ⚡ Live & Upcoming Tournaments:
+
+* Grid layout of tournament cards
+* Each card shows: Game logo, title, prize pool, entry fee, countdown, team size, slots, "Join Now"
+* Filter & sort bar
+
+#### 🎯 Quick Actions:
+
+* Join Quick Match
+* My Matches
+* Withdraw Cash
+* View Recent Results
+
+#### ✅ Daily Tasks:
+
+* Complete daily tasks to earn rewards (e.g., join 2 matches, refer 1 friend)
+* Progress bar with XP system for levels
+
+#### 🔥 Featured Teams & Players:
+
+* Highlight top-performing users/teams
+* Scrollable cards with avatars, ranks, earnings
+* Button to challenge a team or view their matches
+
+#### 📢 Referral Promo:
+
+* Share code to earn ₹10 on each sign-up
+* Display leaderboard of top referrers
+
+#### 🧭 Explore Games Section:
+
+* Carousel-style grid of supported games (icons + titles)
+* Clicking redirects to filtered tournaments
+
+#### 📺 Featured Match Streams:
+
+* Embedded or linked YouTube/Twitch live matches
+* Highlighted upcoming streamed tournaments
+* Watch & Earn tokens/XP for watching
+
+#### 🔚 Footer:
+
+* About Us, Contact, Social Media, Privacy, Terms
+
+---
+
+### 2. 🎮 Tournament Listing Page
+
+* Top Hero Banner (Game-Specific if navigated from home)
+* Search, Filter & Sort Section (1 row):
+
+  * Keyword Search
+  * Filter Modal (Game, Fee, Format, Time, Slots Left, Region)
+  * Sort Dropdown: Latest, Prize Pool, Entry Fee, Soonest, Popular
+* Tabs: All, Free, Paid, Upcoming, Completed
+* Grid of Tournament Cards (Mobile Responsive)
+* Tags on Cards: Featured, Free, Limited Slots, Verified Organizer
+* Pagination or Infinite Scroll
+* Sticky filter toggle on mobile
+
+---
+
+### 3. 📄 Tournament Details Page
+
+* Game Banner + Title, Status (Live/Upcoming/Complete)
+* Info Section: Format, Entry Fee, Prize Pool, Rules, Schedule
+* Slot Table with Joined Teams (live updates)
+* Join Flow:
+
+  * Solo or Select Team
+  * Wallet Deduction Confirmation
+  * Join confirmation with countdown to room release
+* Room Info (Post Join): ID, Password, Join Countdown, Map Info
+* Upload Results: Screenshot Submission
+* Match Status: Pending, Verified, Disqualified, Under Review
+* Match Chat Panel (toggle)
+* Tournament Host Profile and Ratings
+* Share Tournament on Social Media
+
+---
+
+### 4. 🧩 Match Center Page
+
+* Tabs: All | My Matches | Upcoming | Live | Completed
+* Each Match Card:
+
+  * Countdown Timer
+  * Room Info (if joined)
+  * Upload Result Button
+  * Match Chat Button
+  * Join Discord/Voice Chat
+* Right Sticky Panel:
+
+  * Quick Room Access
+  * Upload Status
+  * Live Spectator Button (if enabled)
+  * Admin Notes (if disqualified or flagged)
+
+---
+
+---
+
+### 6. 💳 Wallet Page (Cash Only)
+
+#### 🧩 Wallet Overview:
+
+* Current Balance
+* Add Money: UPI/Card Modal with offer codes
+* Withdraw Funds: UPI, Confirm, Status
+* Daily Limit, Withdrawal Fee Warning
+
+#### 📊 Wallet Stats:
+
+* Graph (Deposit, Winnings, Spends)
+* Time Selector (Today, Week, Month)
+* Compare with other users (rank percentile)
+
+#### 📁 Logs:
+
+* Filterable Transaction History
+* Export to CSV/PDF
+
+#### 💼 Bonus & Promo Panel:
+
+* Redeem referral earnings
+* Apply promo codes
+* View available challenges for bonus
+
+#### ⚙️ Wallet Settings:
+
+* Auto-withdraw toggle
+* UPI management
+* Add secondary bank account
+
+#### 📲 Wallet Linked Services:
+
+* Recharge Mobile
+* Buy Gift Cards (Amazon, Play Store)
+* Transfer Cash to Friend (username/UPI ID)
+
+---
+
+### 7. 🧾 My Tournaments Page
+
+* Tabs: Upcoming, Live, Completed, Disqualified, Cancelled
+* Match Cards with:
+
+  * Match Title, Game, Time
+  * Result Upload CTA (if live)
+  * Withdraw Prize CTA (if winner)
+  * Match Status Timeline: Joined > Room Shared > Played > Verified > Withdrawn
+* Screenshot Upload Area with Drag & Drop
+* Match Chat for coordination
+* Match Result History (all past results)
+* Export to PDF/CSV
+* Flag Match/Report Opponent
+
+---
+
+### 8. 👥 My Teams Page
+
+#### 🧩 Top Buttons:
+
+* Create Team: Modal with logo, name, players (role, ID, etc.)
+* Join Team: Enter Code Modal
+
+#### 🧩 Team Cards:
+
+* Logo, Name, Code, Players Grid
+* Edit / View / Delete options (popup modals)
+* Share Team Link
+* Add Player CTA (role, ID, contact info)
+* Team Stats Section: Win Rate, Matches Played, Avg Rank, Active Members
+* Team History: Tournaments Participated, Ranks Achieved
+* Upload Team Banner
+
+---
+
+### 9. 🏆 Leaderboard Page
+
+* Filters: Game, Time Range (Daily, Weekly, All-Time), Type (Player, Team, Region)
+* Player View:
+
+  * Rank, Avatar, Username, Winnings, Win %, Recent Matches
+* Team View:
+
+  * Team Logo, Name, Members, Winnings
+* Region View:
+
+  * Country, Rank Avg, Earnings
+* Real-Time Highlights Ticker
+* Share to Social (auto-create post template)
+* My Rank Panel with XP milestones
+* Claim Rank Reward Button (weekly/monthly)
+
+---
+
+### 10. 👤 Profile & Settings
+
+* Profile Details: Edit Name, Pic, Contact Info
+* KYC: Aadhaar/PAN Upload, Status, History of Verifications
+* UPI Management: Add/Edit Primary, Multiple Account Support
+* Notification Toggles: Email, SMS, App
+* Dark Mode & Language
+* Password Reset, Account Deactivation
+* My Stats Overview: Win %, Match History
+* Security Log, 2FA, Device Management
+
+---
+
+### 11. 📢 Announcements
+
+* New Features, Winner Stories
+* Maintenance Notices, Updates
+* Push Notification Archive
+* Announcement Categories
+
+---
+
+### 12. 🛠️ Support & Report
+
+* Raise Tickets: Match, Wallet, General
+* FAQs Section
+* WhatsApp Chat Support
+* Response Timeline Viewer
+* Chat with Bot or Live Agent
+* Upload Supporting Docs or Screenshots
+
+---
+
+### 13. 📈 Activity Log
+
+* Match Joins
+* Transactions
+* Bonus Earnings
+* KYC Status Changes
+* Support Tickets Updates
+* Login History & IP Tracker
+
+---
+
+### 14. 📰 News & Esports Blog
+
+* Articles on game updates, meta, pro tips
+* Interviews with top players
+* Tournament highlights and wrap-ups
+* Filter by Game Category
+* Like, Comment, Bookmark posts
+
+---
+
+### 15. 📺 My Match Replays
+
+* Saved gameplay replays (if integration available)
+* Link to YouTube uploads
+* Download option
+* Mark as Favorite
+* Share Replay
+
+---
+
+## 🔐 BONUS USER FEATURES
+
+* **Mobile Responsive Design**
+* **Web App (PWA)**
+* **Real-time Notifications**
+* **Slot Live Update**
+* **Push-to-Join**
+* **Auto Withdrawal Support**
+* **OCR-AI for Result Verification**
+* **Live Match Streaming Integration**
+* **In-App Rewards for Consistent Participation**
+* **Esports Career Progression Profile**
+* **Weekly Lucky Draw Participation**
+* **Gamified Badges & Trophies**
+
+---
+
+Would you like the **admin-side full feature breakdown**, **API schema**, or **UX wireframes** next?
