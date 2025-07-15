@@ -147,7 +147,7 @@ export default function Support() {
   return (
     <div className="min-h-screen bg-gray-50">
       <UserHeader />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="flex justify-between items-center mb-8">
@@ -264,21 +264,21 @@ export default function Support() {
                       <div className="text-sm text-gray-500">Issues with withdrawing winnings</div>
                     </div>
                   </Button>
-                  
+
                   <Button variant="outline" className="h-auto p-4 text-left">
                     <div>
                       <div className="font-medium">🎮 Match Problems</div>
                       <div className="text-sm text-gray-500">Tournament or match related issues</div>
                     </div>
                   </Button>
-                  
+
                   <Button variant="outline" className="h-auto p-4 text-left">
                     <div>
                       <div className="font-medium">📱 Account Issues</div>
                       <div className="text-sm text-gray-500">Login, profile, or KYC problems</div>
                     </div>
                   </Button>
-                  
+
                   <Button variant="outline" className="h-auto p-4 text-left">
                     <div>
                       <div className="font-medium">👥 Team Help</div>
@@ -337,12 +337,12 @@ export default function Support() {
                             #{ticket.id}
                           </span>
                         </div>
-                        
+
                         <h4 className="font-medium mb-1">{ticket.subject}</h4>
                         <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                           {ticket.description}
                         </p>
-                        
+
                         <div className="flex items-center justify-between text-sm text-gray-500">
                           <span>Created {new Date(ticket.createdAt).toLocaleDateString()}</span>
                           <Button size="sm" variant="outline">
@@ -386,7 +386,7 @@ export default function Support() {
                     <div className="text-sm text-gray-500">Available 24/7</div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-fire-green rounded-lg flex items-center justify-center">
                     <Phone className="w-5 h-5 text-white" />
@@ -396,7 +396,7 @@ export default function Support() {
                     <div className="text-sm text-gray-500">+91 98765 43210</div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-fire-orange rounded-lg flex items-center justify-center">
                     <Mail className="w-5 h-5 text-white" />
@@ -424,17 +424,17 @@ export default function Support() {
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Game Rules & Guidelines
                 </Button>
-                
+
                 <Button variant="outline" className="w-full justify-start">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   How to Upload Results
                 </Button>
-                
+
                 <Button variant="outline" className="w-full justify-start">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Payment & Withdrawal Guide
                 </Button>
-                
+
                 <Button variant="outline" className="w-full justify-start">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   KYC Verification Help
@@ -450,15 +450,15 @@ export default function Support() {
               <CardContent className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span>Live Chat:</span>
-                  <span className="font-semibold">< 5 minutes</span>
+                  <span className="font-semibold">&lt; 5 minutes</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Email/Ticket:</span>
-                  <span className="font-semibold">< 24 hours</span>
+                  <span className="font-semibold">&lt; 24 hours</span>
                 </div>
                 <div className="flex justify-between">
                   <span>WhatsApp:</span>
-                  <span className="font-semibold">< 1 hour</span>
+                  <span className="font-semibold">&lt; 1 hour</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Phone:</span>
