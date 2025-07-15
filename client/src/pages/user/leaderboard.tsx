@@ -87,7 +87,7 @@ export default function Leaderboard() {
 
   const PlayerLeaderboardCard = ({ player, rank }: { player: any; rank: number }) => {
     const isCurrentUser = player.id === user?.id;
-    
+
     return (
       <Card className={`card-hover ${isCurrentUser ? 'ring-2 ring-fire-blue' : ''}`}>
         <CardContent className="p-4">
@@ -95,12 +95,12 @@ export default function Leaderboard() {
             <div className="flex items-center justify-center">
               {getRankIcon(rank)}
             </div>
-            
+
             <Avatar className="w-12 h-12">
               <AvatarImage src={player.profileImageUrl} />
               <AvatarFallback>{player.username?.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
-            
+
             <div className="flex-1">
               <div className="flex items-center space-x-2">
                 <h3 className="font-semibold fire-gray">{player.username}</h3>
@@ -117,7 +117,7 @@ export default function Leaderboard() {
                 Level {player.level} • {player.matchesPlayed} matches played
               </div>
             </div>
-            
+
             <div className="text-right">
               <div className="font-bold fire-green text-lg">₹{player.totalEarnings}</div>
               <div className="text-sm text-gray-500">{player.winRate}% Win Rate</div>
@@ -135,11 +135,11 @@ export default function Leaderboard() {
           <div className="flex items-center justify-center">
             {getRankIcon(rank)}
           </div>
-          
+
           <div className="w-12 h-12 bg-gradient-to-r from-fire-blue to-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
             {team.name?.substring(0, 2).toUpperCase()}
           </div>
-          
+
           <div className="flex-1">
             <div className="flex items-center space-x-2">
               <h3 className="font-semibold fire-gray">{team.name}</h3>
@@ -153,20 +153,20 @@ export default function Leaderboard() {
               {team.totalMembers} members • {team.matchesPlayed} matches played
             </div>
           </div>
-          
+
           <div className="text-right">
             <div className="font-bold fire-green text-lg">₹{team.totalEarnings}</div>
             <div className="text-sm text-gray-500">{team.winRate}% Win Rate</div>
           </div>
         </div>
       </CardContent>
-    );
+    </Card>
   );
 
   return (
     <div className="min-h-screen bg-gray-50">
       <UserHeader />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
@@ -221,7 +221,7 @@ export default function Leaderboard() {
                   Teams
                 </Button>
               </div>
-              
+
               <div className="flex space-x-4">
                 <Select value={selectedGame} onValueChange={setSelectedGame}>
                   <SelectTrigger className="w-48">
@@ -327,7 +327,7 @@ export default function Leaderboard() {
                       <div className="text-xs text-gray-500">ProGamer_X - 45 wins</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2 p-2 bg-green-50 rounded-lg">
                     <TrendingUp className="w-5 h-5 text-fire-green" />
                     <div>
@@ -335,7 +335,7 @@ export default function Leaderboard() {
                       <div className="text-xs text-gray-500">EliteSquad - ₹1,25,000</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2 p-2 bg-red-50 rounded-lg">
                     <Zap className="w-5 h-5 text-fire-red" />
                     <div>
