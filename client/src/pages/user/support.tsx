@@ -450,7 +450,7 @@ export default function Support() {
               <CardContent className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span>Live Chat:</span>
-                  <span className="font-semibold">&lt; 5 minutes</span>
+                  <span className="font-semibold">{"< 5 minutes"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Email/Ticket:</span>
