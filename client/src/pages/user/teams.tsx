@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import UserHeader from "@/components/layout/user-header";
 import TeamModal from "@/components/team-modal";
+import PlayerModal from "@/components/player-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -857,6 +858,8 @@ export default function Teams() {
   const [inviteMethod, setInviteMethod] = useState<'code' | 'search'>('code');
   const [inviteCode, setInviteCode] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showPlayerModal, setShowPlayerModal] = useState(false);
+  const [selectedPlayerTeamId, setSelectedPlayerTeamId] = useState<number | null>(null);
 
   const { data: teams = [] } = useQuery<Team[]>({
     queryKey: ["/api/teams"],
@@ -1188,8 +1191,8 @@ export default function Teams() {
                       className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-50 hover:bg-fire-blue/5 hover:border-fire-blue/30 transition-all cursor-pointer"
                       onClick={() => {
                         if (isCaptain) {
-                          setInviteTeamId(team.id);
-                          setShowInviteModal(true);
+                          setSelectedPlayerTeamId(team.id);
+                          setShowPlayerModal(true);
                         }
                       }}
                     >
@@ -1199,7 +1202,7 @@ export default function Teams() {
                     {/* Invite tooltip */}
                     {isCaptain && (
                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                        <div>Invite Player</div>
+                        <div>Add Player</div>
                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900"></div>
                       </div>
                     )}
@@ -1810,6 +1813,17 @@ export default function Teams() {
         <TeamModal
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
+        />
+
+        {/* Add Player Modal */}
+        <PlayerModal
+          isOpen={showPlayerModal}
+          onClose={() => {
+            setShowPlayerModal(false);
+            setSelectedPlayerTeamId(null);
+          }}
+          teamId={selectedPlayerTeamId || undefined}
+          mode="add"
         />
 
         {/* Invite Player Modal */}
