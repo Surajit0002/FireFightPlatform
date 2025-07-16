@@ -19,13 +19,14 @@ export default function Landing() {
               Win Big in Esports Tournaments
             </h1>
             <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto">
-              Join tournaments, compete with the best players, and earn real cash rewards in your favorite games
+              Join tournaments, compete with the best players, and earn real
+              cash rewards in your favorite games
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-white text-fire-red hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
-                onClick={() => window.location.href = "/api/login"}
+                className="bg-red text-fire-red hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
+                onClick={() => (window.location.href = "/api/login")}
               >
                 Get Started
               </Button>
@@ -48,7 +49,8 @@ export default function Landing() {
             Why Choose FireFight?
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Experience the ultimate esports tournament platform with cutting-edge features
+            Experience the ultimate esports tournament platform with
+            cutting-edge features
           </p>
         </div>
 
@@ -58,9 +60,12 @@ export default function Landing() {
               <div className="w-16 h-16 bg-fire-red rounded-full flex items-center justify-center mx-auto mb-6">
                 <Trophy className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-fire-gray mb-4">Competitive Tournaments</h3>
+              <h3 className="text-xl font-bold text-fire-gray mb-4">
+                Competitive Tournaments
+              </h3>
               <p className="text-gray-600">
-                Join daily tournaments across popular games like Free Fire, BGMI, and Valorant
+                Join daily tournaments across popular games like Free Fire,
+                BGMI, and Valorant
               </p>
             </CardContent>
           </Card>
@@ -70,9 +75,12 @@ export default function Landing() {
               <div className="w-16 h-16 bg-fire-green rounded-full flex items-center justify-center mx-auto mb-6">
                 <DollarSign className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-fire-gray mb-4">Real Cash Prizes</h3>
+              <h3 className="text-xl font-bold text-fire-gray mb-4">
+                Real Cash Prizes
+              </h3>
               <p className="text-gray-600">
-                Win actual money that you can withdraw directly to your bank account
+                Win actual money that you can withdraw directly to your bank
+                account
               </p>
             </CardContent>
           </Card>
@@ -82,7 +90,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-fire-blue rounded-full flex items-center justify-center mx-auto mb-6">
                 <Zap className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-fire-gray mb-4">Instant Matches</h3>
+              <h3 className="text-xl font-bold text-fire-gray mb-4">
+                Instant Matches
+              </h3>
               <p className="text-gray-600">
                 Quick match system to find and join tournaments in seconds
               </p>
@@ -94,7 +104,9 @@ export default function Landing() {
               <div className="w-16 h-16 bg-fire-teal rounded-full flex items-center justify-center mx-auto mb-6">
                 <Users className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-fire-gray mb-4">Team Management</h3>
+              <h3 className="text-xl font-bold text-fire-gray mb-4">
+                Team Management
+              </h3>
               <p className="text-gray-600">
                 Create and manage teams, invite friends, and compete together
               </p>
@@ -112,11 +124,15 @@ export default function Landing() {
               <div className="text-gray-600">Active Players</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-fire-blue mb-2">₹10L+</div>
+              <div className="text-4xl font-bold text-fire-blue mb-2">
+                ₹10L+
+              </div>
               <div className="text-gray-600">Prize Pool Distributed</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-fire-green mb-2">500+</div>
+              <div className="text-4xl font-bold text-fire-green mb-2">
+                500+
+              </div>
               <div className="text-gray-600">Daily Tournaments</div>
             </div>
             <div>
@@ -134,12 +150,13 @@ export default function Landing() {
             Ready to Start Winning?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Join thousands of players who are already earning money through esports tournaments
+            Join thousands of players who are already earning money through
+            esports tournaments
           </p>
           <Button
             size="lg"
             className="bg-fire-red hover:bg-red-600 px-8 py-4 text-lg font-semibold"
-            onClick={() => window.location.href = "/api/login"}
+            onClick={() => (window.location.href = "/api/login")}
           >
             Join FireFight Now
           </Button>
@@ -154,13 +171,23 @@ export default function Landing() {
               <div className="w-8 h-8 bg-fire-red rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">F</span>
               </div>
-              <span className="text-xl font-bold text-fire-gray">FireFight</span>
+              <span className="text-xl font-bold text-fire-gray">
+                FireFight
+              </span>
             </div>
             <div className="flex space-x-8 text-gray-600">
-              <a href="#" className="hover:text-fire-red transition-colors">About</a>
-              <a href="#" className="hover:text-fire-red transition-colors">Terms</a>
-              <a href="#" className="hover:text-fire-red transition-colors">Privacy</a>
-              <a href="#" className="hover:text-fire-red transition-colors">Support</a>
+              <a href="#" className="hover:text-fire-red transition-colors">
+                About
+              </a>
+              <a href="#" className="hover:text-fire-red transition-colors">
+                Terms
+              </a>
+              <a href="#" className="hover:text-fire-red transition-colors">
+                Privacy
+              </a>
+              <a href="#" className="hover:text-fire-red transition-colors">
+                Support
+              </a>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t text-center text-gray-600">
