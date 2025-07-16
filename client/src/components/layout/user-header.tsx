@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,7 @@ import {
   Gamepad2, Trophy, Users2, BarChart3, MessageSquare, Zap, 
   Star, Gift, Calendar, Home, TrendingUp, Award, Shield, 
   Headphones, Globe, Plus, Filter, Clock, Target, 
-  PlayCircle, Flame, Coins, Crown, Lightning
+  PlayCircle, Flame, Coins, Crown, Bolt
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -96,7 +95,7 @@ export default function UserHeader() {
   const quickActions = [
     { 
       name: "Quick Match", 
-      icon: <Lightning className="w-4 h-4" />, 
+      icon: <Bolt className="w-4 h-4" />, 
       color: "bg-yellow-500",
       action: () => console.log("Quick match")
     },
@@ -176,7 +175,7 @@ export default function UserHeader() {
                   <span className="text-white font-bold text-xl">F</span>
                 </div>
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-fire-green rounded-full animate-pulse flex items-center justify-center">
-                  <Lightning className="w-2 h-2 text-white" />
+                  <Bolt className="w-2 h-2 text-white" />
                 </div>
               </div>
               <div className="hidden sm:block">
