@@ -95,12 +95,12 @@ export default function TeamModal({ isOpen, onClose }: TeamModalProps) {
   const queryClient = useQueryClient();
 
   const createTeamMutation = useMutation({
-    mutationFn: async (data: { name: string; code: string; logoUrl?: string; players: Player[] }) => {
+    mutationFn: async (data: { name: string; code: string; logoUrl?: string }) => {
       await apiRequest("POST", "/api/teams", data);
     },
     onSuccess: () => {
       toast({
-        title: "🎉 Team Created Successfully!",
+        title: "Team Created Successfully!",
         description: "Your team is ready for tournaments",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
@@ -145,7 +145,54 @@ export default function TeamModal({ isOpen, onClose }: TeamModalProps) {
     setTeamCode(code);
   };
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File, maxSizeKB: number = 100): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions to fit within reasonable bounds
+        const MAX_WIDTH = 200;
+        const MAX_HEIGHT = 200;
+        
+        let { width, height } = img;
+        
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = height * (MAX_WIDTH / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = width * (MAX_HEIGHT / height);
+            height = MAX_HEIGHT;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        // Start with quality 0.8 and reduce if needed
+        let quality = 0.8;
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+        
+        // Reduce quality until size is acceptable
+        while (dataUrl.length > maxSizeKB * 1024 && quality > 0.1) {
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+        
+        resolve(dataUrl);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -156,23 +203,38 @@ export default function TeamModal({ isOpen, onClose }: TeamModalProps) {
         });
         return;
       }
+      
       setTeamLogo(file);
-      const reader = new FileReader();
-      reader.onload = (e) => setTeamLogoPreview(e.target?.result as string);
-      reader.readAsDataURL(file);
+      try {
+        const compressedImage = await compressImage(file, 50); // Compress to ~50KB
+        setTeamLogoPreview(compressedImage);
+      } catch (error) {
+        toast({
+          title: "Error processing image",
+          description: "Please try a different image",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const handlePlayerAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePlayerAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setPlayerForm(prev => ({ ...prev, avatar: file }));
-      const reader = new FileReader();
-      reader.onload = (e) => setPlayerForm(prev => ({ 
-        ...prev, 
-        avatarPreview: e.target?.result as string 
-      }));
-      reader.readAsDataURL(file);
+      try {
+        const compressedImage = await compressImage(file, 30); // Compress to ~30KB for avatars
+        setPlayerForm(prev => ({ 
+          ...prev, 
+          avatarPreview: compressedImage 
+        }));
+      } catch (error) {
+        toast({
+          title: "Error processing avatar",
+          description: "Please try a different image",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -256,8 +318,8 @@ export default function TeamModal({ isOpen, onClose }: TeamModalProps) {
     createTeamMutation.mutate({
       name: teamName.trim(),
       code: teamCode || `FF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-      logoUrl: teamLogoPreview,
-      players
+      // Send compressed image data (small size, ~50KB max)
+      logoUrl: teamLogoPreview
     });
   };
 
