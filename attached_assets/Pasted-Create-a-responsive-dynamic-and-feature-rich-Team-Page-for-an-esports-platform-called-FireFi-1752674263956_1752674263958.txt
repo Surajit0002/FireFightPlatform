@@ -1,0 +1,134 @@
+Create a responsive, dynamic, and feature-rich **Team Page** for an esports platform called **FireFight.gg**.
+
+This page will allow users to create, join, manage, and view game teams used in tournaments (e.g., Free Fire, BGMI, CODM, Valorant). The UI must be mobile-friendly, grid-based, styled in a light theme with solid accent colors, and modern interactions.
+
+---
+
+📐 **Layout Design Requirements**:
+- Use a grid layout (2–3 columns desktop, 1 column mobile)
+- Rounded cards, subtle shadows, clean typography
+- Light background theme with color accents (red, green, blue, orange)
+- Use TailwindCSS or similar for styling
+- Animate interactions (modal transitions, hover states)
+
+---
+
+🧩 **Page Sections & Components**:
+
+### 🔝 Top Bar:
+- Button: “➕ Create Team” → opens modal
+- Button: “🔑 Join Team” → opens modal
+- Hover tooltips for quick guidance
+
+---
+
+### 📦 Create Team Modal:
+- Upload Team Logo (with preview)
+- Input: Team Name (required, unique)
+- Auto-generate: Team Code
+- Button: “➕ Add Players” → opens nested modal
+- Players Preview: Grid view of added players (pic, name, role, game ID)
+- Button: “✅ Create Team”
+
+---
+
+### 🔐 Join Team Modal:
+- Input: “Enter Team Code”
+- Validate existence, availability
+- Join instantly or show "Join Request Pending" if private
+
+---
+
+### 🧾 Team Card (Grid Component):
+- Team Logo (top center)
+- Team Name (bold)
+- Team Code (with copy icon)
+- 3-dot menu:
+  - ✏️ Edit Team (modal)
+  - 👁️ View Team Details
+  - ❌ Leave or Delete Team (with confirm)
+- Stats block:
+  - Matches Played, Wins, Avg Kills
+- Footer: “🔗 Share Team” button (copy link, WhatsApp)
+
+---
+
+### 👥 View Team Details Modal:
+- Large logo, team name, code
+- Player List (avatars + role tags)
+  - Each with IGN, game ID, status
+- Buttons: Add/Remove/Edit Players
+- Shareable Join Link
+- Stats Visualization (chart or grid)
+
+---
+
+### 📊 Team Stats Section:
+- Cards or small graph:
+  - Total Matches
+  - Win %
+  - Avg Damage
+  - KD Ratio
+  - Last Played Date
+
+---
+
+### 🏆 Team Tournament History Table:
+- Columns: Tournament, Placement, Kills, Prize, Status
+- Clickable rows → show match results
+- Filter by game or date range
+
+---
+
+### 🧠 Player Role Badging:
+- Each player card shows:
+  - 🎮 Entry Fragger
+  - 🧠 IGL
+  - 💣 Sniper
+  - 🛡️ Support
+  - 🔍 Scout
+  - 👑 Captain
+
+---
+
+📱 **Mobile Responsiveness**:
+- Collapse grid to single column
+- Stack buttons and cards vertically
+- Ensure modals are touch optimized
+
+---
+
+🔐 **Permissions & Access**:
+- Only Team Owner can:
+  - Edit/delete team
+  - Add/remove players
+- Team members can leave freely
+- Teams capped at 4–6 players
+
+---
+
+🧰 **Admin Panel Controls (optional)**:
+- View All Teams
+- Disband/Merge Teams
+- Track KYC/Player status
+- Blocked players list
+
+---
+
+🎯 **Future Enhancements** (Optional):
+- Team public profile: `firefight.gg/team/slug`
+- Team leveling system (XP, medals)
+- Auto-import teams from game APIs
+- Clan War dashboard
+- AI Suggested Lineups
+
+---
+
+💻 **Tech Stack Suggestions**:
+- Frontend: React + TailwindCSS
+- State Management: Redux / Context
+- Image Upload: Cloudinary or Firebase
+- Animations: Framer Motion
+- Backend: Node.js, Express, MongoDB/PostgreSQL
+- Auth: Appwrite or Firebase
+

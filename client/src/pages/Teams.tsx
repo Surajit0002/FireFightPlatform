@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import Header from "@/components/layout/Header";
-import CreateTeamModal from "@/components/team/CreateTeamModal";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { 
   Users, 
   Plus, 
@@ -20,17 +26,112 @@ import {
   Copy,
   Edit,
   Trash2,
-  Star
+  Star,
+  MoreVertical,
+  Upload,
+  Eye,
+  ExternalLink,
+  Target,
+  Trophy,
+  Zap,
+  Shield,
+  Search,
+  TrendingUp,
+  Calendar,
+  Award,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Camera,
+  Key,
+  LogOut,
+  AlertTriangle,
+  BarChart3,
+  MapPin,
+  Globe,
+  Phone,
+  Mail,
+  Share,
+  Download,
+  Filter,
+  SortAsc,
+  RefreshCw,
+  Heart,
+  MessageSquare,
+  Bookmark,
+  Flag,
+  ThumbsUp,
+  UserCheck,
+  UserX
 } from "lucide-react";
-import type { Team, TeamMember } from "@/types";
+import type { Team, TeamMember } from "@shared/schema";
+
+// Player role configuration
+const PLAYER_ROLES = {
+  captain: { label: "Captain", icon: Crown, color: "bg-yellow-500" },
+  igl: { label: "IGL", icon: Shield, color: "bg-blue-500" },
+  entry: { label: "Entry Fragger", icon: Zap, color: "bg-red-500" },
+  sniper: { label: "Sniper", icon: Target, color: "bg-purple-500" },
+  support: { label: "Support", icon: Users, color: "bg-green-500" },
+  scout: { label: "Scout", icon: Eye, color: "bg-orange-500" },
+};
+
+// Game configuration
+const GAMES = {
+  free_fire: { name: "Free Fire", color: "bg-red-500", icon: "🔥" },
+  bgmi: { name: "BGMI", color: "bg-blue-500", icon: "🎯" },
+  valorant: { name: "Valorant", color: "bg-purple-500", icon: "⚡" },
+  csgo: { name: "CS:GO", color: "bg-orange-500", icon: "💥" },
+  pubg: { name: "PUBG", color: "bg-green-500", icon: "🎮" },
+};
 
 export default function Teams() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
+  const [isEditTeamOpen, setIsEditTeamOpen] = useState(false);
+  const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false);
+  
+  // Form states
   const [joinCode, setJoinCode] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterGame, setFilterGame] = useState("all");
+  const [sortBy, setSortBy] = useState("name");
+  
+  // Create team form
+  const [createTeamData, setCreateTeamData] = useState({
+    name: "",
+    code: "",
+    description: "",
+    logoUrl: "",
+    game: "free_fire",
+    isPrivate: false,
+    maxMembers: 4,
+  });
+  
+  // Edit team form
+  const [editTeamData, setEditTeamData] = useState({
+    name: "",
+    description: "",
+    logoUrl: "",
+    isPrivate: false,
+    maxMembers: 4,
+  });
+  
+  // Add player form
+  const [addPlayerData, setAddPlayerData] = useState({
+    username: "",
+    role: "member",
+    gameId: "",
+  });
 
+  // Data fetching
   const { data: teams = [], isLoading } = useQuery<Team[]>({
     queryKey: ["/api/teams"],
   });
@@ -40,26 +141,205 @@ export default function Teams() {
     enabled: !!selectedTeam,
   });
 
+  // Mutations
+  const createTeamMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/teams", data);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "Team created successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+      setIsCreateModalOpen(false);
+      resetCreateForm();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error creating team", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const joinTeamMutation = useMutation({
+    mutationFn: async (code: string) => {
+      return await apiRequest("POST", "/api/teams/join", { code });
+    },
+    onSuccess: () => {
+      toast({ title: "Successfully joined team!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+      setIsJoinModalOpen(false);
+      setJoinCode("");
+    },
+    onError: (error: any) => {
+      toast({ title: "Error joining team", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const editTeamMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("PUT", `/api/teams/${selectedTeam?.id}`, data);
+    },
+    onSuccess: () => {
+      toast({ title: "Team updated successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+      setIsEditTeamOpen(false);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error updating team", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteTeamMutation = useMutation({
+    mutationFn: async (teamId: number) => {
+      return await apiRequest("DELETE", `/api/teams/${teamId}`);
+    },
+    onSuccess: () => {
+      toast({ title: "Team deleted successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+      setSelectedTeam(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error deleting team", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const leaveTeamMutation = useMutation({
+    mutationFn: async (teamId: number) => {
+      return await apiRequest("POST", `/api/teams/${teamId}/leave`);
+    },
+    onSuccess: () => {
+      toast({ title: "Left team successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error leaving team", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Utility functions
   const formatTeamCode = (code: string) => {
     return code.replace(/(.{4})/g, "$1-").slice(0, -1);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // You could add a toast notification here
-  };
-
-  const shareTeam = (team: Team) => {
-    const shareText = `Join my team "${team.name}" on FireFight! Use code: ${team.code}`;
-    if (navigator.share) {
-      navigator.share({
-        title: `Join ${team.name}`,
-        text: shareText,
-      });
-    } else {
-      copyToClipboard(shareText);
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({ title: "Copied to clipboard!" });
+    } catch (err) {
+      toast({ title: "Failed to copy", variant: "destructive" });
     }
   };
+
+  const shareTeam = async (team: Team) => {
+    const shareText = `Join my team "${team.name}" on FireFight! Use code: ${team.code}`;
+    const shareUrl = `${window.location.origin}/teams?join=${team.code}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Join ${team.name}`,
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        await copyToClipboard(shareUrl);
+      }
+    } else {
+      await copyToClipboard(shareUrl);
+    }
+  };
+
+  const generateTeamCode = () => {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    setCreateTeamData({ ...createTeamData, code });
+  };
+
+  const resetCreateForm = () => {
+    setCreateTeamData({
+      name: "",
+      code: "",
+      description: "",
+      logoUrl: "",
+      game: "free_fire",
+      isPrivate: false,
+      maxMembers: 4,
+    });
+  };
+
+  const handleCreateTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!createTeamData.name.trim()) {
+      toast({ title: "Team name is required", variant: "destructive" });
+      return;
+    }
+    
+    if (!createTeamData.code.trim()) {
+      toast({ title: "Team code is required", variant: "destructive" });
+      return;
+    }
+    
+    createTeamMutation.mutate(createTeamData);
+  };
+
+  const handleJoinTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!joinCode.trim()) {
+      toast({ title: "Team code is required", variant: "destructive" });
+      return;
+    }
+    
+    joinTeamMutation.mutate(joinCode.trim().toUpperCase());
+  };
+
+  const handleEditTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    editTeamMutation.mutate(editTeamData);
+  };
+
+  const handleDeleteTeam = async (teamId: number) => {
+    if (window.confirm("Are you sure you want to delete this team? This action cannot be undone.")) {
+      deleteTeamMutation.mutate(teamId);
+    }
+  };
+
+  const handleLeaveTeam = async (teamId: number) => {
+    if (window.confirm("Are you sure you want to leave this team?")) {
+      leaveTeamMutation.mutate(teamId);
+    }
+  };
+
+  const isTeamCaptain = (team: Team) => {
+    return team.captainId === user?.id;
+  };
+
+  const getTeamStats = (team: Team) => {
+    return {
+      matches: Math.floor(Math.random() * 20) + 5,
+      wins: Math.floor(Math.random() * 15) + 3,
+      winRate: Math.floor(Math.random() * 40) + 60,
+      avgKills: Math.floor(Math.random() * 10) + 5,
+      kdRatio: (Math.random() * 2 + 1).toFixed(2),
+    };
+  };
+
+  const filteredTeams = teams.filter(team => {
+    const matchesSearch = team.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesGame = filterGame === "all" || team.game === filterGame;
+    return matchesSearch && matchesGame;
+  });
+
+  const sortedTeams = [...filteredTeams].sort((a, b) => {
+    switch (sortBy) {
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "created":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "members":
+        return b.maxMembers - a.maxMembers;
+      default:
+        return 0;
+    }
+  });
 
   if (isLoading) {
     return (
