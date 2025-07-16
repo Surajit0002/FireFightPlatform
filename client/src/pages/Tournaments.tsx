@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
-import TournamentCard from "@/components/tournament/TournamentCard";
+import TournamentCard from "@/components/tournament-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Trophy } from "lucide-react";
-import type { Tournament } from "@/types";
+import type { Tournament } from "@shared/schema";
 
 export default function Tournaments() {
   const [gameFilter, setGameFilter] = useState<string>("all");
@@ -165,7 +165,7 @@ export default function Tournaments() {
         )}
 
         {/* Tournament Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredTournaments.map((tournament) => (
             <TournamentCard key={tournament.id} tournament={tournament} />
           ))}
