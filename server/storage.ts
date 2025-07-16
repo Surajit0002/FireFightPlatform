@@ -155,16 +155,20 @@ export class DatabaseStorage implements IStorage {
 
   // Tournament operations
   async getTournaments(filters?: any): Promise<Tournament[]> {
-    let query = db.select().from(tournaments);
+    let conditions = [];
     
     if (filters?.status) {
-      query = query.where(eq(tournaments.status, filters.status));
+      conditions.push(eq(tournaments.status, filters.status));
     }
     if (filters?.game) {
-      query = query.where(eq(tournaments.game, filters.game));
+      conditions.push(eq(tournaments.game, filters.game));
     }
     
-    return await query.orderBy(desc(tournaments.startTime));
+    return await db
+      .select()
+      .from(tournaments)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(tournaments.startTime));
   }
 
   async getTournament(id: number): Promise<Tournament | undefined> {
@@ -338,13 +342,11 @@ export class DatabaseStorage implements IStorage {
 
   // Transaction operations
   async getTransactions(userId?: string): Promise<Transaction[]> {
-    let query = db.select().from(transactions);
-    
-    if (userId) {
-      query = query.where(eq(transactions.userId, userId));
-    }
-    
-    return await query.orderBy(desc(transactions.createdAt));
+    return await db
+      .select()
+      .from(transactions)
+      .where(userId ? eq(transactions.userId, userId) : undefined)
+      .orderBy(desc(transactions.createdAt));
   }
 
   async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
@@ -377,16 +379,20 @@ export class DatabaseStorage implements IStorage {
 
   // Admin operations
   async getUsers(filters?: any): Promise<User[]> {
-    let query = db.select().from(users);
+    let conditions = [];
     
     if (filters?.role) {
-      query = query.where(eq(users.role, filters.role));
+      conditions.push(eq(users.role, filters.role));
     }
     if (filters?.kycStatus) {
-      query = query.where(eq(users.kycStatus, filters.kycStatus));
+      conditions.push(eq(users.kycStatus, filters.kycStatus));
     }
     
-    return await query.orderBy(desc(users.createdAt));
+    return await db
+      .select()
+      .from(users)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(users.createdAt));
   }
 
   async getDashboardStats(): Promise<any> {
@@ -432,13 +438,11 @@ export class DatabaseStorage implements IStorage {
 
   // Announcement operations
   async getAnnouncements(isActive = true): Promise<Announcement[]> {
-    let query = db.select().from(announcements);
-    
-    if (isActive) {
-      query = query.where(eq(announcements.isActive, true));
-    }
-    
-    return await query.orderBy(desc(announcements.createdAt));
+    return await db
+      .select()
+      .from(announcements)
+      .where(isActive ? eq(announcements.isActive, true) : undefined)
+      .orderBy(desc(announcements.createdAt));
   }
 
   async createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement> {
@@ -460,13 +464,11 @@ export class DatabaseStorage implements IStorage {
 
   // Support operations
   async getSupportTickets(userId?: string): Promise<SupportTicket[]> {
-    let query = db.select().from(supportTickets);
-    
-    if (userId) {
-      query = query.where(eq(supportTickets.userId, userId));
-    }
-    
-    return await query.orderBy(desc(supportTickets.createdAt));
+    return await db
+      .select()
+      .from(supportTickets)
+      .where(userId ? eq(supportTickets.userId, userId) : undefined)
+      .orderBy(desc(supportTickets.createdAt));
   }
 
   async createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket> {
@@ -488,16 +490,20 @@ export class DatabaseStorage implements IStorage {
 
   // KYC operations
   async getKycDocuments(userId?: string, status?: string): Promise<KycDocument[]> {
-    let query = db.select().from(kycDocuments);
+    let conditions = [];
     
     if (userId) {
-      query = query.where(eq(kycDocuments.userId, userId));
+      conditions.push(eq(kycDocuments.userId, userId));
     }
     if (status) {
-      query = query.where(eq(kycDocuments.status, status));
+      conditions.push(eq(kycDocuments.status, status));
     }
     
-    return await query.orderBy(desc(kycDocuments.createdAt));
+    return await db
+      .select()
+      .from(kycDocuments)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(kycDocuments.createdAt));
   }
 
   async createKycDocument(document: InsertKycDocument): Promise<KycDocument> {
