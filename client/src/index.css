@@ -143,4 +143,99 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  .hero-bg {
+    background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-blue) 100%);
+  }
+
+  /* Enhanced mobile animations */
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-slideUp {
+    animation: slideUp 0.6s ease-out;
+  }
+
+  .animate-fadeInScale {
+    animation: fadeInScale 0.8s ease-out;
+  }
+
+  .animate-bounceIn {
+    animation: bounceIn 1s ease-out;
+  }
+
+  /* Mobile-first responsive card effects */
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Mobile touch-friendly buttons */
+  @media (max-width: 768px) {
+    .card-hover:active {
+      transform: translateY(-4px) scale(0.98);
+    }
+    
+    button {
+      min-height: 48px;
+      touch-action: manipulation;
+    }
+  }
+
+  /* Smooth backdrop blur for glass morphism */
+  .backdrop-blur-glass {
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+  }
+
+  /* Enhanced gradient backgrounds */
+  .bg-gradient-fire {
+    background: linear-gradient(135deg, var(--fire-red), var(--fire-orange), var(--fire-blue));
+  }
+
+  .bg-gradient-cool {
+    background: linear-gradient(135deg, var(--fire-blue), var(--fire-teal), var(--fire-green));
+  }
 }
