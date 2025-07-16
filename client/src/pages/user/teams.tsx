@@ -852,6 +852,11 @@ export default function Teams() {
   const [filterPeriod, setFilterPeriod] = useState("all");
   const [filterGame, setFilterGame] = useState("all");
   const [expandedStats, setExpandedStats] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteTeamId, setInviteTeamId] = useState<number | null>(null);
+  const [inviteMethod, setInviteMethod] = useState<'code' | 'search'>('code');
+  const [inviteCode, setInviteCode] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: teams = [] } = useQuery<Team[]>({
     queryKey: ["/api/teams"],
@@ -1181,7 +1186,12 @@ export default function Teams() {
                   <div key={`empty-${index}`} className="relative group">
                     <div 
                       className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-50 hover:bg-fire-blue/5 hover:border-fire-blue/30 transition-all cursor-pointer"
-                      onClick={() => isCaptain && console.log('Open invite modal')}
+                      onClick={() => {
+                        if (isCaptain) {
+                          setInviteTeamId(team.id);
+                          setShowInviteModal(true);
+                        }
+                      }}
                     >
                       <UserPlus className="w-5 h-5 text-gray-400 group-hover:text-fire-blue transition-colors" />
                     </div>
@@ -1801,6 +1811,215 @@ export default function Teams() {
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
         />
+
+        {/* Invite Player Modal */}
+        <Dialog open={showInviteModal} onOpenChange={setShowInviteModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <UserPlus className="w-5 h-5 text-fire-blue" />
+                <span>Invite Player to Team</span>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {/* Invite Method Selection */}
+              <div className="flex space-x-2 p-1 bg-gray-100 rounded-lg">
+                <button
+                  onClick={() => setInviteMethod('code')}
+                  className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
+                    inviteMethod === 'code' 
+                      ? 'bg-white text-fire-blue shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <QrCode className="w-4 h-4 mr-2 inline" />
+                  Share Code
+                </button>
+                <button
+                  onClick={() => setInviteMethod('search')}
+                  className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
+                    inviteMethod === 'search' 
+                      ? 'bg-white text-fire-blue shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <Search className="w-4 h-4 mr-2 inline" />
+                  Search User
+                </button>
+              </div>
+
+              {/* Share Code Method */}
+              {inviteMethod === 'code' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Team Invite Code
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <code className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg text-center font-mono text-lg font-bold text-fire-blue">
+                        #{teams.find(t => t.id === inviteTeamId)?.code}
+                      </code>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const code = teams.find(t => t.id === inviteTeamId)?.code;
+                          if (code) {
+                            navigator.clipboard.writeText(code);
+                          }
+                        }}
+                        className="hover:bg-fire-blue hover:text-white"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Share this code with players to let them join your team
+                    </p>
+                  </div>
+
+                  {/* Share Options */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const code = teams.find(t => t.id === inviteTeamId)?.code;
+                        const teamName = teams.find(t => t.id === inviteTeamId)?.name;
+                        const text = `Join my FireFight team "${teamName}" with code: ${code}`;
+                        const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                        window.open(url, '_blank');
+                      }}
+                      className="flex-1"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-1" />
+                      WhatsApp
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const code = teams.find(t => t.id === inviteTeamId)?.code;
+                        const teamName = teams.find(t => t.id === inviteTeamId)?.name;
+                        const text = `Join my FireFight team "${teamName}" with code: ${code}`;
+                        navigator.clipboard.writeText(text);
+                      }}
+                      className="flex-1"
+                    >
+                      <Copy className="w-4 h-4 mr-1" />
+                      Copy
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                    >
+                      <QrCode className="w-4 h-4 mr-1" />
+                      QR Code
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Search User Method */}
+              {inviteMethod === 'search' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Search Player
+                    </label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input
+                        placeholder="Search by username or email..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Search Results */}
+                  {searchQuery && (
+                    <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                      <div className="text-sm text-gray-500 mb-2">Search Results:</div>
+                      <div className="space-y-2">
+                        {/* Sample search results */}
+                        <div className="flex items-center justify-between p-2 bg-white rounded border">
+                          <div className="flex items-center space-x-2">
+                            <Avatar className="w-6 h-6">
+                              <AvatarImage src="" />
+                              <AvatarFallback className="text-xs bg-fire-blue text-white">
+                                U
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm font-medium">Username123</span>
+                          </div>
+                          <Button size="sm" className="bg-fire-blue hover:bg-blue-600 text-white">
+                            <UserPlus className="w-3 h-3 mr-1" />
+                            Invite
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Team Info */}
+              <div className="bg-fire-blue/5 p-3 rounded-lg">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-fire-blue to-fire-red rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                    {teams.find(t => t.id === inviteTeamId)?.name?.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-800">
+                      {teams.find(t => t.id === inviteTeamId)?.name}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {teamMembersData[inviteTeamId || 0]?.length || 0}/6 members
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowInviteModal(false);
+                    setInviteTeamId(null);
+                    setSearchQuery('');
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    // Handle invite action based on method
+                    if (inviteMethod === 'code') {
+                      // Code sharing is handled by the share buttons
+                      setShowInviteModal(false);
+                    } else {
+                      // Handle direct invite
+                      console.log('Send invite to:', searchQuery);
+                      setShowInviteModal(false);
+                    }
+                    setInviteTeamId(null);
+                    setSearchQuery('');
+                  }}
+                  className="flex-1 bg-fire-blue hover:bg-blue-600 text-white"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  {inviteMethod === 'code' ? 'Done' : 'Send Invite'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
