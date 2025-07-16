@@ -1,0 +1,172 @@
+👥 FireFight – Team Page (User Portal)
+📍 URL:
+/teams
+
+🎯 Objective:
+Allow users to create, join, manage, and showcase gaming teams. Teams are crucial for participating in squad/duo tournaments, building player communities, and tracking team-level performance.
+
+🧩 Page Structure & Layout (Grid-Based, Fully Responsive)
+🔝 Top Header Bar:
+🔘 Create Team Button (opens modal)
+
+🔘 Join Team Button (opens modal)
+
+📄 Tooltip: “Create a team to lead or join a friend’s team with a code”
+
+📦 Team Creation Modal:
+📤 Upload Team Logo (image cropper with preview)
+
+🏷️ Team Name (Unique, required)
+
+🔢 Auto-Generated Team Code (shown after creation, used for sharing)
+
+➕ Add Players Button (opens nested modal)
+
+👥 Added Players Preview Grid:
+
+Avatar, Name, Role, In-Game ID
+
+Remove/edit player buttons (optional)
+
+✅ Create Button (validation + success toast)
+
+🔑 Join Team Modal:
+🔐 Input Field: "Enter Team Code"
+
+🧩 Validation (check if team exists, if full)
+
+✅ Submit to Join
+
+🔁 Join request status if private team (Pending / Accepted)
+
+📂 Main Page Sections
+1️⃣ Your Teams (if member of one or more)
+📇 Team Card Component (Grid View):
+🖼️ Logo (centered)
+
+🏷️ Team Name (top)
+
+🧾 Team Code (bottom + copy button)
+
+⚙️ Options Button (3 dots):
+
+📝 Edit Team (open edit modal)
+
+👁️ View Details (modal or slideout panel)
+
+❌ Leave/Delete Team (confirm popup)
+
+📊 Stats Block:
+
+Matches Played, Win %, Avg Kills, Best Rank
+
+🧩 Manager Controls (if team leader):
+✏️ Edit Players
+
+➕ Add Players
+
+🔗 Share Team (WhatsApp, Copy Link, QR)
+
+🗑️ Remove Players (with confirm)
+
+2️⃣ Team Details Slideout (or Modal View)
+🖼️ Large Logo
+
+🏷️ Team Name
+
+🔗 Share Code
+
+👥 Players List:
+
+Grid format (small avatars, role tags, IGN, UPI/contact, verification badge)
+
+Icon for each role: Captain, Support, Sniper, Entry, IGL, etc.
+
+🔁 Add Player (if not full)
+
+📈 Team Stats Graph (Performance trend, match history)
+
+3️⃣ Team Stats Overview Section
+📊 Total Matches, Wins, Avg Damage, KD Ratio
+
+⏱️ Last Played, Recent Tournaments
+
+🎯 Performance Badges (Rising Stars, MVPs)
+
+🏆 Recent Achievements
+
+4️⃣ Team Tournament History Table
+Columns:
+
+Match Name
+
+Placement
+
+Kills
+
+Prize Earned
+
+Status (Completed / Pending)
+
+Filter by game or time period
+
+Click to view match details
+
+5️⃣ Player Role Legend & Badging
+Small color badges/icons:
+
+🎮 Entry Fragger
+
+🧠 IGL
+
+🛡️ Support
+
+🔍 Scout
+
+💣 Sniper
+
+👑 Captain (Team Owner)
+
+🎨 UI Design Notes:
+Grid-based layout with 2–3 team cards per row
+
+Avatars with role badges
+
+Light theme with subtle shadows, soft contrast
+
+Solid accent colors for each role and game
+
+Mobile view: 1-column, collapsible sections
+
+🔒 Permissions & Access Control
+Only team creators can delete team
+
+Team members can leave voluntarily
+
+Edit roles restricted to team leaders
+
+Player slots capped (e.g., 4–6)
+
+🔧 Admin Tools (Optional View for Moderators)
+View All Teams (Global table)
+
+Flag/Report history
+
+Disband Team
+
+Merge or Assign Teams
+
+Team KYC (optional for paid entry validation)
+
+🔮 Future Expansion Ideas
+🧾 Team Verification Badge (based on activity or KYC)
+
+🔄 Auto-Sync Team Roster from BGMI/Valorant APIs
+
+📺 Public Team Showcase Page: firefight.gg/team/slug
+
+🪙 Team XP/Leveling System
+
+🏟️ Clan Wars / Team vs Team Leaderboards
+
+🧠 AI Suggestion: Optimal player lineup
