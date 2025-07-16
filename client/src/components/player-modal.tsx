@@ -86,28 +86,73 @@ export default function PlayerModal({ isOpen, onClose, player, teamId, mode = 'a
 
   const addPlayerMutation = useMutation({
     mutationFn: async (data: PlayerFormData) => {
-      const formDataToSend = new FormData();
-      formDataToSend.append("playerName", data.playerName);
-      formDataToSend.append("email", data.email);
-      formDataToSend.append("phone", data.phone);
-      formDataToSend.append("gameId", data.gameId);
-      formDataToSend.append("role", data.role);
-      if (teamId) formDataToSend.append("teamId", teamId.toString());
-      if (data.profileImage) {
-        formDataToSend.append("profileImage", data.profileImage);
+      try {
+        if (data.profileImage) {
+          // If there's an image, use FormData
+          const formDataToSend = new FormData();
+          formDataToSend.append("playerName", data.playerName);
+          formDataToSend.append("email", data.email);
+          formDataToSend.append("phone", data.phone);
+          formDataToSend.append("gameId", data.gameId);
+          formDataToSend.append("role", data.role);
+          if (teamId) formDataToSend.append("teamId", teamId.toString());
+          formDataToSend.append("profileImage", data.profileImage);
+
+          const res = await fetch("/api/players", {
+            method: "POST",
+            body: formDataToSend,
+          });
+
+          if (!res.ok) {
+            const errorText = await res.text();
+            let errorMessage = "Failed to add player";
+            try {
+              const errorJson = JSON.parse(errorText);
+              errorMessage = errorJson.message || errorMessage;
+            } catch {
+              errorMessage = errorText || errorMessage;
+            }
+            throw new Error(errorMessage);
+          }
+
+          return res.json();
+        } else {
+          // If no image, send JSON
+          const res = await fetch("/api/players", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              playerName: data.playerName,
+              email: data.email,
+              phone: data.phone,
+              gameId: data.gameId,
+              role: data.role,
+              teamId: teamId,
+            }),
+          });
+
+          if (!res.ok) {
+            const errorText = await res.text();
+            let errorMessage = "Failed to add player";
+            try {
+              const errorJson = JSON.parse(errorText);
+              errorMessage = errorJson.message || errorMessage;
+            } catch {
+              errorMessage = errorText || errorMessage;
+            }
+            throw new Error(errorMessage);
+          }
+
+          return res.json();
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          throw error;
+        }
+        throw new Error("An unexpected error occurred");
       }
-
-      const res = await fetch("/api/players", {
-        method: "POST",
-        body: formDataToSend,
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to add player");
-      }
-
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
@@ -159,7 +204,8 @@ export default function PlayerModal({ isOpen, onClose, player, teamId, mode = 'a
   };
 
   const handleImageUpload = (file: File) => {
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
       toast({
         title: "Error",
         description: "Image size should be less than 5MB",
@@ -168,10 +214,12 @@ export default function PlayerModal({ isOpen, onClose, player, teamId, mode = 'a
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
       toast({
         title: "Error",
-        description: "Please upload a valid image file",
+        description: "Please upload a valid image file (PNG, JPG, JPEG, WebP)",
         variant: "destructive",
       });
       return;
@@ -181,19 +229,19 @@ export default function PlayerModal({ isOpen, onClose, player, teamId, mode = 'a
     
     const reader = new FileReader();
     reader.onload = (e) => {
-      setProfileImagePreview(e.target?.result as string);
+      const result = e.target?.result;
+      if (typeof result === 'string') {
+        setProfileImagePreview(result);
+      }
+    };
+    reader.onerror = () => {
+      toast({
+        title: "Error",
+        description: "Failed to read the image file",
+        variant: "destructive",
+      });
     };
     reader.readAsDataURL(file);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      handleImageUpload(files[0]);
-    }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,6 +249,8 @@ export default function PlayerModal({ isOpen, onClose, player, teamId, mode = 'a
     if (files && files.length > 0) {
       handleImageUpload(files[0]);
     }
+    // Reset the input value to allow selecting the same file again
+    e.target.value = '';
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -248,44 +298,33 @@ export default function PlayerModal({ isOpen, onClose, player, teamId, mode = 'a
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Profile Image Upload Section */}
-          <Card className="border-dashed border-2 border-gray-300 hover:border-fire-blue/50 transition-colors">
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative">
-                  <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                    <AvatarImage src={currentImageUrl} alt="Player profile" />
-                    <AvatarFallback className="bg-gradient-to-br from-fire-blue to-fire-red text-white text-2xl font-bold">
-                      {formData.playerName.charAt(0).toUpperCase() || 'P'}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  {/* Upload indicator */}
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-fire-blue rounded-full flex items-center justify-center shadow-lg">
-                    <Camera className="w-4 h-4 text-white" />
-                  </div>
-                </div>
+          {/* Profile Image Upload Section - Compact */}
+          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg border">
+            <div className="relative">
+              <Avatar className="w-16 h-16 border-2 border-white shadow-md">
+                <AvatarImage src={currentImageUrl} alt="Player profile" />
+                <AvatarFallback className="bg-gradient-to-br from-fire-blue to-fire-red text-white text-lg font-bold">
+                  {formData.playerName.charAt(0).toUpperCase() || 'P'}
+                </AvatarFallback>
+              </Avatar>
+              
+              {/* Upload indicator */}
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-fire-blue rounded-full flex items-center justify-center shadow-lg">
+                <Camera className="w-3 h-3 text-white" />
+              </div>
+            </div>
 
-                <div
-                  className={`w-full border-2 border-dashed rounded-lg p-6 text-center transition-all ${
-                    isDragOver 
-                      ? 'border-fire-blue bg-fire-blue/5' 
-                      : 'border-gray-300 hover:border-fire-blue/50'
-                  }`}
-                  onDrop={handleDrop}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setIsDragOver(true);
-                  }}
-                  onDragLeave={() => setIsDragOver(false)}
-                >
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600 mb-2">
-                    Drop an image here or click to upload
-                  </p>
+            <div className="flex-1">
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-center space-x-2">
+                  <h4 className="text-sm font-medium text-gray-700">Profile Picture</h4>
+                  <span className="text-xs text-gray-500">(Optional)</span>
+                </div>
+                
+                <div className="flex items-center space-x-2">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
                     onChange={handleFileSelect}
                     className="hidden"
                     id="profile-upload"
@@ -295,17 +334,16 @@ export default function PlayerModal({ isOpen, onClose, player, teamId, mode = 'a
                     variant="outline"
                     size="sm"
                     onClick={() => document.getElementById('profile-upload')?.click()}
+                    className="text-xs px-3 py-1 h-8"
                   >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Choose Image
+                    <Upload className="w-3 h-3 mr-1" />
+                    Choose
                   </Button>
-                  <p className="text-xs text-gray-500 mt-2">
-                    PNG, JPG up to 5MB
-                  </p>
+                  <span className="text-xs text-gray-500">PNG, JPG up to 5MB</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Player Information Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
