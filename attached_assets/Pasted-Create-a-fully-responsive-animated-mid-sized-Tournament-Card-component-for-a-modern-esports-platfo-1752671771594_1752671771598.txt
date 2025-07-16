@@ -1,0 +1,81 @@
+Create a fully responsive, animated, mid-sized Tournament Card component for a modern esports platform UI (FireFight.gg). This card should include a **poster image** for visual branding along with key match details.
+
+---
+
+📐 **Card Layout & Dimensions**:
+- Width: 300–350px | Height: ~260–300px
+- Shape: Rounded corners (2xl), subtle shadows
+- Theme: Light mode with solid, game-specific accent backgrounds
+- Layout: Grid-compatible, 2–4 per row on desktop, 1 per row on mobile
+- Animation: Hover scale, transition effects (Framer Motion optional)
+
+---
+
+🖼️ **New Section: Tournament Poster Image**
+- Full-width image banner (top 1/3 of card)
+- Ratio: 16:9 or 4:3
+- Use: Static image or animated GIF (for Premium)
+- Overlay tags on image corner: e.g., 🔥 "Trending", 🎯 "Beginner Friendly"
+- Fallback image if no poster uploaded
+- Add `Upload Poster` feature in admin create/edit form (accept JPG/PNG/WebP)
+
+---
+
+🧩 **Card Content Layout**:
+
+#### 🖼️ 1. Poster Banner (Top)
+- Full-width image
+- Optional tags (absolute positioned): “Pro Only”, “Free Entry”, “Live Now”
+
+#### 🎮 2. Header Info
+- Game Icon (left)
+- Game Name (bold)
+- Match Type Badge: Solo / Squad / Bracket
+- Colored strip background (based on game type)
+
+#### 🏷️ 3. Title + Mode
+- Tournament Name (bold, 1 line)
+- Mode Label: “Last Man Standing”, “TDM” etc.
+
+#### 📊 4. Info Grid (icons + text)
+- 🏆 Prize Pool: ₹10,000
+- 🎫 Entry: ₹50 / Free
+- 📅 Starts In: Live countdown
+- 👥 Slots: 45/100
+
+#### 🔘 5. Action Row
+- Button: “Join Now” (or “Closed” if ended)
+- 🔔 Notify Me toggle icon
+- Time Status: “Live”, “Upcoming”, “Closed” badge (color-coded)
+
+---
+
+🎨 **Design Options**:
+- Poster image has light overlay on hover with animated gradient
+- Badge tags are animated (pulse, glow)
+- Different solid color schemes per game
+- Optional progress bar: Slot fill status
+- Glowing outline for featured tournaments
+
+---
+
+📲 **Mobile View**:
+- Poster image spans top
+- Below it, icon + name + info blocks
+- Buttons and badges stacked vertically
+- Cards span full width with padding
+
+---
+
+🛠️ **Technical Details**:
+- Frontend: React or React Native
+- Styling: TailwindCSS + Framer Motion (optional)
+- Assets: Custom SVG game icons, cloud image hosting
+- Dynamic Props: Poster URL, Prize, Countdown, Slots, Entry, Status
+
+---
+
+🎯 **Use This Prompt To**:
+- Generate reusable tournament cards with eye-catching image posters
+- Dynamically render based on tournament API data
+- Apply in listing pages, game-specific feeds, home sliders, and admin dashboards

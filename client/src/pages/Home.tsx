@@ -99,18 +99,30 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="hero-bg rounded-2xl p-8 mb-8 text-white">
           <div className="max-w-2xl">
-            <h1 className="text-4xl font-bold mb-4">Win Big in Esports Tournaments</h1>
-            <p className="text-xl mb-6 opacity-90">Join tournaments, compete with the best, and earn real cash rewards</p>
+            <h1 className="text-4xl font-bold mb-4">
+              Win Big in Esports Tournaments
+            </h1>
+            <p className="text-xl mb-6 opacity-90">
+              Join tournaments, compete with the best, and earn real cash
+              rewards
+            </p>
             <div className="flex space-x-4">
-              <Button asChild className="bg-white text-fire-red hover:bg-gray-100">
+              <Button
+                asChild
+                className="bg-blue-600 text-fire-red hover:bg-black hover:text-white"
+              >
                 <Link href="/tournaments">Join Tournament</Link>
               </Button>
-              <Button asChild variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-fire-red">
+              <Button
+                asChild
+                variant="outline"
+                className="border-2 border-black text-black hover:bg-black hover:text-fire-red"
+              >
                 <Link href="/leaderboard">View Rankings</Link>
               </Button>
             </div>
@@ -123,10 +135,14 @@ export default function Home() {
             <Link key={action.title} href={action.href}>
               <Card className="card-hover cursor-pointer">
                 <CardContent className="p-4">
-                  <div className={`w-12 h-12 ${action.bgColor} rounded-lg flex items-center justify-center mb-3`}>
+                  <div
+                    className={`w-12 h-12 ${action.bgColor} rounded-lg flex items-center justify-center mb-3`}
+                  >
                     <action.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-fire-gray mb-1">{action.title}</h3>
+                  <h3 className="font-semibold text-fire-gray mb-1">
+                    {action.title}
+                  </h3>
                   <p className="text-sm text-gray-500">{action.description}</p>
                 </CardContent>
               </Card>
@@ -137,7 +153,9 @@ export default function Home() {
         {/* Live & Upcoming Tournaments */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-fire-gray">Live & Upcoming Tournaments</h2>
+            <h2 className="text-2xl font-bold text-fire-gray">
+              Live & Upcoming Tournaments
+            </h2>
             <div className="flex space-x-2">
               <Button className="bg-fire-red text-white">All Games</Button>
               <Button variant="outline">Free Fire</Button>
@@ -156,8 +174,12 @@ export default function Home() {
             <Card className="p-8 text-center">
               <CardContent>
                 <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No tournaments available</h3>
-                <p className="text-gray-500">Check back later for new tournaments</p>
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                  No tournaments available
+                </h3>
+                <p className="text-gray-500">
+                  Check back later for new tournaments
+                </p>
               </CardContent>
             </Card>
           )}
@@ -177,18 +199,29 @@ export default function Home() {
               <div className="space-y-4">
                 {topPlayers.map((player, index) => (
                   <div key={player.id} className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 ${index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-gray-400' : 'bg-orange-400'} rounded-full flex items-center justify-center text-white font-bold`}>
+                    <div
+                      className={`w-8 h-8 ${index === 0 ? "bg-yellow-400" : index === 1 ? "bg-gray-400" : "bg-orange-400"} rounded-full flex items-center justify-center text-white font-bold`}
+                    >
                       {index + 1}
                     </div>
                     <Avatar className="w-10 h-10">
                       <AvatarImage src={player.profileImageUrl} />
-                      <AvatarFallback>{player.username?.[0]?.toUpperCase()}</AvatarFallback>
+                      <AvatarFallback>
+                        {player.username?.[0]?.toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <div className="font-semibold text-fire-gray">{player.username}</div>
-                      <div className="text-sm text-gray-500">₹{parseFloat(player.walletBalance).toLocaleString()} earned</div>
+                      <div className="font-semibold text-fire-gray">
+                        {player.username}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        ₹{parseFloat(player.walletBalance).toLocaleString()}{" "}
+                        earned
+                      </div>
                     </div>
-                    <div className="text-fire-green font-semibold">Level {player.level}</div>
+                    <div className="text-fire-green font-semibold">
+                      Level {player.level}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -207,17 +240,25 @@ export default function Home() {
               <div className="space-y-4">
                 {topTeams.map((team, index) => (
                   <div key={team.id} className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 ${index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-gray-400' : 'bg-orange-400'} rounded-full flex items-center justify-center text-white font-bold`}>
+                    <div
+                      className={`w-8 h-8 ${index === 0 ? "bg-yellow-400" : index === 1 ? "bg-gray-400" : "bg-orange-400"} rounded-full flex items-center justify-center text-white font-bold`}
+                    >
                       {index + 1}
                     </div>
                     <div className="w-10 h-10 bg-fire-red rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold">{team.name.substring(0, 2).toUpperCase()}</span>
+                      <span className="text-white font-bold">
+                        {team.name.substring(0, 2).toUpperCase()}
+                      </span>
                     </div>
                     <div className="flex-1">
-                      <div className="font-semibold text-fire-gray">{team.name}</div>
+                      <div className="font-semibold text-fire-gray">
+                        {team.name}
+                      </div>
                       <div className="text-sm text-gray-500">Active team</div>
                     </div>
-                    <Badge variant="outline" className="text-fire-green">Active</Badge>
+                    <Badge variant="outline" className="text-fire-green">
+                      Active
+                    </Badge>
                   </div>
                 ))}
               </div>
@@ -233,13 +274,23 @@ export default function Home() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {dailyTasks.map((task, index) => (
-                <div key={index} className={`border rounded-lg p-4 bg-gradient-to-r ${task.bgColor} text-white`}>
+                <div
+                  key={index}
+                  className={`border rounded-lg p-4 bg-gradient-to-r ${task.bgColor} text-white`}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-semibold">{task.title}</span>
-                    <span className="text-sm">{task.current}/{task.total}</span>
+                    <span className="text-sm">
+                      {task.current}/{task.total}
+                    </span>
                   </div>
-                  <Progress value={task.progress} className="mb-2 bg-white bg-opacity-30" />
-                  <div className="text-sm opacity-90">Reward: {task.reward}</div>
+                  <Progress
+                    value={task.progress}
+                    className="mb-2 bg-white bg-opacity-30"
+                  />
+                  <div className="text-sm opacity-90">
+                    Reward: {task.reward}
+                  </div>
                 </div>
               ))}
             </div>

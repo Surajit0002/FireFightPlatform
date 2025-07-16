@@ -4,6 +4,20 @@
 
 FireFight is a full-stack esports tournament platform built with React, Node.js/Express, and PostgreSQL. The application features two distinct portals: a user portal for gamers to participate in tournaments and an admin portal for tournament management. The system handles tournament creation, team management, user authentication, wallet transactions, and real-time match updates.
 
+## Recent Changes
+
+### Dynamic Tournament Cards Implementation (July 16, 2025)
+- Added poster image support to tournaments database schema with `posterUrl` field
+- Completely redesigned tournament card component following modern esports design specifications
+- Implemented dynamic poster banners with gradient overlays and responsive image handling
+- Added dynamic overlay tags system (Featured, Free Entry, Beginner Friendly)
+- Created game-specific color schemes and enhanced visual hierarchy
+- Added hover animations, scale effects, and smooth transitions
+- Implemented slot fill progress bars with visual feedback
+- Added notification bell for upcoming tournaments
+- Enhanced responsive design with mobile-first approach
+- Added comprehensive fallback system for missing poster images
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

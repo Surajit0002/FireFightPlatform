@@ -74,6 +74,7 @@ export const tournaments = pgTable("tournaments", {
   roomPassword: varchar("room_password"),
   rules: text("rules"),
   mapInfo: varchar("map_info"),
+  posterUrl: varchar("poster_url"), // Tournament poster image URL
   isVerified: boolean("is_verified").default(false),
   isFeatured: boolean("is_featured").default(false),
   createdBy: varchar("created_by").references(() => users.id),
