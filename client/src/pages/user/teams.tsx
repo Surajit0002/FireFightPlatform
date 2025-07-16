@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import UserHeader from "@/components/layout/user-header";
@@ -984,7 +983,7 @@ export default function Teams() {
       <Card className="card-hover bg-white border-l-4 border-l-fire-blue shadow-lg relative overflow-hidden group">
         {/* Background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-fire-blue/5 to-fire-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
+
         <CardHeader className="pb-4 relative">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -1002,7 +1001,7 @@ export default function Teams() {
                   {onlineMembers}
                 </div>
               </div>
-              
+
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
                   <CardTitle className="text-xl font-bold fire-gray">{team.name}</CardTitle>
@@ -1013,7 +1012,7 @@ export default function Teams() {
                     </Badge>
                   )}
                 </div>
-                
+
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2">
                     <Badge variant="outline" className="text-xs">
@@ -1028,21 +1027,21 @@ export default function Teams() {
                       <Copy className="w-3 h-3" />
                     </Button>
                   </div>
-                  
+
                   {isCaptain && (
                     <Badge className="bg-fire-orange text-white text-xs">
                       <Crown className="w-3 h-3 mr-1" />
                       Captain
                     </Badge>
                   )}
-                  
+
                   <Badge variant="secondary" className="text-xs">
                     {members.length}/6 Members
                   </Badge>
                 </div>
               </div>
             </div>
-            
+
             {/* Team actions dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -1089,7 +1088,7 @@ export default function Teams() {
             </DropdownMenu>
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-6 relative">
           {/* Enhanced team stats */}
           <div className="grid grid-cols-4 gap-3">
@@ -1140,14 +1139,14 @@ export default function Teams() {
                 )}
               </div>
             </div>
-            
+
             {/* Profile pictures grid with empty slots */}
             <div className="mb-4">
               <div className="flex items-center space-x-2 mb-3">
                 <span className="text-xs font-medium text-gray-600">Team Roster</span>
                 <span className="text-xs text-gray-500">({members.length}/6)</span>
               </div>
-              
+
               <div className="grid grid-cols-6 gap-2">
                 {/* Existing team members */}
                 {members.slice(0, 6).map((member) => {
@@ -1164,16 +1163,16 @@ export default function Teams() {
                             {member.username.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        
+
                         {/* Online status indicator */}
                         <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(member.status)} shadow-sm`}></div>
-                        
+
                         {/* Role badge */}
                         <div className={`absolute -top-1 -left-1 w-5 h-5 ${getRoleColor(member.role)} rounded-full flex items-center justify-center shadow-sm`}>
                           <RoleIcon className="w-2.5 h-2.5 text-white" />
                         </div>
                       </div>
-                      
+
                       {/* Tooltip on hover */}
                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                         <div className="font-medium">{member.username}</div>
@@ -1183,7 +1182,7 @@ export default function Teams() {
                     </div>
                   );
                 })}
-                
+
                 {/* Empty slots for remaining positions */}
                 {Array.from({ length: 6 - members.length }).map((_, index) => (
                   <div key={`empty-${index}`} className="relative group">
@@ -1198,7 +1197,7 @@ export default function Teams() {
                     >
                       <UserPlus className="w-5 h-5 text-gray-400 group-hover:text-fire-blue transition-colors" />
                     </div>
-                    
+
                     {/* Invite tooltip */}
                     {isCaptain && (
                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
@@ -1210,7 +1209,7 @@ export default function Teams() {
                 ))}
               </div>
             </div>
-            
+
             {/* Detailed member list (first 3) */}
             <div className="space-y-2">
               {members.slice(0, 3).map((member) => {
@@ -1229,7 +1228,7 @@ export default function Teams() {
                       </Avatar>
                       <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(member.status)}`}></div>
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium text-gray-900 truncate">{member.username}</span>
@@ -1243,7 +1242,7 @@ export default function Teams() {
                         <span>K/D: {member.kd}</span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <Badge className={`${getRoleColor(member.role)} text-white text-xs px-2 py-1`}>
                         <RoleIcon className="w-3 h-3 mr-1" />
@@ -1253,7 +1252,7 @@ export default function Teams() {
                   </div>
                 );
               })}
-              
+
               {members.length > 3 && (
                 <div className="text-center py-2">
                   <Button
@@ -1287,7 +1286,7 @@ export default function Teams() {
               <Users className="w-4 h-4 mr-2" />
               View Team
             </Button>
-            
+
             <Button
               size="sm"
               className="bg-fire-green hover:bg-green-600 text-white"
@@ -1295,7 +1294,7 @@ export default function Teams() {
               <Share2 className="w-4 h-4 mr-2" />
               Share
             </Button>
-            
+
             {isCaptain && (
               <Button
                 size="sm"
@@ -1314,7 +1313,7 @@ export default function Teams() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <UserHeader />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Enhanced page header */}
         <div className="flex justify-between items-center mb-8">
@@ -1326,7 +1325,7 @@ export default function Teams() {
               Create and manage your esports teams for squad tournaments
             </p>
           </div>
-          
+
           <div className="flex space-x-3">
             <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
               <DialogTrigger asChild>
@@ -1374,7 +1373,7 @@ export default function Teams() {
                 </div>
               </DialogContent>
             </Dialog>
-            
+
             <Button 
               onClick={() => setShowCreateModal(true)}
               size="lg"
@@ -1484,7 +1483,7 @@ export default function Teams() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-white/80 transition-all border border-white/30">
                 <div className="w-16 h-16 bg-gradient-to-br from-fire-blue to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-white" />
                 </div>
@@ -1493,8 +1492,8 @@ export default function Teams() {
                   Participate in team-based tournaments with higher prize pools and exclusive rewards
                 </p>
               </div>
-              
-              <div className="text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+
+              <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-white/80 transition-all border border-white/30">
                 <div className="w-16 h-16 bg-gradient-to-br from-fire-green to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trophy className="w-8 h-8 text-white" />
                 </div>
@@ -1503,8 +1502,8 @@ export default function Teams() {
                   Win together and automatically distribute prize money among teammates
                 </p>
               </div>
-              
-              <div className="text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+
+              <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-white/80 transition-all border border-white/30">
                 <div className="w-16 h-16 bg-gradient-to-br from-fire-orange to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="w-8 h-8 text-white" />
                 </div>
@@ -1513,8 +1512,8 @@ export default function Teams() {
                   Advanced performance tracking and team statistics with detailed insights
                 </p>
               </div>
-              
-              <div className="text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+
+              <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-white/80 transition-all border border-white/30">
                 <div className="w-16 h-16 bg-gradient-to-br from-fire-red to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Crown className="w-8 h-8 text-white" />
                 </div>
@@ -1551,7 +1550,7 @@ export default function Teams() {
                     </div>
                   </DialogTitle>
                 </DialogHeader>
-                
+
                 <div className="space-y-8">
                   {/* Team info and sharing */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1572,7 +1571,7 @@ export default function Teams() {
                           </Button>
                         </div>
                       </div>
-                      
+
                       <div>
                         <label className="text-sm font-medium text-gray-700 mb-2 block">Share Team</label>
                         <div className="flex space-x-2">
@@ -1591,7 +1590,7 @@ export default function Teams() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div>
                         <label className="text-sm font-medium text-gray-700 mb-2 block">Created</label>
@@ -1600,7 +1599,7 @@ export default function Teams() {
                           <span>{new Date(selectedTeam.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      
+
                       <div>
                         <label className="text-sm font-medium text-gray-700 mb-2 block">Last Active</label>
                         <div className="text-gray-600 flex items-center space-x-2">
@@ -1640,7 +1639,7 @@ export default function Teams() {
                         Add Member
                       </Button>
                     </div>
-                    
+
                     <div className="space-y-3">
                       {(teamMembersData[selectedTeam.id] || []).map((member) => {
                         const RoleIcon = getRoleIcon(member.role);
@@ -1655,7 +1654,7 @@ export default function Teams() {
                               </Avatar>
                               <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(member.status)}`}></div>
                             </div>
-                            
+
                             <div className="flex-1">
                               <div className="flex items-center space-x-2">
                                 <h5 className="font-semibold text-gray-800">{member.username}</h5>
@@ -1673,13 +1672,13 @@ export default function Teams() {
                                 Joined: {new Date(member.joinDate).toLocaleDateString()} • Last active: {member.lastActive}
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center space-x-3">
                               <Badge className={`${getRoleColor(member.role)} text-white`}>
                                 <RoleIcon className="w-3 h-3 mr-1" />
                                 {getRoleLabel(member.role)}
                               </Badge>
-                              
+
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="sm">
@@ -1728,7 +1727,7 @@ export default function Teams() {
                         </Button>
                       </div>
                     </div>
-                    
+
                     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                       <Table>
                         <TableHeader>
@@ -1798,7 +1797,7 @@ export default function Teams() {
                         Share Team
                       </Button>
                     </div>
-                    
+
                     <Button variant="outline" onClick={() => setShowTeamDetails(false)}>
                       Close
                     </Button>
@@ -1835,7 +1834,7 @@ export default function Teams() {
                 <span>Invite Player to Team</span>
               </DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               {/* Invite Method Selection */}
               <div className="flex space-x-2 p-1 bg-gray-100 rounded-lg">
