@@ -321,9 +321,11 @@ export default function Tournaments() {
 
         {/* Tournament Grid */}
         {filteredTournaments.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredTournaments.map((tournament) => (
-              <TournamentCard key={tournament.id} tournament={tournament} />
+              <div key={tournament.id} className="flex">
+                <TournamentCard tournament={tournament} />
+              </div>
             ))}
           </div>
         ) : (
