@@ -95,7 +95,7 @@ export default function TeamModal({ isOpen, onClose }: TeamModalProps) {
   const queryClient = useQueryClient();
 
   const createTeamMutation = useMutation({
-    mutationFn: async (data: { name: string; code: string; logoUrl?: string }) => {
+    mutationFn: async (data: { name: string; code: string; logoUrl?: string; players: Player[] }) => {
       await apiRequest("POST", "/api/teams", data);
     },
     onSuccess: () => {
@@ -319,7 +319,8 @@ export default function TeamModal({ isOpen, onClose }: TeamModalProps) {
       name: teamName.trim(),
       code: teamCode || `FF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
       // Send compressed image data (small size, ~50KB max)
-      logoUrl: teamLogoPreview
+      logoUrl: teamLogoPreview,
+      players: players
     });
   };
 

@@ -106,11 +106,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/teams', isAuthenticated, async (req: any, res) => {
     try {
+      const { players, ...teamFields } = req.body;
       const teamData = insertTeamSchema.parse({
-        ...req.body,
+        ...teamFields,
         captainId: req.user.claims.sub
       });
+      
       const team = await storage.createTeam(teamData);
+      
+      // Add players to the team if provided
+      if (players && Array.isArray(players)) {
+        for (const player of players) {
+          // Create user if not exists (for demo purposes, in real app you'd invite existing users)
+          const userId = `player_${player.id}`;
+          await storage.upsertUser({
+            id: userId,
+            username: player.username,
+            email: player.email || `${player.username}@example.com`,
+            avatarUrl: player.avatar,
+            phoneNumber: player.phone,
+            gameId: player.gameId,
+            role: 'user',
+            isActive: true,
+            walletBalance: '0.00',
+            kycStatus: 'pending',
+            profileCompleted: true,
+            totalEarnings: '0.00',
+            totalTournaments: 0,
+            winRate: 0,
+            avgPlacement: 0,
+            skillRating: 1000,
+            reputation: 100
+          });
+          
+          // Add player to team
+          await storage.addTeamMember(team.id, userId, player.role);
+        }
+      }
+      
       res.json(team);
     } catch (error) {
       console.error("Error creating team:", error);

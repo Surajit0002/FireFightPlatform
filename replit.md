@@ -6,6 +6,15 @@ FireFight is a full-stack esports tournament platform built with React, Node.js/
 
 ## Recent Changes
 
+### Team Creation and Member Management Fix (July 16, 2025)
+- Fixed "request entity too large" error in team creation by adding 10MB request limit
+- Implemented automatic image compression for team logos (~50KB) and player avatars (~30KB)
+- Updated team creation API to properly save players added in the team modal
+- Enhanced team members retrieval to include user profile information
+- Created comprehensive team details modal showing all team members with roles and avatars
+- Fixed team member display in team cards to show actual database members
+- Added proper team member management with role-based permissions
+
 ### Database Setup and Sample Data Population (July 16, 2025)
 - Successfully created PostgreSQL database with all required tables and schemas
 - Populated database with comprehensive sample data including:

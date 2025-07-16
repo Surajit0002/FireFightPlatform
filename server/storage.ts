@@ -333,11 +333,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTeamMembers(teamId: number): Promise<TeamMember[]> {
-    return await db
-      .select()
+    const results = await db
+      .select({
+        id: teamMembers.id,
+        teamId: teamMembers.teamId,
+        userId: teamMembers.userId,
+        role: teamMembers.role,
+        gameId: teamMembers.gameId,
+        contactInfo: teamMembers.contactInfo,
+        joinedAt: teamMembers.joinedAt,
+        username: users.username,
+        email: users.email,
+        avatarUrl: users.profileImageUrl,
+        phoneNumber: users.upiId, // Using upiId as phone for now
+      })
       .from(teamMembers)
+      .innerJoin(users, eq(teamMembers.userId, users.id))
       .where(eq(teamMembers.teamId, teamId))
       .orderBy(asc(teamMembers.role));
+    
+    return results;
   }
 
   // Transaction operations

@@ -85,6 +85,186 @@ const GAMES = {
   pubg: { name: "PUBG", color: "bg-green-500", icon: "🎮" },
 };
 
+// Team Members Section Component for Team Details Modal
+function TeamMembersSection({ 
+  teamId, 
+  isTeamCaptain, 
+  captainId 
+}: { 
+  teamId: number; 
+  isTeamCaptain: boolean;
+  captainId: string;
+}) {
+  const { data: members = [], isLoading } = useQuery<TeamMember[]>({
+    queryKey: ["/api/teams", teamId, "members"],
+  });
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold">Team Members</h3>
+          <div className="animate-pulse h-8 w-20 bg-gray-200 rounded"></div>
+        </div>
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+                <div>
+                  <div className="h-4 w-20 bg-gray-200 rounded animate-pulse mb-1"></div>
+                  <div className="h-3 w-32 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">Team Members ({members.length})</h3>
+        {isTeamCaptain && (
+          <Button size="sm" className="bg-fire-blue text-white">
+            <UserPlus className="w-4 h-4 mr-2" />
+            Add Member
+          </Button>
+        )}
+      </div>
+      
+      <div className="space-y-3">
+        {members.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Users className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+            <p>No team members yet</p>
+            <p className="text-sm">Add players to get started</p>
+          </div>
+        ) : (
+          members.map((member) => {
+            const role = PLAYER_ROLES[member.role as keyof typeof PLAYER_ROLES];
+            const RoleIcon = role?.icon || Users;
+            
+            return (
+              <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src={member.avatarUrl} alt={member.username} />
+                    <AvatarFallback className="bg-fire-blue text-white">
+                      {member.username.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-medium flex items-center space-x-2">
+                      <span>{member.username}</span>
+                      {member.userId === captainId && (
+                        <Crown className="w-4 h-4 text-yellow-500" />
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500 flex items-center space-x-2">
+                      <RoleIcon className="w-3 h-3" />
+                      <span>{role?.label || member.role}</span>
+                      {member.gameId && (
+                        <>
+                          <span>•</span>
+                          <span>ID: {member.gameId}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  {member.userId === captainId && (
+                    <Badge className="bg-yellow-500 text-white">
+                      <Crown className="w-3 h-3 mr-1" />
+                      Captain
+                    </Badge>
+                  )}
+                  {role && (
+                    <Badge className={`${role.color} text-white`}>
+                      <RoleIcon className="w-3 h-3 mr-1" />
+                      {role.label}
+                    </Badge>
+                  )}
+                  {isTeamCaptain && member.userId !== captainId && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit Role
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600">
+                          <UserX className="w-4 h-4 mr-2" />
+                          Remove Member
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Team Members Preview Component
+function TeamMembersPreview({ teamId }: { teamId: number }) {
+  const { data: members = [], isLoading } = useQuery<TeamMember[]>({
+    queryKey: ["/api/teams", teamId, "members"],
+  });
+
+  if (isLoading) {
+    return (
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-gray-700">Team Members</span>
+          <Badge variant="outline">Loading...</Badge>
+        </div>
+        <div className="flex -space-x-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="w-8 h-8 bg-gray-200 rounded-full border-2 border-white animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-4">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium text-gray-700">Team Members</span>
+        <Badge variant="outline">{members.length} members</Badge>
+      </div>
+      <div className="flex -space-x-2">
+        {members.slice(0, 4).map((member) => (
+          <Avatar key={member.id} className="w-8 h-8 border-2 border-white">
+            <AvatarImage src={member.avatarUrl} alt={member.username} />
+            <AvatarFallback className="bg-fire-blue text-white text-xs">
+              {member.username.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        ))}
+        {members.length > 4 && (
+          <div className="w-8 h-8 bg-gray-500 rounded-full border-2 border-white flex items-center justify-center">
+            <span className="text-white text-xs">+{members.length - 4}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Teams() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -486,20 +666,7 @@ export default function Teams() {
                   </div>
 
                   {/* Members Preview */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">Team Members</span>
-                      <Badge variant="outline">4 members</Badge>
-                    </div>
-                    <div className="flex -space-x-2">
-                      {[1, 2, 3, 4].map((i) => (
-                        <Avatar key={i} className="w-8 h-8 border-2 border-white">
-                          <AvatarFallback className="bg-fire-blue text-white text-xs">
-                            {i}
-                          </AvatarFallback>
-                        </Avatar>
-                      ))}
-                    </div>
+                  <TeamMembersPreview teamId={team.id} />
                   </div>
 
                   {/* Action Buttons */}
@@ -508,10 +675,13 @@ export default function Teams() {
                       variant="outline" 
                       size="sm" 
                       className="flex-1"
-                      onClick={() => setSelectedTeam(team)}
+                      onClick={() => {
+                        setSelectedTeam(team);
+                        setIsViewDetailsOpen(true);
+                      }}
                     >
-                      <Settings className="w-4 h-4 mr-2" />
-                      Manage
+                      <Eye className="w-4 h-4 mr-2" />
+                      View Team
                     </Button>
                     <Button 
                       variant="outline" 
@@ -599,21 +769,28 @@ export default function Teams() {
           </div>
         </div>
 
-        {/* Team Management Modal */}
-        {selectedTeam && (
-          <Dialog open={!!selectedTeam} onOpenChange={() => setSelectedTeam(null)}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-fire-red rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold">
-                      {selectedTeam.name.substring(0, 2).toUpperCase()}
+        {/* Team Details Modal */}
+        <Dialog open={isViewDetailsOpen} onOpenChange={setIsViewDetailsOpen}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-fire-red rounded-lg flex items-center justify-center">
+                  {selectedTeam?.logoUrl ? (
+                    <img src={selectedTeam.logoUrl} alt={selectedTeam.name} className="w-full h-full rounded-lg object-cover" />
+                  ) : (
+                    <span className="text-white font-bold text-lg">
+                      {selectedTeam?.name.substring(0, 2).toUpperCase()}
                     </span>
-                  </div>
-                  <span>{selectedTeam.name}</span>
-                </DialogTitle>
-              </DialogHeader>
+                  )}
+                </div>
+                <div>
+                  <div className="text-xl font-bold">{selectedTeam?.name}</div>
+                  <div className="text-sm text-gray-500">Team Code: {selectedTeam?.code}</div>
+                </div>
+              </DialogTitle>
+            </DialogHeader>
 
+            {selectedTeam && (
               <div className="space-y-6">
                 {/* Team Info */}
                 <div className="grid grid-cols-2 gap-4">
@@ -643,49 +820,15 @@ export default function Teams() {
                 </div>
 
                 {/* Team Members */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold">Team Members</h3>
-                    {selectedTeam.captainId === user?.id && (
-                      <Button size="sm" className="bg-fire-blue text-white">
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Add Member
-                      </Button>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <Avatar>
-                            <AvatarFallback>M{i}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">Member {i}</div>
-                            <div className="text-sm text-gray-500">
-                              {i === 1 ? "Captain" : "Member"} • Joined {i} days ago
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          {i === 1 && (
-                            <Badge className="bg-yellow-500 text-white">
-                              <Crown className="w-3 h-3 mr-1" />
-                              Captain
-                            </Badge>
-                          )}
-                          {selectedTeam.captainId === user?.id && i !== 1 && (
-                            <Button variant="outline" size="sm">
-                              Remove
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <TeamMembersSection 
+                  teamId={selectedTeam.id} 
+                  isTeamCaptain={selectedTeam.captainId === user?.id}
+                  captainId={selectedTeam.captainId}
+                />
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
                 {/* Team Actions */}
                 <div className="flex space-x-3 pt-4 border-t">
