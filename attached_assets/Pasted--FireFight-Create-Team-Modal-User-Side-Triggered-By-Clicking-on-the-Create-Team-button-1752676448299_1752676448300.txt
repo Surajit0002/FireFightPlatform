@@ -1,0 +1,132 @@
+🧩 FireFight – Create Team Modal (User Side)
+📍 Triggered By:
+Clicking on the “➕ Create Team” button on the /teams page.
+
+🎨 UI Layout (Modal)
+Type: Centered modal with multi-step OR scrollable form
+Width: ~500px on desktop, full-width on mobile
+Theme: Light background, solid color borders (accent by game type), rounded corners, shadowed container
+Animation: Smooth slide-in or fade-in with backdrop blur
+
+🧾 Step-by-Step Form Sections
+🔹 1. Upload Team Logo
+🖼️ Image uploader (accept: JPG, PNG, WEBP)
+
+Live preview of uploaded logo
+
+Optional: crop/resize tool
+
+Validation: Max size 5MB, required
+
+🔹 2. Team Name
+📛 Input field (max 24 characters)
+
+Tooltip: “Must be unique. No special characters.”
+
+Auto-suggest existing team names to prevent duplicates
+
+Validation: Required, uniqueness check
+
+🔹 3. Auto-generated Team Code
+🔢 Code like FFX-JK91D
+
+Displayed after submission or pre-filled for sharing
+
+Optional: “Copy code” button
+
+🔹 4. Add Players
+➕ Button: “Add Player” opens nested modal
+
+🔁 Add Player Modal (inside Create Team):
+📸 Upload Player Avatar (optional)
+
+👤 Username (text)
+
+🎮 Game Role (dropdown: Entry, Support, Sniper, IGL, Captain)
+
+📧 Email (optional, for verification)
+
+📱 Phone Number (optional)
+
+🆔 In-Game ID / Game Account ID (required)
+
+✅ Add Player button (add to preview list)
+
+Show player in preview with:
+
+Avatar
+
+IGN
+
+Game Role badge
+
+Remove icon
+
+Limit: Up to 6 players max (show “Max limit reached” when full)
+
+🔹 5. Final Preview
+Show all added players in grid
+
+Profile pic
+
+Name
+
+Role (icon tag)
+
+Edit / Remove actions
+
+Summary:
+
+Total Players
+
+Team Logo
+
+Team Name
+
+🔹 6. Submit/Create Team
+✅ Button: “Create Team”
+
+Loading state with spinner
+
+On success:
+
+Toast: “Team Created Successfully!”
+
+Redirect to /teams
+
+Option to share team code
+
+🔐 Form Validation & Logic
+Require at least 2 players to create team
+
+Unique team name check (via API)
+
+Optional checks: profanity filter, duplicate player ID detection
+
+Responsive validation messages on input blur or submit
+
+🛡️ Security Rules (Backend Integration)
+Only logged-in users can create a team
+
+Each user can own only one team (optional rule)
+
+Auto-tag team creator as “Captain”
+
+📱 Mobile Behavior
+Modal takes full screen on phones
+
+Player list scrollable
+
+Buttons fixed to bottom
+
+Close/back arrow in top-left
+
+🔄 Optional Features:
+Invite by email/phone after creation
+
+Share team to WhatsApp/Telegram
+
+Team creation XP/reward (gamification)
+
+Upload team banner image (for public page)
+
