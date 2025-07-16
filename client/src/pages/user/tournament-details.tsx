@@ -39,7 +39,7 @@ import {
   AlertTriangle,
   Gamepad2,
   Crown,
-  Fire,
+  Flame,
   Timer,
   Users2,
   Coins,

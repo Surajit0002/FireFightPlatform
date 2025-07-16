@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
 import TournamentCard from "@/components/tournament-card";
+import { LoadingCard, LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Trophy } from "lucide-react";
+import { Search, Filter, Trophy, AlertCircle } from "lucide-react";
 import type { Tournament } from "@shared/schema";
 
 export default function Tournaments() {
@@ -15,7 +17,7 @@ export default function Tournaments() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: tournaments = [], isLoading } = useQuery<Tournament[]>({
+  const { data: tournaments = [], isLoading, error, refetch } = useQuery<Tournament[]>({
     queryKey: ["/api/tournaments", gameFilter, statusFilter],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -23,8 +25,13 @@ export default function Tournaments() {
       if (statusFilter !== "all") params.append("status", statusFilter);
       
       const res = await fetch(`/api/tournaments?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch tournaments');
+      }
       return res.json();
     },
+    retry: 2,
+    staleTime: 30000, // 30 seconds
   });
 
   const filteredTournaments = tournaments.filter(tournament =>
@@ -47,18 +54,35 @@ export default function Tournaments() {
     { value: "completed", label: "Completed" },
   ];
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <ErrorBoundary 
+            error={error as Error} 
+            onRetry={() => refetch()}
+            title="Failed to load tournaments"
+            description="We couldn't load the tournaments. Please check your connection and try again."
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-300 rounded w-1/3 mb-6"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="h-80 bg-gray-300 rounded-lg"></div>
-              ))}
-            </div>
+          <div className="mb-8">
+            <div className="h-8 bg-gray-300 rounded w-1/3 mb-2 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <LoadingCard key={i} />
+            ))}
           </div>
         </div>
       </div>
@@ -172,7 +196,7 @@ export default function Tournaments() {
         </div>
 
         {/* Empty State */}
-        {filteredTournaments.length === 0 && (
+        {filteredTournaments.length === 0 && !isLoading && (
           <Card className="p-12 text-center">
             <CardContent>
               <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />

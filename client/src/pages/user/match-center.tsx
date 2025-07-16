@@ -29,7 +29,7 @@ import {
   Target,
   Award,
   TrendingUp,
-  Fire,
+  Flame,
   Crown,
   Swords,
   Shield,

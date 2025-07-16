@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/layout/Header";
-import TournamentCard from "@/components/tournament/TournamentCard";
+import TournamentCard from "@/components/tournament-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Zap, DollarSign, Users, BarChart3, Trophy, Crown } from "lucide-react";
 import { Link } from "wouter";
-import type { Tournament, User, Team } from "@/types";
+import type { Tournament, User, Team } from "@shared/schema";
 
 export default function Home() {
   const { user } = useAuth();
