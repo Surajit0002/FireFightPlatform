@@ -23,7 +23,7 @@
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
-  
+
   /* FireFight Custom Colors */
   --fire-red: hsl(0, 91%, 60%);
   --fire-blue: hsl(217, 91%, 60%);
@@ -70,47 +70,47 @@
   .fire-red {
     color: var(--fire-red);
   }
-  
+
   .bg-fire-red {
     background-color: var(--fire-red);
   }
-  
+
   .fire-blue {
     color: var(--fire-blue);
   }
-  
+
   .bg-fire-blue {
     background-color: var(--fire-blue);
   }
-  
+
   .fire-green {
     color: var(--fire-green);
   }
-  
+
   .bg-fire-green {
     background-color: var(--fire-green);
   }
-  
+
   .fire-teal {
     color: var(--fire-teal);
   }
-  
+
   .bg-fire-teal {
     background-color: var(--fire-teal);
   }
-  
+
   .fire-gray {
     color: var(--fire-gray);
   }
-  
+
   .bg-fire-gray {
     background-color: var(--fire-gray);
   }
-  
+
   .fire-orange {
     color: var(--fire-orange);
   }
-  
+
   .bg-fire-orange {
     background-color: var(--fire-orange);
   }
@@ -216,7 +216,7 @@
     .card-hover:active {
       transform: translateY(-4px) scale(0.98);
     }
-    
+
     button {
       min-height: 48px;
       touch-action: manipulation;
@@ -238,4 +238,54 @@
   .bg-gradient-cool {
     background: linear-gradient(135deg, var(--fire-blue), var(--fire-teal), var(--fire-green));
   }
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .auto-rows-fr {
+    grid-auto-rows: 1fr;
+  }
+}
+
+/* Tournament Card Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.tournament-card-enter {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

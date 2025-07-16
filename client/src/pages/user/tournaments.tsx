@@ -112,85 +112,104 @@ export default function Tournaments() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
-        <div className="hero-gradient rounded-2xl p-8 mb-8 text-white">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl font-bold mb-4">Browse Tournaments</h1>
-            <p className="text-xl mb-6 opacity-90">
-              Find the perfect tournament for your skill level and favorite games
-            </p>
-            <div className="flex space-x-4">
-              <Badge className="bg-white text-fire-red px-3 py-1">
-                {liveTournaments.length} Live
-              </Badge>
-              <Badge className="bg-white text-fire-blue px-3 py-1">
-                {upcomingTournaments.length} Upcoming
-              </Badge>
-              <Badge className="bg-white text-fire-green px-3 py-1">
-                {freeTournaments.length} Free
-              </Badge>
+        <div className="relative hero-gradient rounded-3xl p-8 mb-8 text-white overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+          <div className="relative max-w-4xl">
+            <div className="flex flex-col lg:flex-row items-center justify-between">
+              <div className="flex-1 mb-6 lg:mb-0">
+                <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100">
+                  Discover Epic Tournaments
+                </h1>
+                <p className="text-xl mb-6 opacity-90 max-w-2xl">
+                  Join competitive esports tournaments, compete with players worldwide, and win amazing prizes in your favorite games
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 px-4 py-2 text-sm font-medium">
+                    <div className="w-2 h-2 bg-red-400 rounded-full mr-2 animate-pulse"></div>
+                    {liveTournaments.length} Live Tournaments
+                  </Badge>
+                  <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 px-4 py-2 text-sm font-medium">
+                    <Clock className="w-4 h-4 mr-2" />
+                    {upcomingTournaments.length} Starting Soon
+                  </Badge>
+                  <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 px-4 py-2 text-sm font-medium">
+                    <Trophy className="w-4 h-4 mr-2" />
+                    {freeTournaments.length} Free to Enter
+                  </Badge>
+                </div>
+              </div>
+              <div className="hidden lg:block">
+                <div className="w-48 h-48 bg-gradient-to-br from-white/10 to-white/5 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <Trophy className="w-24 h-24 text-white/80" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm border p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8 backdrop-blur-sm">
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+              <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
               <Input
                 type="text"
-                placeholder="Search tournaments..."
+                placeholder="Search tournaments by name, game, or description..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-12 h-12 bg-gray-50 border-gray-200 rounded-xl focus:bg-white transition-colors"
               />
             </div>
 
-            {/* Game Filter */}
-            <Select value={selectedGame} onValueChange={setSelectedGame}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Select Game" />
-              </SelectTrigger>
-              <SelectContent>
-                {gameOptions.map((game) => (
-                  <SelectItem key={game.value} value={game.value}>
-                    <span className="flex items-center space-x-2">
-                      <span>{game.icon}</span>
-                      <span>{game.label}</span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Filters Row */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* Game Filter */}
+              <Select value={selectedGame} onValueChange={setSelectedGame}>
+                <SelectTrigger className="w-full sm:w-48 h-12 bg-gray-50 border-gray-200 rounded-xl">
+                  <SelectValue placeholder="Select Game" />
+                </SelectTrigger>
+                <SelectContent>
+                  {gameOptions.map((game) => (
+                    <SelectItem key={game.value} value={game.value}>
+                      <span className="flex items-center space-x-2">
+                        <span>{game.icon}</span>
+                        <span>{game.label}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            {/* Status Filter */}
-            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Tournament Status" />
-              </SelectTrigger>
-              <SelectContent>
-                {statusOptions.map((status) => (
-                  <SelectItem key={status.value} value={status.value}>
-                    {status.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              {/* Status Filter */}
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger className="w-full sm:w-48 h-12 bg-gray-50 border-gray-200 rounded-xl">
+                  <SelectValue placeholder="Tournament Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            {/* Sort */}
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Sort By" />
-              </SelectTrigger>
-              <SelectContent>
-                {sortOptions.map((sort) => (
-                  <SelectItem key={sort.value} value={sort.value}>
-                    {sort.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full sm:w-48 h-12 bg-gray-50 border-gray-200 rounded-xl">
+                  <SelectValue placeholder="Sort By" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((sort) => (
+                    <SelectItem key={sort.value} value={sort.value}>
+                      {sort.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             {/* Mobile Filter Button */}
             <Sheet open={showFilters} onOpenChange={setShowFilters}>
@@ -286,19 +305,23 @@ export default function Tournaments() {
           </Card>
         </div>
 
-        {/* Results Info */}
+        
+
+        {/* View Toggle */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold fire-gray">
             Tournaments ({filteredTournaments.length})
           </h2>
-          <div className="text-sm text-gray-500">
-            Showing {filteredTournaments.length} of {tournaments.length} tournaments
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-500">
+              Showing {filteredTournaments.length} of {tournaments.length} tournaments
+            </div>
           </div>
         </div>
 
         {/* Tournament Grid */}
         {filteredTournaments.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
             {filteredTournaments.map((tournament) => (
               <TournamentCard key={tournament.id} tournament={tournament} />
             ))}
