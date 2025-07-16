@@ -1260,52 +1260,36 @@ export default function Teams() {
         </div>
 
         {/* Enhanced quick stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-fire-blue to-blue-600 text-white border-0 shadow-lg">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-3xl font-bold mb-1">{teams.length}</div>
-              <div className="text-blue-100">My Teams</div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-blue-500 text-white p-4 rounded-lg text-center">
+            <Users className="w-6 h-6 mx-auto mb-2" />
+            <div className="text-2xl font-bold">{teams.length}</div>
+            <div className="text-xs opacity-90">My Teams</div>
+          </div>
 
-          <Card className="bg-gradient-to-br from-fire-orange to-orange-600 text-white border-0 shadow-lg">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Crown className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-3xl font-bold mb-1">
-                {teams.filter(t => t.captainId === user?.id).length}
-              </div>
-              <div className="text-orange-100">As Captain</div>
-            </CardContent>
-          </Card>
+          <div className="bg-orange-500 text-white p-4 rounded-lg text-center">
+            <Crown className="w-6 h-6 mx-auto mb-2" />
+            <div className="text-2xl font-bold">
+              {teams.filter(t => t.captainId === user?.id).length}
+            </div>
+            <div className="text-xs opacity-90">As Captain</div>
+          </div>
 
-          <Card className="bg-gradient-to-br from-fire-green to-green-600 text-white border-0 shadow-lg">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Trophy className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-3xl font-bold mb-1">
-                {teams.length > 0 ? Math.round(teams.reduce((avg, team) => avg + parseFloat(team.winRate), 0) / teams.length) : 0}%
-              </div>
-              <div className="text-green-100">Avg Win Rate</div>
-            </CardContent>
-          </Card>
+          <div className="bg-green-500 text-white p-4 rounded-lg text-center">
+            <Trophy className="w-6 h-6 mx-auto mb-2" />
+            <div className="text-2xl font-bold">
+              {teams.length > 0 ? Math.round(teams.reduce((avg, team) => avg + parseFloat(team.winRate), 0) / teams.length) : 0}%
+            </div>
+            <div className="text-xs opacity-90">Avg Win Rate</div>
+          </div>
 
-          <Card className="bg-gradient-to-br from-fire-red to-red-600 text-white border-0 shadow-lg">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <IndianRupee className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-3xl font-bold mb-1">
-                ₹{teams.reduce((total, team) => total + parseFloat(team.totalEarnings), 0).toFixed(2)}
-              </div>
-              <div className="text-red-100">Total Earnings</div>
-            </CardContent>
-          </Card>
+          <div className="bg-red-500 text-white p-4 rounded-lg text-center">
+            <IndianRupee className="w-6 h-6 mx-auto mb-2" />
+            <div className="text-2xl font-bold">
+              ₹{teams.reduce((total, team) => total + parseFloat(team.totalEarnings), 0).toFixed(2)}
+            </div>
+            <div className="text-xs opacity-90">Total Earnings</div>
+          </div>
         </div>
 
         {/* Teams grid */}
