@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -197,7 +196,7 @@ export default function UserHeader() {
                 <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-50 rounded-xl p-2 group">
                   <Avatar className="w-8 h-8 ring-2 ring-transparent group-hover:ring-fire-red transition-all duration-300">
                     <AvatarImage src={user?.profileImageUrl || ""} />
-                    <AvatarFallback className="bg-gradient-to-r from-fire-red to-fire-blue text-white font-bold">
+                    <AvatarFallback className="bg-fire-red text-white font-bold">
                       {user?.username?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -217,7 +216,7 @@ export default function UserHeader() {
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={user?.profileImageUrl || ""} />
-                      <AvatarFallback className="bg-gradient-to-r from-fire-red to-fire-blue text-white font-bold">
+                      <AvatarFallback className="bg-fire-red text-white font-bold">
                         {user?.username?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -235,7 +234,7 @@ export default function UserHeader() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="py-2">
                   <Link href="/profile">
                     <DropdownMenuItem className="cursor-pointer hover:bg-fire-red hover:text-white transition-colors duration-200">
@@ -262,9 +261,9 @@ export default function UserHeader() {
                     </DropdownMenuItem>
                   </Link>
                 </div>
-                
+
                 <DropdownMenuSeparator />
-                
+
                 <div className="py-2">
                   <Link href="/support">
                     <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 transition-colors duration-200">
@@ -281,9 +280,9 @@ export default function UserHeader() {
                     </Link>
                   )}
                 </div>
-                
+
                 <DropdownMenuSeparator />
-                
+
                 <DropdownMenuItem 
                   onClick={() => window.location.href = '/api/logout'}
                   className="cursor-pointer hover:bg-red-50 text-red-600 transition-colors duration-200"
@@ -308,7 +307,7 @@ export default function UserHeader() {
                     Quick access to all features
                   </SheetDescription>
                 </SheetHeader>
-                
+
                 <div className="p-6">
                   {/* Mobile Search */}
                   <div className="relative mb-6">
