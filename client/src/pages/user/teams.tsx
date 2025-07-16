@@ -980,330 +980,204 @@ export default function Teams() {
     const onlineMembers = members.filter(m => m.status === "online").length;
 
     return (
-      <Card className="card-hover bg-white border-l-4 border-l-fire-blue shadow-lg relative overflow-hidden group">
+      <Card className="card-hover bg-white border border-gray-200 hover:border-fire-blue/50 shadow-md hover:shadow-xl relative overflow-hidden group transition-all duration-300">
         {/* Background gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-fire-blue/5 to-fire-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-br from-fire-blue/3 to-fire-red/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        <CardHeader className="pb-4 relative">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              {/* Enhanced team logo */}
+        <CardContent className="p-4 relative">
+          {/* Header with team logo and basic info */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-br from-fire-blue via-fire-red to-fire-orange rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-fire-blue via-fire-red to-fire-orange rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md">
                   {team.logoUrl ? (
-                    <img src={team.logoUrl} alt={team.name} className="w-full h-full rounded-xl object-cover" />
+                    <img src={team.logoUrl} alt={team.name} className="w-full h-full rounded-lg object-cover" />
                   ) : (
-                    <span className="text-shadow">{team.name.substring(0, 2).toUpperCase()}</span>
+                    <span>{team.name.substring(0, 2).toUpperCase()}</span>
                   )}
                 </div>
-                {/* Online indicator */}
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md">
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm">
                   {onlineMembers}
                 </div>
               </div>
 
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-1">
-                  <CardTitle className="text-xl font-bold fire-gray">{team.name}</CardTitle>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-lg font-bold text-gray-900 truncate">{team.name}</h3>
                   {team.verified && (
-                    <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                      <ShieldCheck className="w-3 h-3 mr-1" />
-                      Verified
-                    </Badge>
+                    <ShieldCheck className="w-4 h-4 text-blue-500 flex-shrink-0" />
                   )}
                 </div>
-
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="outline" className="text-xs">
-                      #{team.code}
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigator.clipboard.writeText(team.code)}
-                      className="h-6 w-6 p-0 hover:bg-fire-blue/10"
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
-
+                <div className="flex items-center space-x-2 text-xs text-gray-500">
+                  <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">#{team.code}</span>
                   {isCaptain && (
-                    <Badge className="bg-fire-orange text-white text-xs">
+                    <Badge className="bg-fire-orange text-white text-xs px-1.5 py-0.5 h-5">
                       <Crown className="w-3 h-3 mr-1" />
                       Captain
                     </Badge>
                   )}
-
-                  <Badge variant="secondary" className="text-xs">
-                    {members.length}/6 Members
-                  </Badge>
+                  <span>{members.length}/6</span>
                 </div>
               </div>
             </div>
 
-            {/* Team actions dropdown */}
+            {/* Actions dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-fire-blue">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-500 hover:text-fire-blue">
                   <MoreVertical className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem onClick={() => {
                   setSelectedTeam(team);
                   setShowTeamDetails(true);
                 }}>
                   <Eye className="w-4 h-4 mr-2" />
-                  View Details
+                  View Team
                 </DropdownMenuItem>
                 {isCaptain && (
                   <>
                     <DropdownMenuItem>
                       <Edit className="w-4 h-4 mr-2" />
-                      Edit Team
+                      Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <UserPlus className="w-4 h-4 mr-2" />
-                      Invite Members
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="w-4 h-4 mr-2" />
-                      Team Settings
-                    </DropdownMenuItem>
-                    <Separator />
-                    <DropdownMenuItem className="text-red-600">
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete Team
+                      Invite
                     </DropdownMenuItem>
                   </>
                 )}
-                {!isCaptain && (
-                  <DropdownMenuItem className="text-red-600">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Leave Team
-                  </DropdownMenuItem>
-                )}
+                <DropdownMenuItem>
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </CardHeader>
 
-        <CardContent className="space-y-6 relative">
-          {/* Enhanced team stats */}
-          <div className="grid grid-cols-4 gap-3">
-            <div className="text-center p-3 bg-gradient-to-b from-fire-blue/10 to-fire-blue/5 rounded-lg">
-              <div className="text-xl font-bold text-fire-blue">{team.totalMembers}</div>
+          {/* Compact stats grid */}
+          <div className="grid grid-cols-4 gap-2 mb-3">
+            <div className="text-center p-2 bg-gradient-to-b from-fire-blue/8 to-fire-blue/4 rounded-md">
+              <div className="text-sm font-bold text-fire-blue">{team.totalMembers}</div>
               <div className="text-xs text-gray-500">Members</div>
             </div>
-            <div className="text-center p-3 bg-gradient-to-b from-fire-green/10 to-fire-green/5 rounded-lg">
-              <div className="text-xl font-bold text-fire-green">{team.winRate}%</div>
+            <div className="text-center p-2 bg-gradient-to-b from-fire-green/8 to-fire-green/4 rounded-md">
+              <div className="text-sm font-bold text-fire-green">{team.winRate}%</div>
               <div className="text-xs text-gray-500">Win Rate</div>
             </div>
-            <div className="text-center p-3 bg-gradient-to-b from-fire-orange/10 to-fire-orange/5 rounded-lg">
-              <div className="text-xl font-bold text-fire-orange">₹{team.totalEarnings}</div>
+            <div className="text-center p-2 bg-gradient-to-b from-fire-orange/8 to-fire-orange/4 rounded-md">
+              <div className="text-sm font-bold text-fire-orange">₹{team.totalEarnings}</div>
               <div className="text-xs text-gray-500">Earnings</div>
             </div>
-            <div className="text-center p-3 bg-gradient-to-b from-fire-red/10 to-fire-red/5 rounded-lg">
-              <div className="text-xl font-bold text-fire-red">{team.matchesPlayed}</div>
+            <div className="text-center p-2 bg-gradient-to-b from-fire-red/8 to-fire-red/4 rounded-md">
+              <div className="text-sm font-bold text-fire-red">{team.matchesPlayed}</div>
               <div className="text-xs text-gray-500">Matches</div>
             </div>
           </div>
 
-          {/* Team performance trend */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Performance Trend</span>
-              <div className="flex items-center space-x-1">
-                <TrendingUp className="w-4 h-4 text-green-500" />
-                <span className="text-sm text-green-600">+12% this month</span>
-              </div>
+          {/* Performance indicator */}
+          <div className="flex items-center justify-between mb-3 p-2 bg-gray-50 rounded-md">
+            <span className="text-xs font-medium text-gray-700">Performance</span>
+            <div className="flex items-center space-x-1">
+              <TrendingUp className="w-3 h-3 text-green-500" />
+              <span className="text-xs text-green-600 font-medium">+12%</span>
             </div>
-            <Progress value={team.winRate} className="h-2" />
           </div>
 
-          {/* Team members preview with profile pictures */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-gray-700">Team Members</span>
+          {/* Team roster - compact avatars */}
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-xs text-gray-500">{onlineMembers} online</span>
-                </div>
-                {isCaptain && (
-                  <Button size="sm" variant="outline" className="text-xs px-2 py-1">
-                    <UserPlus className="w-3 h-3 mr-1" />
-                    Invite
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* Profile pictures grid with empty slots */}
-            <div className="mb-4">
-              <div className="flex items-center space-x-2 mb-3">
-                <span className="text-xs font-medium text-gray-600">Team Roster</span>
+                <span className="text-xs font-medium text-gray-700">Team Roster</span>
                 <span className="text-xs text-gray-500">({members.length}/6)</span>
               </div>
-
-              <div className="grid grid-cols-6 gap-2">
-                {/* Existing team members */}
-                {members.slice(0, 6).map((member) => {
-                  const RoleIcon = getRoleIcon(member.role);
-                  return (
-                    <div key={member.id} className="relative group">
-                      <div className="relative">
-                        <Avatar className="w-12 h-12 border-2 border-white shadow-md hover:shadow-lg transition-shadow">
-                          <AvatarImage 
-                            src={member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`} 
-                            alt={member.username}
-                          />
-                          <AvatarFallback className="text-sm bg-gradient-to-br from-fire-blue to-fire-red text-white font-bold">
-                            {member.username.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-
-                        {/* Online status indicator */}
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(member.status)} shadow-sm`}></div>
-
-                        {/* Role badge */}
-                        <div className={`absolute -top-1 -left-1 w-5 h-5 ${getRoleColor(member.role)} rounded-full flex items-center justify-center shadow-sm`}>
-                          <RoleIcon className="w-2.5 h-2.5 text-white" />
-                        </div>
-                      </div>
-
-                      {/* Tooltip on hover */}
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                        <div className="font-medium">{member.username}</div>
-                        <div className="text-gray-300">{getRoleLabel(member.role)}</div>
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900"></div>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Empty slots for remaining positions */}
-                {Array.from({ length: 6 - members.length }).map((_, index) => (
-                  <div key={`empty-${index}`} className="relative group">
-                    <div 
-                      className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-50 hover:bg-fire-blue/5 hover:border-fire-blue/30 transition-all cursor-pointer"
-                      onClick={() => {
-                        if (isCaptain) {
-                          setSelectedPlayerTeamId(team.id);
-                          setShowPlayerModal(true);
-                        }
-                      }}
-                    >
-                      <UserPlus className="w-5 h-5 text-gray-400 group-hover:text-fire-blue transition-colors" />
-                    </div>
-
-                    {/* Invite tooltip */}
-                    {isCaptain && (
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                        <div>Add Player</div>
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900"></div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-xs text-gray-500">{onlineMembers} online</span>
               </div>
             </div>
 
-            {/* Detailed member list (first 3) */}
-            <div className="space-y-2">
-              {members.slice(0, 3).map((member) => {
+            <div className="flex items-center space-x-1">
+              {/* Existing members */}
+              {members.slice(0, 6).map((member) => {
                 const RoleIcon = getRoleIcon(member.role);
                 return (
-                  <div key={member.id} className="flex items-center space-x-3 p-2 bg-white rounded-lg border border-gray-100 hover:border-fire-blue/30 transition-colors">
-                    <div className="relative">
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage 
-                          src={member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`} 
-                          alt={member.username}
-                        />
-                        <AvatarFallback className="text-xs bg-gradient-to-br from-fire-blue to-fire-red text-white">
-                          {member.username.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(member.status)}`}></div>
+                  <div key={member.id} className="relative group">
+                    <Avatar className="w-8 h-8 border-2 border-white shadow-sm hover:shadow-md transition-shadow">
+                      <AvatarImage 
+                        src={member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`} 
+                        alt={member.username}
+                      />
+                      <AvatarFallback className="text-xs bg-gradient-to-br from-fire-blue to-fire-red text-white font-bold">
+                        {member.username.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    {/* Status dot */}
+                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(member.status)}`}></div>
+                    
+                    {/* Role badge */}
+                    <div className={`absolute -top-1 -left-1 w-4 h-4 ${getRoleColor(member.role)} rounded-full flex items-center justify-center`}>
+                      <RoleIcon className="w-2 h-2 text-white" />
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-900 truncate">{member.username}</span>
-                        {member.verified && (
-                          <CheckCircle className="w-3 h-3 text-blue-500" />
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2 text-xs text-gray-500">
-                        <span>{member.gameId}</span>
-                        <span>•</span>
-                        <span>K/D: {member.kd}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <Badge className={`${getRoleColor(member.role)} text-white text-xs px-2 py-1`}>
-                        <RoleIcon className="w-3 h-3 mr-1" />
-                        {getRoleLabel(member.role)}
-                      </Badge>
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                      <div className="font-medium">{member.username}</div>
+                      <div className="text-gray-300">{getRoleLabel(member.role)}</div>
                     </div>
                   </div>
                 );
               })}
 
-              {members.length > 3 && (
-                <div className="text-center py-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
+              {/* Empty slots */}
+              {Array.from({ length: 6 - members.length }).map((_, index) => (
+                <div key={`empty-${index}`} className="relative group">
+                  <div 
+                    className="w-8 h-8 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-50 hover:bg-fire-blue/5 hover:border-fire-blue/30 transition-all cursor-pointer"
                     onClick={() => {
-                      setSelectedTeam(team);
-                      setShowTeamDetails(true);
+                      if (isCaptain) {
+                        setSelectedPlayerTeamId(team.id);
+                        setShowPlayerModal(true);
+                      }
                     }}
-                    className="text-xs text-fire-blue hover:text-fire-blue/80"
                   >
-                    View all {members.length} members
-                    <ChevronRight className="w-3 h-3 ml-1" />
-                  </Button>
+                    <UserPlus className="w-3 h-3 text-gray-400 group-hover:text-fire-blue transition-colors" />
+                  </div>
+                  
+                  {isCaptain && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                      Add Player
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
           </div>
 
-          {/* Team actions */}
+          {/* Action buttons */}
           <div className="flex space-x-2">
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 hover:bg-fire-blue hover:text-white hover:border-fire-blue"
+              className="flex-1 h-8 text-xs hover:bg-fire-blue hover:text-white hover:border-fire-blue"
               onClick={() => {
                 setSelectedTeam(team);
                 setShowTeamDetails(true);
               }}
             >
-              <Users className="w-4 h-4 mr-2" />
+              <Users className="w-3 h-3 mr-1" />
               View Team
             </Button>
 
             <Button
               size="sm"
-              className="bg-fire-green hover:bg-green-600 text-white"
+              className="h-8 px-3 text-xs bg-fire-green hover:bg-green-600 text-white"
             >
-              <Share2 className="w-4 h-4 mr-2" />
+              <Share2 className="w-3 h-3 mr-1" />
               Share
             </Button>
-
-            {isCaptain && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="hover:bg-fire-orange hover:text-white hover:border-fire-orange"
-              >
-                <Settings className="w-4 h-4" />
-              </Button>
-            )}
           </div>
         </CardContent>
       </Card>
