@@ -1115,7 +1115,7 @@ export default function Teams() {
             <Progress value={team.winRate} className="h-2" />
           </div>
 
-          {/* Team members preview */}
+          {/* Team members preview with profile pictures */}
           <div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-gray-700">Team Members</span>
@@ -1133,6 +1133,72 @@ export default function Teams() {
               </div>
             </div>
             
+            {/* Profile pictures grid with empty slots */}
+            <div className="mb-4">
+              <div className="flex items-center space-x-2 mb-3">
+                <span className="text-xs font-medium text-gray-600">Team Roster</span>
+                <span className="text-xs text-gray-500">({members.length}/6)</span>
+              </div>
+              
+              <div className="grid grid-cols-6 gap-2">
+                {/* Existing team members */}
+                {members.slice(0, 6).map((member) => {
+                  const RoleIcon = getRoleIcon(member.role);
+                  return (
+                    <div key={member.id} className="relative group">
+                      <div className="relative">
+                        <Avatar className="w-12 h-12 border-2 border-white shadow-md hover:shadow-lg transition-shadow">
+                          <AvatarImage 
+                            src={member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`} 
+                            alt={member.username}
+                          />
+                          <AvatarFallback className="text-sm bg-gradient-to-br from-fire-blue to-fire-red text-white font-bold">
+                            {member.username.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        
+                        {/* Online status indicator */}
+                        <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(member.status)} shadow-sm`}></div>
+                        
+                        {/* Role badge */}
+                        <div className={`absolute -top-1 -left-1 w-5 h-5 ${getRoleColor(member.role)} rounded-full flex items-center justify-center shadow-sm`}>
+                          <RoleIcon className="w-2.5 h-2.5 text-white" />
+                        </div>
+                      </div>
+                      
+                      {/* Tooltip on hover */}
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                        <div className="font-medium">{member.username}</div>
+                        <div className="text-gray-300">{getRoleLabel(member.role)}</div>
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                {/* Empty slots for remaining positions */}
+                {Array.from({ length: 6 - members.length }).map((_, index) => (
+                  <div key={`empty-${index}`} className="relative group">
+                    <div 
+                      className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-50 hover:bg-fire-blue/5 hover:border-fire-blue/30 transition-all cursor-pointer"
+                      onClick={() => isCaptain && console.log('Open invite modal')}
+                    >
+                      <UserPlus className="w-5 h-5 text-gray-400 group-hover:text-fire-blue transition-colors" />
+                    </div>
+                    
+                    {/* Invite tooltip */}
+                    {isCaptain && (
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                        <div>Invite Player</div>
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900"></div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Detailed member list (first 3) */}
             <div className="space-y-2">
               {members.slice(0, 3).map((member) => {
                 const RoleIcon = getRoleIcon(member.role);
@@ -1140,9 +1206,12 @@ export default function Teams() {
                   <div key={member.id} className="flex items-center space-x-3 p-2 bg-white rounded-lg border border-gray-100 hover:border-fire-blue/30 transition-colors">
                     <div className="relative">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage src={member.avatar} />
+                        <AvatarImage 
+                          src={member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`} 
+                          alt={member.username}
+                        />
                         <AvatarFallback className="text-xs bg-gradient-to-br from-fire-blue to-fire-red text-white">
-                          {member.username.charAt(0)}
+                          {member.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(member.status)}`}></div>
