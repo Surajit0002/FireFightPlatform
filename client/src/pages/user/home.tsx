@@ -42,7 +42,7 @@ function HeroSlider() {
     {
       title: "Win Big in Esports Tournaments",
       subtitle: "Join tournaments, compete with the best players, and earn real cash rewards in your favorite games",
-      bgGradient: "from-fire-red via-purple-600 to-fire-blue",
+      bgColor: "bg-fire-red",
       icon: "🏆",
       cta: "Join Tournament",
       secondaryCta: "View Rankings"
@@ -50,7 +50,7 @@ function HeroSlider() {
     {
       title: "Team Up & Dominate",
       subtitle: "Create teams, invite friends, and conquer tournaments together for massive prize pools",
-      bgGradient: "from-fire-green via-fire-teal to-fire-blue",
+      bgColor: "bg-fire-blue",
       icon: "👥",
       cta: "Create Team",
       secondaryCta: "Find Teams"
@@ -58,7 +58,7 @@ function HeroSlider() {
     {
       title: "Daily Challenges & Rewards",
       subtitle: "Complete daily missions, climb leaderboards, and unlock exclusive rewards and bonuses",
-      bgGradient: "from-fire-orange via-fire-red to-purple-600",
+      bgColor: "bg-fire-orange",
       icon: "🎯",
       cta: "View Challenges",
       secondaryCta: "Check Rewards"
@@ -78,7 +78,7 @@ function HeroSlider() {
         <CarouselContent>
           {heroSlides.map((slide, index) => (
             <CarouselItem key={index}>
-              <div className={`relative bg-gradient-to-br ${slide.bgGradient} text-white py-16 px-8`}>
+              <div className={`relative ${slide.bgColor} text-white py-16 px-8`}>
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0">
                   <div className="absolute top-8 left-8 w-24 h-24 bg-white/10 rounded-full animate-pulse"></div>
@@ -117,17 +117,17 @@ function HeroSlider() {
 
                   {/* Stats */}
                   <div className="flex flex-wrap justify-center gap-6 mt-12">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3 border border-white/30">
+                    <div className="bg-red-500 rounded-xl px-6 py-3 shadow-lg">
                       <div className="text-2xl font-bold">50K+</div>
-                      <div className="text-sm opacity-80">Active Players</div>
+                      <div className="text-sm opacity-90">Active Players</div>
                     </div>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3 border border-white/30">
+                    <div className="bg-green-500 rounded-xl px-6 py-3 shadow-lg">
                       <div className="text-2xl font-bold">₹50L+</div>
-                      <div className="text-sm opacity-80">Total Prizes</div>
+                      <div className="text-sm opacity-90">Total Prizes</div>
                     </div>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3 border border-white/30">
+                    <div className="bg-blue-500 rounded-xl px-6 py-3 shadow-lg">
                       <div className="text-2xl font-bold">1000+</div>
-                      <div className="text-sm opacity-80">Daily Matches</div>
+                      <div className="text-sm opacity-90">Daily Matches</div>
                     </div>
                   </div>
                 </div>
@@ -165,7 +165,7 @@ function GamesGrid() {
       players: "25K+",
       tournaments: "150+",
       prizePool: "₹15L+",
-      bgGradient: "from-red-500 to-orange-600",
+      bgColor: "bg-red-500",
       bgPattern: "bg-red-50",
       iconBg: "bg-red-500",
       description: "Battle Royale at its finest"
@@ -177,7 +177,7 @@ function GamesGrid() {
       players: "20K+",
       tournaments: "120+",
       prizePool: "₹12L+",
-      bgGradient: "from-blue-500 to-cyan-600",
+      bgColor: "bg-blue-500",
       bgPattern: "bg-blue-50",
       iconBg: "bg-blue-500",
       description: "Tactical battle royale action"
@@ -189,7 +189,7 @@ function GamesGrid() {
       players: "18K+",
       tournaments: "100+",
       prizePool: "₹10L+",
-      bgGradient: "from-gray-700 to-gray-900",
+      bgColor: "bg-gray-700",
       bgPattern: "bg-gray-50",
       iconBg: "bg-gray-700",
       description: "Intense FPS warfare"
@@ -201,7 +201,7 @@ function GamesGrid() {
       players: "15K+",
       tournaments: "80+",
       prizePool: "₹8L+",
-      bgGradient: "from-purple-500 to-pink-600",
+      bgColor: "bg-purple-500",
       bgPattern: "bg-purple-50",
       iconBg: "bg-purple-500",
       description: "Tactical 5v5 shooter"
@@ -213,7 +213,7 @@ function GamesGrid() {
       players: "12K+",
       tournaments: "60+",
       prizePool: "₹5L+",
-      bgGradient: "from-yellow-500 to-orange-500",
+      bgColor: "bg-yellow-500",
       bgPattern: "bg-yellow-50",
       iconBg: "bg-yellow-500",
       description: "Real-time strategy battles"
@@ -225,7 +225,7 @@ function GamesGrid() {
       players: "10K+",
       tournaments: "50+",
       prizePool: "₹4L+",
-      bgGradient: "from-green-500 to-emerald-600",
+      bgColor: "bg-green-500",
       bgPattern: "bg-green-50",
       iconBg: "bg-green-500",
       description: "Ultimate football experience"
@@ -238,7 +238,7 @@ function GamesGrid() {
         <Card key={game.id} className={`group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 ${game.bgPattern} overflow-hidden`}>
           <CardContent className="p-0">
             {/* Game Header with Gradient */}
-            <div className={`bg-gradient-to-r ${game.bgGradient} p-6 text-white relative overflow-hidden`}>
+            <div className={`${game.bgColor} p-6 text-white relative overflow-hidden`}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full transform translate-x-8 -translate-y-8"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full transform -translate-x-4 translate-y-4"></div>
               
@@ -373,7 +373,7 @@ export default function UserHome() {
       progress: 1,
       max: 2,
       reward: "₹50 + 100 XP",
-      color: "from-fire-red to-red-600",
+      color: "bg-fire-red",
       completed: false
     },
     {
@@ -381,7 +381,7 @@ export default function UserHome() {
       progress: 0,
       max: 1,
       reward: "₹100 + 200 XP",
-      color: "from-fire-blue to-blue-600",
+      color: "bg-fire-blue",
       completed: false
     },
     {
@@ -389,7 +389,7 @@ export default function UserHome() {
       progress: 1,
       max: 1,
       reward: "₹200 + 500 XP",
-      color: "from-fire-green to-green-600",
+      color: "bg-fire-green",
       completed: true
     }
   ];
@@ -565,7 +565,7 @@ export default function UserHome() {
               {dailyChallenges.map((challenge, index) => (
                 <div 
                   key={index}
-                  className={`border rounded-lg p-4 bg-gradient-to-r ${challenge.color} text-white`}
+                  className={`border rounded-lg p-4 ${challenge.color} text-white`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-semibold">{challenge.title}</span>
