@@ -25,31 +25,73 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="hero-gradient text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-6">
-            Win Big in Esports Tournaments
-          </h1>
-          <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Join tournaments, compete with the best players, and earn real cash rewards.
-            Your skills, your victory, your money.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Button
-              onClick={() => window.location.href = '/api/login'}
-              size="lg"
-              className="bg-white text-fire-red hover:bg-gray-100 px-8 py-3"
-            >
-              Get Started
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-fire-red px-8 py-3"
-            >
-              View Tournaments
-            </Button>
+      {/* Enhanced Dynamic Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-red-600 via-purple-600 to-blue-600 text-white py-24">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-400 rounded-full opacity-20 animate-bounce"></div>
+          <div className="absolute top-32 right-20 w-24 h-24 bg-green-400 rounded-full opacity-30 animate-pulse"></div>
+          <div className="absolute bottom-20 left-32 w-40 h-40 bg-orange-400 rounded-full opacity-25 animate-ping"></div>
+          <div className="absolute bottom-32 right-10 w-28 h-28 bg-cyan-400 rounded-full opacity-20 animate-bounce delay-300"></div>
+          <div className="absolute top-1/2 left-1/4 w-20 h-20 bg-pink-400 rounded-full opacity-30 animate-pulse delay-500"></div>
+          <div className="absolute top-1/3 right-1/3 w-36 h-36 bg-indigo-400 rounded-full opacity-25 animate-ping delay-700"></div>
+        </div>
+
+        {/* Floating Gaming Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-16 left-1/4 text-4xl animate-bounce">🎮</div>
+          <div className="absolute top-24 right-1/4 text-3xl animate-pulse delay-300">🏆</div>
+          <div className="absolute bottom-24 left-1/3 text-4xl animate-bounce delay-500">⚡</div>
+          <div className="absolute bottom-16 right-1/3 text-3xl animate-pulse delay-700">💰</div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="animate-fade-in-up">
+            <h1 className="text-6xl md:text-7xl font-black mb-8 bg-gradient-to-r from-yellow-300 via-red-300 to-pink-300 bg-clip-text text-transparent animate-pulse">
+              Win Big in Esports Tournaments
+            </h1>
+            <p className="text-2xl md:text-3xl mb-12 font-semibold max-w-4xl mx-auto leading-relaxed">
+              Join tournaments, compete with the best players, and earn 
+              <span className="text-yellow-300 font-bold animate-bounce inline-block mx-2">real cash rewards</span>
+              Your skills, your victory, your money.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-6 mb-12">
+              <Button
+                onClick={() => window.location.href = '/api/login'}
+                size="lg"
+                className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-12 py-4 text-xl rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300 animate-pulse"
+              >
+                🚀 Get Started
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-4 border-white bg-transparent text-white hover:bg-white hover:text-purple-600 font-bold px-12 py-4 text-xl rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300"
+              >
+                🏆 View Tournaments
+              </Button>
+            </div>
+
+            {/* Dynamic Stats Bar */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
+              <div className="bg-red-500 rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 shadow-xl">
+                <div className="text-3xl font-black">10K+</div>
+                <div className="text-sm font-semibold opacity-90">Active Gamers</div>
+              </div>
+              <div className="bg-green-500 rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 shadow-xl">
+                <div className="text-3xl font-black">₹50L+</div>
+                <div className="text-sm font-semibold opacity-90">Prizes Won</div>
+              </div>
+              <div className="bg-blue-500 rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 shadow-xl">
+                <div className="text-3xl font-black">500+</div>
+                <div className="text-sm font-semibold opacity-90">Daily Matches</div>
+              </div>
+              <div className="bg-purple-500 rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 shadow-xl">
+                <div className="text-3xl font-black">24/7</div>
+                <div className="text-sm font-semibold opacity-90">Live Support</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
