@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,11 +18,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
-import { 
-  Flame, Menu, Search, Wallet, Bell, ChevronDown, User, Settings,
-  Home, Trophy, Users2, BarChart3, MessageSquare, 
+import {
+  Flame, Menu, Wallet, Bell, ChevronDown, User, Settings,
+  Home, Trophy, Users2, BarChart3, MessageSquare,
   Target, Gamepad2, LogOut, Crown, Star, Zap, ShoppingCart,
-  TrendingUp, Award, Play, Filter, X
+  TrendingUp, Award, Play, Filter, X, Search
 } from "lucide-react";
 import { useState } from "react";
 
@@ -35,37 +34,37 @@ export default function UserHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const navigation = [
-    { 
-      name: "Dashboard", 
-      href: "/", 
+    {
+      name: "Dashboard",
+      href: "/",
       current: location === "/",
       icon: Home,
       color: "bg-blue-600"
     },
-    { 
-      name: "Tournaments", 
-      href: "/tournaments", 
+    {
+      name: "Tournaments",
+      href: "/tournaments",
       current: location === "/tournaments",
       icon: Trophy,
       color: "bg-yellow-600"
     },
-    { 
-      name: "Teams", 
-      href: "/teams", 
+    {
+      name: "Teams",
+      href: "/teams",
       current: location === "/teams",
       icon: Users2,
       color: "bg-green-600"
     },
-    { 
-      name: "Leaderboard", 
-      href: "/leaderboard", 
+    {
+      name: "Leaderboard",
+      href: "/leaderboard",
       current: location === "/leaderboard",
       icon: BarChart3,
       color: "bg-purple-600"
     },
-    { 
-      name: "Matches", 
-      href: "/match-center", 
+    {
+      name: "Matches",
+      href: "/match-center",
       current: location === "/match-center",
       icon: Target,
       color: "bg-red-600"
@@ -217,9 +216,9 @@ export default function UserHeader() {
               {/* Notifications */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="relative hover:bg-gray-100 rounded-lg"
                   >
                     <Bell className="w-5 h-5" />
@@ -252,8 +251,8 @@ export default function UserHeader() {
               {/* User Profile */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="flex items-center space-x-2 hover:bg-gray-100 rounded-lg p-2"
                   >
                     <Avatar className="w-8 h-8 border-2 border-fire-red">
@@ -321,7 +320,7 @@ export default function UserHeader() {
 
                   <DropdownMenuSeparator />
 
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => window.location.href = '/api/logout'}
                     className="cursor-pointer text-red-600 hover:bg-red-50"
                   >
@@ -353,7 +352,7 @@ export default function UserHeader() {
                         const IconComponent = item.icon;
                         return (
                           <Link key={item.name} href={item.href}>
-                            <div 
+                            <div
                               className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${
                                 item.current
                                   ? `${item.color} text-white shadow-lg`
