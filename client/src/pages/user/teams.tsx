@@ -951,6 +951,7 @@ function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: num
     </Card>
 
     {/* Edit Team Modal */}
+    <>
     <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -1185,5 +1186,6 @@ function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: num
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
