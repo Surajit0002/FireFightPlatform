@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { 
   Users, 
   Plus, 
@@ -19,13 +22,24 @@ import {
   Crown,
   Target,
   Shield,
-  Crosshair
+  Crosshair,
+  Upload,
+  Copy,
+  Edit,
+  Eye,
+  Trash2,
+  MoreVertical,
+  DollarSign,
+  Gamepad2,
+  X,
+  Camera
 } from "lucide-react";
 
 interface Team {
   id: number;
   name: string;
   code: string;
+  logoUrl?: string;
   captainId: string;
   totalMembers: number;
   winRate: number;
@@ -48,14 +62,26 @@ interface TeamMember {
 
 interface CreateTeamForm {
   name: string;
+  code: string;
+  logoUrl: string;
   players: {
+    id: string;
     username: string;
     email: string;
+    phone: string;
     role: string;
     gameId: string;
-    contactInfo: string;
+    avatarUrl: string;
   }[];
 }
+
+const PLAYER_ROLES = {
+  captain: { label: "Captain", icon: Crown, color: "bg-yellow-500 text-white" },
+  entry: { label: "Entry Fragger", icon: Target, color: "bg-red-500 text-white" },
+  sniper: { label: "Sniper", icon: Crosshair, color: "bg-purple-500 text-white" },
+  support: { label: "Support", icon: Shield, color: "bg-green-500 text-white" },
+  player: { label: "Player", icon: Users, color: "bg-blue-500 text-white" },
+};
 
 export default function Teams() {
   const { user } = useAuth();
@@ -64,18 +90,22 @@ export default function Teams() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+  const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   
   const [createForm, setCreateForm] = useState<CreateTeamForm>({
     name: "",
+    code: "",
+    logoUrl: "",
     players: []
   });
   
   const [playerForm, setPlayerForm] = useState({
     username: "",
     email: "",
+    phone: "",
     role: "player",
     gameId: "",
-    contactInfo: ""
+    avatarUrl: ""
   });
 
   // Fetch teams
@@ -95,7 +125,7 @@ export default function Teams() {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
       setShowCreateModal(false);
-      setCreateForm({ name: "", players: [] });
+      setCreateForm({ name: "", code: "", logoUrl: "", players: [] });
     },
     onError: (error: any) => {
       toast({
@@ -119,7 +149,7 @@ export default function Teams() {
       queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
       queryClient.invalidateQueries({ queryKey: [`/api/teams/${selectedTeamId}/members`] });
       setShowAddPlayerModal(false);
-      setPlayerForm({ username: "", email: "", role: "player", gameId: "", contactInfo: "" });
+      resetPlayerForm();
     },
     onError: (error: any) => {
       toast({
@@ -130,6 +160,132 @@ export default function Teams() {
     },
   });
 
+  // Generate random team code
+  const generateTeamCode = () => {
+    const code = `FF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    setCreateForm(prev => ({ ...prev, code }));
+  };
+
+  // Handle logo upload
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Error",
+          description: "Logo must be under 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Convert to base64 for demo purposes
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCreateForm(prev => ({ ...prev, logoUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle player avatar upload
+  const handlePlayerAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPlayerForm(prev => ({ ...prev, avatarUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Reset player form
+  const resetPlayerForm = () => {
+    setPlayerForm({
+      username: "",
+      email: "",
+      phone: "",
+      role: "player",
+      gameId: "",
+      avatarUrl: ""
+    });
+    setEditingPlayerId(null);
+  };
+
+  // Add player to create form
+  const handleAddPlayerToCreate = () => {
+    if (!playerForm.username.trim() || !playerForm.gameId.trim()) {
+      toast({
+        title: "Error",
+        description: "Username and Game ID are required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const newPlayer = {
+      id: editingPlayerId || Date.now().toString(),
+      ...playerForm
+    };
+    
+    if (editingPlayerId) {
+      setCreateForm(prev => ({
+        ...prev,
+        players: prev.players.map(p => p.id === editingPlayerId ? newPlayer : p)
+      }));
+    } else {
+      setCreateForm(prev => ({
+        ...prev,
+        players: [...prev.players, newPlayer]
+      }));
+    }
+    
+    resetPlayerForm();
+  };
+
+  // Add player to existing team
+  const handleAddPlayerToTeam = () => {
+    if (!playerForm.username.trim() || !playerForm.gameId.trim()) {
+      toast({
+        title: "Error",
+        description: "Username and Game ID are required",
+        variant: "destructive",
+      });
+      return;
+    }
+    addPlayerMutation.mutate({
+      username: playerForm.username,
+      email: playerForm.email,
+      phone: playerForm.phone,
+      role: playerForm.role,
+      gameId: playerForm.gameId,
+      avatarUrl: playerForm.avatarUrl
+    });
+  };
+
+  // Remove player from create form
+  const removePlayerFromCreate = (playerId: string) => {
+    setCreateForm(prev => ({
+      ...prev,
+      players: prev.players.filter(p => p.id !== playerId)
+    }));
+  };
+
+  // Edit player in create form
+  const editPlayerInCreate = (player: any) => {
+    setPlayerForm({
+      username: player.username,
+      email: player.email,
+      phone: player.phone,
+      role: player.role,
+      gameId: player.gameId,
+      avatarUrl: player.avatarUrl
+    });
+    setEditingPlayerId(player.id);
+  };
+
+  // Handle create team
   const handleCreateTeam = () => {
     if (!createForm.name.trim()) {
       toast({
@@ -139,74 +295,37 @@ export default function Teams() {
       });
       return;
     }
+    
+    if (!createForm.code) {
+      generateTeamCode();
+    }
+    
     createTeamMutation.mutate(createForm);
   };
 
-  const handleAddPlayerToCreate = () => {
-    if (!playerForm.username.trim() || !playerForm.email.trim()) {
-      toast({
-        title: "Error",
-        description: "Username and email are required",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setCreateForm(prev => ({
-      ...prev,
-      players: [...prev.players, { ...playerForm }]
-    }));
-    
-    setPlayerForm({ username: "", email: "", role: "player", gameId: "", contactInfo: "" });
+  // Copy team code
+  const copyTeamCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast({
+      title: "Copied!",
+      description: "Team code copied to clipboard",
+    });
   };
 
-  const handleAddPlayerToTeam = () => {
-    if (!playerForm.username.trim() || !playerForm.email.trim()) {
-      toast({
-        title: "Error",
-        description: "Username and email are required",
-        variant: "destructive",
-      });
-      return;
-    }
-    addPlayerMutation.mutate(playerForm);
-  };
-
-  const removePlayerFromCreate = (index: number) => {
-    setCreateForm(prev => ({
-      ...prev,
-      players: prev.players.filter((_, i) => i !== index)
-    }));
-  };
-
+  // Get role icon and color
   const getRoleIcon = (role: string) => {
-    switch (role) {
-      case "captain":
-        return <Crown className="w-4 h-4" />;
-      case "sniper":
-        return <Crosshair className="w-4 h-4" />;
-      case "support":
-        return <Shield className="w-4 h-4" />;
-      case "entry":
-        return <Target className="w-4 h-4" />;
-      default:
-        return <Users className="w-4 h-4" />;
-    }
+    const roleData = PLAYER_ROLES[role as keyof typeof PLAYER_ROLES];
+    return roleData ? roleData.icon : Users;
   };
 
   const getRoleColor = (role: string) => {
-    switch (role) {
-      case "captain":
-        return "bg-yellow-500";
-      case "sniper":
-        return "bg-red-500";
-      case "support":
-        return "bg-green-500";
-      case "entry":
-        return "bg-blue-500";
-      default:
-        return "bg-gray-500";
-    }
+    const roleData = PLAYER_ROLES[role as keyof typeof PLAYER_ROLES];
+    return roleData ? roleData.color : "bg-gray-500 text-white";
+  };
+
+  const getRoleLabel = (role: string) => {
+    const roleData = PLAYER_ROLES[role as keyof typeof PLAYER_ROLES];
+    return roleData ? roleData.label : role;
   };
 
   if (isLoading) {
@@ -218,7 +337,7 @@ export default function Teams() {
             <div className="h-8 bg-gray-300 rounded w-1/4"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-64 bg-gray-300 rounded-lg"></div>
+                <div key={i} className="h-80 bg-gray-300 rounded-lg"></div>
               ))}
             </div>
           </div>
@@ -250,102 +369,146 @@ export default function Teams() {
                 Create Team
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Create New Team</DialogTitle>
+                <DialogTitle className="text-xl font-semibold">Create Team</DialogTitle>
                 <DialogDescription>
                   Create a new team and add players to it.
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="teamName">Team Name</Label>
-                  <Input
-                    id="teamName"
-                    placeholder="Enter team name"
-                    value={createForm.name}
-                    onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                </div>
-
-                {/* Players List */}
-                {createForm.players.length > 0 && (
-                  <div>
-                    <Label>Players ({createForm.players.length})</Label>
-                    <div className="space-y-2 mt-2 max-h-32 overflow-y-auto">
-                      {createForm.players.map((player, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                          <div className="flex items-center space-x-2">
-                            {getRoleIcon(player.role)}
-                            <span className="font-medium">{player.username}</span>
-                            <Badge variant="secondary" className="text-xs">
-                              {player.role}
-                            </Badge>
+              <div className="space-y-6">
+                {/* Team Logo and Basic Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Logo Upload */}
+                  <div className="space-y-2">
+                    <Label>Team Logo</Label>
+                    <div className="relative">
+                      <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                        {createForm.logoUrl ? (
+                          <img 
+                            src={createForm.logoUrl} 
+                            alt="Team logo" 
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="text-center">
+                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                            <p className="text-sm text-gray-500">Upload Team Logo</p>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removePlayerFromCreate(index)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      ))}
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLogoUpload}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                        />
+                      </div>
                     </div>
                   </div>
-                )}
 
-                {/* Add Player Form */}
-                <div className="border-t pt-4">
-                  <Label>Add Player</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    <Input
-                      placeholder="Username"
-                      value={playerForm.username}
-                      onChange={(e) => setPlayerForm(prev => ({ ...prev, username: e.target.value }))}
-                    />
-                    <Input
-                      placeholder="Email"
-                      type="email"
-                      value={playerForm.email}
-                      onChange={(e) => setPlayerForm(prev => ({ ...prev, email: e.target.value }))}
-                    />
-                    <select
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      value={playerForm.role}
-                      onChange={(e) => setPlayerForm(prev => ({ ...prev, role: e.target.value }))}
-                    >
-                      <option value="player">Player</option>
-                      <option value="captain">Captain</option>
-                      <option value="sniper">Sniper</option>
-                      <option value="support">Support</option>
-                      <option value="entry">Entry</option>
-                    </select>
-                    <Input
-                      placeholder="Game ID"
-                      value={playerForm.gameId}
-                      onChange={(e) => setPlayerForm(prev => ({ ...prev, gameId: e.target.value }))}
-                    />
+                  {/* Team Info */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="teamName">Team Name</Label>
+                      <Input
+                        id="teamName"
+                        placeholder="Enter team name"
+                        value={createForm.name}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="teamCode">Team Code</Label>
+                      <div className="flex space-x-2">
+                        <Input
+                          id="teamCode"
+                          placeholder="Auto-generated"
+                          value={createForm.code}
+                          onChange={(e) => setCreateForm(prev => ({ ...prev, code: e.target.value }))}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={generateTeamCode}
+                          className="px-3"
+                        >
+                          Generate
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <Input
-                    className="mt-2"
-                    placeholder="Contact Info"
-                    value={playerForm.contactInfo}
-                    onChange={(e) => setPlayerForm(prev => ({ ...prev, contactInfo: e.target.value }))}
-                  />
+                </div>
+
+                {/* Add Player Button */}
+                <div className="flex justify-center">
                   <Button
-                    className="w-full mt-2"
-                    variant="outline"
-                    onClick={handleAddPlayerToCreate}
+                    onClick={() => setShowAddPlayerModal(true)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8"
                   >
-                    <UserPlus className="w-4 h-4 mr-2" />
+                    <Plus className="w-4 h-4 mr-2" />
                     Add Player
                   </Button>
                 </div>
 
-                <div className="flex space-x-2 pt-4">
+                {/* Team Members */}
+                {createForm.players.length > 0 && (
+                  <div className="space-y-3">
+                    <Label>Team Members ({createForm.players.length})</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {createForm.players.map((player) => {
+                        const RoleIcon = getRoleIcon(player.role);
+                        return (
+                          <div
+                            key={player.id}
+                            className="flex items-center space-x-3 p-3 bg-white rounded-lg border"
+                          >
+                            <Avatar className="w-10 h-10">
+                              <AvatarImage src={player.avatarUrl} />
+                              <AvatarFallback>
+                                {player.username.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-medium">{player.username}</span>
+                                <Badge className={`${getRoleColor(player.role)} text-xs`}>
+                                  <RoleIcon className="w-3 h-3 mr-1" />
+                                  {getRoleLabel(player.role)}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-gray-500">{player.gameId}</p>
+                            </div>
+                            
+                            <div className="flex space-x-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => editPlayerInCreate(player)}
+                                className="p-1"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => removePlayerFromCreate(player.id)}
+                                className="p-1 text-red-500 hover:text-red-700"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex space-x-3 pt-4 border-t">
                   <Button
                     variant="outline"
                     onClick={() => setShowCreateModal(false)}
@@ -356,7 +519,7 @@ export default function Teams() {
                   <Button
                     onClick={handleCreateTeam}
                     disabled={createTeamMutation.isPending}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     {createTeamMutation.isPending ? "Creating..." : "Create Team"}
                   </Button>
@@ -395,76 +558,115 @@ export default function Teams() {
         )}
 
         {/* Add Player Modal */}
-        <Dialog open={showAddPlayerModal} onOpenChange={setShowAddPlayerModal}>
+        <Dialog open={showAddPlayerModal} onOpenChange={(open) => {
+          setShowAddPlayerModal(open);
+          if (!open) {
+            resetPlayerForm();
+          }
+        }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add Player to Team</DialogTitle>
+              <DialogTitle className="flex items-center space-x-2">
+                <UserPlus className="w-5 h-5 text-blue-600" />
+                <span>{editingPlayerId ? "Edit Player" : "Add Player"}</span>
+              </DialogTitle>
               <DialogDescription>
-                Add a new player to this team.
+                {editingPlayerId ? "Edit player details" : "Add a new player to the team"}
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
+              {/* Player Avatar */}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-50 cursor-pointer hover:bg-gray-100">
+                    {playerForm.avatarUrl ? (
+                      <img 
+                        src={playerForm.avatarUrl} 
+                        alt="Player avatar" 
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <Camera className="w-8 h-8 text-gray-400" />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePlayerAvatarUpload}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Player Form */}
+              <div className="space-y-4">
                 <div>
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="playerName">Player Name</Label>
                   <Input
-                    id="username"
-                    placeholder="Username"
+                    id="playerName"
+                    placeholder="Enter player name"
                     value={playerForm.username}
                     onChange={(e) => setPlayerForm(prev => ({ ...prev, username: e.target.value }))}
                   />
                 </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    placeholder="Email"
-                    type="email"
-                    value={playerForm.email}
-                    onChange={(e) => setPlayerForm(prev => ({ ...prev, email: e.target.value }))}
-                  />
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="playerGameId">Player Game ID</Label>
+                    <Input
+                      id="playerGameId"
+                      placeholder="Game ID"
+                      value={playerForm.gameId}
+                      onChange={(e) => setPlayerForm(prev => ({ ...prev, gameId: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="playerRole">Player Role</Label>
+                    <Select value={playerForm.role} onValueChange={(value) => setPlayerForm(prev => ({ ...prev, role: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(PLAYER_ROLES).map(([key, role]) => (
+                          <SelectItem key={key} value={key}>
+                            <div className="flex items-center space-x-2">
+                              <role.icon className="w-4 h-4" />
+                              <span>{role.label}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="role">Role</Label>
-                  <select
-                    id="role"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={playerForm.role}
-                    onChange={(e) => setPlayerForm(prev => ({ ...prev, role: e.target.value }))}
-                  >
-                    <option value="player">Player</option>
-                    <option value="captain">Captain</option>
-                    <option value="sniper">Sniper</option>
-                    <option value="support">Support</option>
-                    <option value="entry">Entry</option>
-                  </select>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="playerEmail">Player Email</Label>
+                    <Input
+                      id="playerEmail"
+                      type="email"
+                      placeholder="Email"
+                      value={playerForm.email}
+                      onChange={(e) => setPlayerForm(prev => ({ ...prev, email: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="playerPhone">Player Phone</Label>
+                    <Input
+                      id="playerPhone"
+                      placeholder="Phone"
+                      value={playerForm.phone}
+                      onChange={(e) => setPlayerForm(prev => ({ ...prev, phone: e.target.value }))}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="gameId">Game ID</Label>
-                  <Input
-                    id="gameId"
-                    placeholder="Game ID"
-                    value={playerForm.gameId}
-                    onChange={(e) => setPlayerForm(prev => ({ ...prev, gameId: e.target.value }))}
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="contactInfo">Contact Info</Label>
-                <Input
-                  id="contactInfo"
-                  placeholder="Contact Info"
-                  value={playerForm.contactInfo}
-                  onChange={(e) => setPlayerForm(prev => ({ ...prev, contactInfo: e.target.value }))}
-                />
               </div>
 
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setShowAddPlayerModal(false)}
@@ -473,9 +675,9 @@ export default function Teams() {
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleAddPlayerToTeam}
+                  onClick={selectedTeamId ? handleAddPlayerToTeam : handleAddPlayerToCreate}
                   disabled={addPlayerMutation.isPending}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {addPlayerMutation.isPending ? "Adding..." : "Add Player"}
                 </Button>
@@ -490,6 +692,7 @@ export default function Teams() {
 
 // Team Card Component
 function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: number) => void }) {
+  const { toast } = useToast();
   const { data: members = [] } = useQuery<TeamMember[]>({
     queryKey: [`/api/teams/${team.id}/members`],
     enabled: !!team.id,
@@ -497,104 +700,158 @@ function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: num
     retry: 1,
   });
 
+  const copyTeamCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast({
+      title: "Copied!",
+      description: "Team code copied to clipboard",
+    });
+  };
+
   const getRoleIcon = (role: string) => {
-    switch (role) {
-      case "captain":
-        return <Crown className="w-3 h-3" />;
-      case "sniper":
-        return <Crosshair className="w-3 h-3" />;
-      case "support":
-        return <Shield className="w-3 h-3" />;
-      case "entry":
-        return <Target className="w-3 h-3" />;
-      default:
-        return <Users className="w-3 h-3" />;
-    }
+    const roleData = PLAYER_ROLES[role as keyof typeof PLAYER_ROLES];
+    return roleData ? roleData.icon : Users;
   };
 
   const getRoleColor = (role: string) => {
-    switch (role) {
-      case "captain":
-        return "bg-yellow-500";
-      case "sniper":
-        return "bg-red-500";
-      case "support":
-        return "bg-green-500";
-      case "entry":
-        return "bg-blue-500";
-      default:
-        return "bg-gray-500";
-    }
+    const roleData = PLAYER_ROLES[role as keyof typeof PLAYER_ROLES];
+    return roleData ? roleData.color : "bg-gray-500 text-white";
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
+    <Card className="hover:shadow-xl transition-all duration-300 border-0 bg-white">
+      <CardHeader className="pb-3">
+        {/* Team Header */}
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg">{team.name}</CardTitle>
-            <p className="text-sm text-gray-500 font-mono">{team.code}</p>
+          <div className="flex items-center space-x-3">
+            <Avatar className="w-12 h-12">
+              <AvatarImage src={team.logoUrl} />
+              <AvatarFallback className="bg-blue-600 text-white">
+                {team.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="text-lg font-semibold">{team.name}</CardTitle>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-500 font-mono">{team.code}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyTeamCode(team.code)}
+                  className="p-1 h-6 w-6"
+                >
+                  <Copy className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
           </div>
-          <Badge variant="secondary">{members.length} members</Badge>
+          
+          {/* Three Dot Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Team
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Eye className="w-4 h-4 mr-2" />
+                View Team
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Team
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="space-y-4">
         {/* Team Stats */}
-        <div className="grid grid-cols-3 gap-2 mb-4 text-center">
-          <div>
-            <p className="text-lg font-bold text-green-600">{team.winRate}%</p>
-            <p className="text-xs text-gray-500">Win Rate</p>
+        <div className="grid grid-cols-4 gap-2">
+          <div className="text-center p-2 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-center mb-1">
+              <Users className="w-4 h-4 text-blue-600" />
+            </div>
+            <p className="text-sm font-semibold text-gray-900">{members.length}</p>
+            <p className="text-xs text-gray-500">Members</p>
           </div>
-          <div>
-            <p className="text-lg font-bold text-blue-600">₹{team.totalEarnings}</p>
+          
+          <div className="text-center p-2 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-center mb-1">
+              <DollarSign className="w-4 h-4 text-green-600" />
+            </div>
+            <p className="text-sm font-semibold text-gray-900">₹{team.totalEarnings}</p>
             <p className="text-xs text-gray-500">Earnings</p>
           </div>
-          <div>
-            <p className="text-lg font-bold text-purple-600">{team.matchesPlayed}</p>
+          
+          <div className="text-center p-2 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-center mb-1">
+              <Gamepad2 className="w-4 h-4 text-purple-600" />
+            </div>
+            <p className="text-sm font-semibold text-gray-900">{team.matchesPlayed}</p>
             <p className="text-xs text-gray-500">Matches</p>
+          </div>
+          
+          <div className="text-center p-2 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-center mb-1">
+              <Trophy className="w-4 h-4 text-yellow-600" />
+            </div>
+            <p className="text-sm font-semibold text-gray-900">{team.winRate}%</p>
+            <p className="text-xs text-gray-500">Win Rate</p>
           </div>
         </div>
 
         {/* Team Members */}
-        <div className="mb-4">
+        <div>
           <div className="flex items-center justify-between mb-2">
-            <Label className="text-sm font-medium">Members</Label>
+            <Label className="text-sm font-medium text-gray-700">Team Members</Label>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onAddPlayer(team.id)}
               className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700"
             >
-              <UserPlus className="w-3 h-3 mr-1" />
+              <Plus className="w-3 h-3 mr-1" />
               Add
             </Button>
           </div>
           
-          <div className="space-y-1 max-h-24 overflow-y-auto">
-            {members.map((member) => (
-              <div key={member.id} className="flex items-center space-x-2 p-1">
-                <Avatar className="w-6 h-6">
-                  <AvatarImage src={member.avatarUrl || undefined} />
-                  <AvatarFallback className="text-xs">
-                    {member.username?.charAt(0)?.toUpperCase() || member.email.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm flex-1 truncate">{member.username || member.email}</span>
-                <div className={`w-3 h-3 rounded-full ${getRoleColor(member.role)} flex items-center justify-center`}>
-                  {getRoleIcon(member.role)}
-                </div>
-              </div>
-            ))}
+          <div className="flex flex-wrap gap-2">
+            {members.length > 0 ? (
+              members.map((member) => {
+                const RoleIcon = getRoleIcon(member.role);
+                return (
+                  <div key={member.id} className="relative">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={member.avatarUrl || undefined} />
+                      <AvatarFallback className="text-xs">
+                        {member.username?.charAt(0)?.toUpperCase() || member.email.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {/* Role Badge */}
+                    <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full ${getRoleColor(member.role)} flex items-center justify-center`}>
+                      <RoleIcon className="w-2 h-2" />
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onAddPlayer(team.id)}
+                className="h-8 w-8 p-0 border-dashed"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            )}
           </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex space-x-2">
-          <Button variant="outline" size="sm" className="flex-1">
-            <Trophy className="w-3 h-3 mr-1" />
-            View Details
-          </Button>
         </div>
       </CardContent>
     </Card>
