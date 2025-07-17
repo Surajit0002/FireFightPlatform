@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { useWebSocket } from "@/hooks/useWebSocket";
+// import { useWebSocket } from "@/hooks/useWebSocket"; // Temporarily disabled
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -35,7 +35,7 @@ export default function TournamentDetails() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { toast } = useToast();
-  const { subscribeTournament } = useWebSocket();
+  // const { subscribeTournament } = useWebSocket(); // Temporarily disabled
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
@@ -158,9 +158,9 @@ export default function TournamentDetails() {
   }
 
   // Subscribe to tournament updates
-  if (id) {
-    subscribeTournament(parseInt(id));
-  }
+  // if (id) {
+  //   subscribeTournament(parseInt(id));
+  // }
 
   const isParticipant = participants.some(p => p.userId === user?.id);
   const userParticipant = participants.find(p => p.userId === user?.id);

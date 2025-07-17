@@ -8,6 +8,8 @@ export function useWebSocket(onMessage?: (data: any) => void) {
     let reconnectTimeout: NodeJS.Timeout | null = null;
 
     const connect = () => {
+      // Temporarily disabled WebSocket connection to fix application errors
+      return;
       try {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = `${protocol}//${window.location.host}/ws`;

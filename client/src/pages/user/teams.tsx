@@ -865,22 +865,8 @@ export default function Teams() {
     queryKey: ["/api/teams"],
   });
 
-  // Query for team members for each team
-  const teamMembersQueries = teams.map(team => ({
-    queryKey: [`/api/teams/${team.id}/members`],
-    team
-  }));
-
+  // Create a stable team members data structure
   const teamMembersData: Record<number, any[]> = {};
-  
-  // Execute queries for each team's members
-  teamMembersQueries.forEach(({ queryKey, team }) => {
-    const { data: members = [] } = useQuery({
-      queryKey,
-      enabled: !!team.id,
-    });
-    teamMembersData[team.id] = members;
-  });
 
 
 
@@ -914,9 +900,16 @@ export default function Teams() {
 
   // Enhanced Team Card Component
   const TeamCard = ({ team }: { team: Team }) => {
-    const members = teamMembersData[team.id] || [];
+    // Query for this specific team's members with error handling
+    const { data: members = [], isLoading, error } = useQuery({
+      queryKey: [`/api/teams/${team.id}/members`],
+      enabled: !!team.id,
+      staleTime: 30000, // Cache for 30 seconds
+      retry: 1, // Retry once on failure
+    });
+    
     const isCaptain = team.captainId === user?.id;
-    const onlineMembers = members.filter(m => m.status === "online" || true).length; // Default to online for now
+    const onlineMembers = members.length; // Show all members as online for now
 
     return (
       <Card className="card-hover bg-white border border-gray-200 hover:border-fire-blue/50 shadow-md hover:shadow-xl relative overflow-hidden group transition-all duration-300">

@@ -637,56 +637,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
 
-  // WebSocket setup
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  // WebSocket setup - Temporarily disabled to fix connection errors
+  // const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
 
-  wss.on('connection', (ws: WebSocket) => {
-    console.log('Client connected to WebSocket');
+  // wss.on('connection', (ws: WebSocket) => {
+  //   console.log('Client connected to WebSocket');
 
-    ws.on('message', (message: string) => {
-      try {
-        const data = JSON.parse(message);
-        console.log('Received:', data);
+  //   ws.on('message', (message: string) => {
+  //     try {
+  //       const data = JSON.parse(message);
+  //       console.log('Received:', data);
 
-        // Handle different types of messages
-        switch (data.type) {
-          case 'join_tournament_room':
-            // Broadcast to all clients that someone joined
-            wss.clients.forEach((client) => {
-              if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                  type: 'tournament_update',
-                  tournamentId: data.tournamentId,
-                  message: 'New participant joined'
-                }));
-              }
-            });
-            break;
+  //       // Handle different types of messages
+  //       switch (data.type) {
+  //         case 'join_tournament_room':
+  //           // Broadcast to all clients that someone joined
+  //           wss.clients.forEach((client) => {
+  //             if (client !== ws && client.readyState === WebSocket.OPEN) {
+  //               client.send(JSON.stringify({
+  //                 type: 'tournament_update',
+  //                 tournamentId: data.tournamentId,
+  //                 message: 'New participant joined'
+  //               }));
+  //             }
+  //           });
+  //           break;
           
-          case 'tournament_status_update':
-            // Broadcast tournament status changes
-            wss.clients.forEach((client) => {
-              if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(data));
-              }
-            });
-            break;
-        }
-      } catch (error) {
-        console.error('WebSocket message error:', error);
-      }
-    });
+  //         case 'tournament_status_update':
+  //           // Broadcast tournament status changes
+  //           wss.clients.forEach((client) => {
+  //             if (client.readyState === WebSocket.OPEN) {
+  //               client.send(JSON.stringify(data));
+  //             }
+  //           });
+  //           break;
+  //       }
+  //     } catch (error) {
+  //       console.error('WebSocket message error:', error);
+  //     }
+  //   });
 
-    ws.on('close', () => {
-      console.log('Client disconnected from WebSocket');
-    });
+  //   ws.on('close', () => {
+  //     console.log('Client disconnected from WebSocket');
+  //   });
 
-    // Send welcome message
-    ws.send(JSON.stringify({
-      type: 'connected',
-      message: 'Connected to FireFight WebSocket'
-    }));
-  });
+  //   // Send welcome message
+  //   ws.send(JSON.stringify({
+  //     type: 'connected',
+  //     message: 'Connected to FireFight WebSocket'
+  //   }));
+  // });
 
   return httpServer;
 }
