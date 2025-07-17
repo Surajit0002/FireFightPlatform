@@ -90,7 +90,7 @@ function App() {
             <Route path="/support" component={UserSupport} />
             <Route path="/announcements" component={UserAnnouncements} />
             <Route path="/my-tournaments" component={UserMyTournaments} />
-            <Route path="/tournament/:id" component={UserTournamentDetails} />
+            <Route path="/tournaments/:id" component={UserTournamentDetails} />
             <Route path="/match-center" component={UserMatchCenter} />
 
             {/* Admin Routes */}
