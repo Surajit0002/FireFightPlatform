@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserHeader from "@/components/layout/user-header";
 import TeamModal from "@/components/team-modal";
 import PlayerModal from "@/components/player-modal";
@@ -844,6 +844,7 @@ const tournamentHistory = [
 
 export default function Teams() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
@@ -864,86 +865,24 @@ export default function Teams() {
     queryKey: ["/api/teams"],
   });
 
-  // Enhanced team members data with more details
-  const teamMembersData: Record<number, any[]> = {
-    1: [
-      { 
-        id: "1", 
-        username: "ProGamer_X", 
-        role: "captain", 
-        avatar: "", 
-        gameId: "PG#123", 
-        contactInfo: "+91 9876543210",
-        kd: 2.4,
-        avgDamage: 3200,
-        winRate: 78,
-        status: "online",
-        verified: true,
-        joinDate: "2024-01-01",
-        lastActive: "2 min ago"
-      },
-      { 
-        id: "2", 
-        username: "EliteSniper", 
-        role: "sniper", 
-        avatar: "", 
-        gameId: "ES#456", 
-        contactInfo: "+91 9876543211",
-        kd: 3.1,
-        avgDamage: 2800,
-        winRate: 82,
-        status: "online",
-        verified: true,
-        joinDate: "2024-01-02",
-        lastActive: "5 min ago"
-      },
-      { 
-        id: "3", 
-        username: "SupportMaster", 
-        role: "support", 
-        avatar: "", 
-        gameId: "SM#789", 
-        contactInfo: "+91 9876543212",
-        kd: 1.8,
-        avgDamage: 2400,
-        winRate: 75,
-        status: "away",
-        verified: false,
-        joinDate: "2024-01-03",
-        lastActive: "1 hour ago"
-      },
-      { 
-        id: "4", 
-        username: "EntryFragger", 
-        role: "entry", 
-        avatar: "", 
-        gameId: "EF#012", 
-        contactInfo: "+91 9876543213",
-        kd: 2.7,
-        avgDamage: 3500,
-        winRate: 80,
-        status: "offline",
-        verified: true,
-        joinDate: "2024-01-04",
-        lastActive: "3 hours ago"
-      },
-      { 
-        id: "5", 
-        username: "IGLMind", 
-        role: "igl", 
-        avatar: "", 
-        gameId: "IG#345", 
-        contactInfo: "+91 9876543214",
-        kd: 2.1,
-        avgDamage: 2900,
-        winRate: 77,
-        status: "online",
-        verified: true,
-        joinDate: "2024-01-05",
-        lastActive: "1 min ago"
-      },
-    ]
-  };
+  // Query for team members for each team
+  const teamMembersQueries = teams.map(team => ({
+    queryKey: [`/api/teams/${team.id}/members`],
+    team
+  }));
+
+  const teamMembersData: Record<number, any[]> = {};
+  
+  // Execute queries for each team's members
+  teamMembersQueries.forEach(({ queryKey, team }) => {
+    const { data: members = [] } = useQuery({
+      queryKey,
+      enabled: !!team.id,
+    });
+    teamMembersData[team.id] = members;
+  });
+
+
 
   // Get role icon component
   const getRoleIcon = (role: string) => {
@@ -977,7 +916,7 @@ export default function Teams() {
   const TeamCard = ({ team }: { team: Team }) => {
     const members = teamMembersData[team.id] || [];
     const isCaptain = team.captainId === user?.id;
-    const onlineMembers = members.filter(m => m.status === "online").length;
+    const onlineMembers = members.filter(m => m.status === "online" || true).length; // Default to online for now
 
     return (
       <Card className="card-hover bg-white border border-gray-200 hover:border-fire-blue/50 shadow-md hover:shadow-xl relative overflow-hidden group transition-all duration-300">
@@ -1106,16 +1045,16 @@ export default function Teams() {
                   <div key={member.id} className="relative group">
                     <Avatar className="w-8 h-8 border-2 border-white shadow-sm hover:shadow-md transition-shadow">
                       <AvatarImage 
-                        src={member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`} 
+                        src={member.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`} 
                         alt={member.username}
                       />
                       <AvatarFallback className="text-xs bg-gradient-to-br from-fire-blue to-fire-red text-white font-bold">
-                        {member.username.charAt(0).toUpperCase()}
+                        {member.username?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     
                     {/* Status dot */}
-                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(member.status)}`}></div>
+                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white bg-green-500`}></div>
                     
                     {/* Role badge */}
                     <div className={`absolute -top-1 -left-1 w-4 h-4 ${getRoleColor(member.role)} rounded-full flex items-center justify-center`}>

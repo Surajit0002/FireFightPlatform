@@ -348,25 +348,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (players && Array.isArray(players)) {
         for (const player of players) {
           // Create user if not exists (for demo purposes, in real app you'd invite existing users)
-          const userId = `player_${player.id}`;
+          const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           await storage.upsertUser({
             id: userId,
             username: player.username,
             email: player.email || `${player.username}@example.com`,
-            avatarUrl: player.avatar,
+            profileImageUrl: player.avatar,
             phoneNumber: player.phone,
-            gameId: player.gameId,
             role: 'user',
             isActive: true,
             walletBalance: '0.00',
-            kycStatus: 'pending',
-            profileCompleted: true,
-            totalEarnings: '0.00',
-            totalTournaments: 0,
-            winRate: 0,
-            avgPlacement: 0,
-            skillRating: 1000,
-            reputation: 100
+            kycStatus: 'pending'
           });
           
           // Add player to team
@@ -394,12 +386,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/teams/:id/members', isAuthenticated, async (req: any, res) => {
     try {
       const teamId = parseInt(req.params.id);
-      const { userId, role } = req.body;
-      await storage.addTeamMember(teamId, userId, role);
+      const { playerName, email, phone, gameId, role } = req.body;
+      
+      // Create user for the new player
+      const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      await storage.upsertUser({
+        id: userId,
+        username: playerName,
+        email: email || `${playerName}@example.com`,
+        phoneNumber: phone,
+        role: 'user',
+        isActive: true,
+        walletBalance: '0.00',
+        kycStatus: 'pending'
+      });
+      
+      // Add player to team
+      await storage.addTeamMember(teamId, userId, role || 'member');
       res.json({ message: "Member added successfully" });
     } catch (error) {
       console.error("Error adding team member:", error);
       res.status(500).json({ message: "Failed to add team member" });
+    }
+  });
+
+  // Add player API endpoint for player modal
+  app.post('/api/players', isAuthenticated, async (req: any, res) => {
+    try {
+      const { playerName, email, phone, gameId, role, teamId } = req.body;
+      
+      // Create user for the new player
+      const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      await storage.upsertUser({
+        id: userId,
+        username: playerName,
+        email: email || `${playerName}@example.com`,
+        phoneNumber: phone,
+        role: 'user',
+        isActive: true,
+        walletBalance: '0.00',
+        kycStatus: 'pending'
+      });
+      
+      // Add player to team if teamId is provided
+      if (teamId) {
+        await storage.addTeamMember(parseInt(teamId), userId, role || 'member');
+      }
+      
+      res.json({ message: "Player added successfully", userId });
+    } catch (error) {
+      console.error("Error adding player:", error);
+      res.status(500).json({ message: "Failed to add player" });
     }
   });
 

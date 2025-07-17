@@ -109,7 +109,7 @@ export default function TeamModal({ isOpen, onClose }: TeamModalProps) {
     onError: (error) => {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to create team",
         variant: "destructive",
       });
     },
