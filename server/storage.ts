@@ -9,6 +9,11 @@ import {
   announcements,
   supportTickets,
   kycDocuments,
+  userSessions,
+  securityLogs,
+  userRoles,
+  userRoleAssignments,
+  verificationTokens,
   type User,
   type UpsertUser,
   type Tournament,
@@ -20,6 +25,10 @@ import {
   type Announcement,
   type SupportTicket,
   type KycDocument,
+  type UserSession,
+  type SecurityLog,
+  type UserRole,
+  type VerificationToken,
   type InsertTournament,
   type InsertTeam,
   type InsertTransaction,
@@ -71,6 +80,17 @@ export interface IStorage {
   getAnnouncements(isActive?: boolean): Promise<Announcement[]>;
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
   updateAnnouncement(id: number, announcement: Partial<Announcement>): Promise<Announcement>;
+
+  // Enhanced Auth operations
+  getUserSessions(userId: string): Promise<UserSession[]>;
+  createUserSession(session: any): Promise<UserSession>;
+  revokeUserSession(sessionId: string): Promise<void>;
+  getSecurityLogs(userId?: string, limit?: number): Promise<SecurityLog[]>;
+  createSecurityLog(log: any): Promise<SecurityLog>;
+  getUserRoles(userId: string): Promise<UserRole[]>;
+  assignUserRole(userId: string, roleId: number, assignedBy: string): Promise<void>;
+  createVerificationToken(token: any): Promise<VerificationToken>;
+  verifyToken(token: string, type: string): Promise<VerificationToken | null>;
 
   // Support operations
   getSupportTickets(userId?: string): Promise<SupportTicket[]>;
@@ -536,6 +556,102 @@ export class DatabaseStorage implements IStorage {
       .where(eq(kycDocuments.id, id))
       .returning();
     return updatedDocument;
+  }
+
+  // Enhanced Auth operations
+  async getUserSessions(userId: string): Promise<UserSession[]> {
+    return await db
+      .select()
+      .from(userSessions)
+      .where(and(
+        eq(userSessions.userId, userId),
+        eq(userSessions.isActive, true)
+      ))
+      .orderBy(desc(userSessions.lastAccessedAt));
+  }
+
+  async createUserSession(session: any): Promise<UserSession> {
+    const [newSession] = await db
+      .insert(userSessions)
+      .values(session)
+      .returning();
+    return newSession;
+  }
+
+  async revokeUserSession(sessionId: string): Promise<void> {
+    await db
+      .update(userSessions)
+      .set({ isActive: false })
+      .where(eq(userSessions.id, sessionId));
+  }
+
+  async getSecurityLogs(userId?: string, limit: number = 100): Promise<SecurityLog[]> {
+    const whereClause = userId ? eq(securityLogs.userId, userId) : undefined;
+    
+    return await db
+      .select()
+      .from(securityLogs)
+      .where(whereClause)
+      .orderBy(desc(securityLogs.createdAt))
+      .limit(limit);
+  }
+
+  async createSecurityLog(log: any): Promise<SecurityLog> {
+    const [newLog] = await db
+      .insert(securityLogs)
+      .values(log)
+      .returning();
+    return newLog;
+  }
+
+  async getUserRoles(userId: string): Promise<UserRole[]> {
+    const roles = await db
+      .select({ role: userRoles })
+      .from(userRoleAssignments)
+      .innerJoin(userRoles, eq(userRoleAssignments.roleId, userRoles.id))
+      .where(
+        and(
+          eq(userRoleAssignments.userId, userId),
+          eq(userRoles.isActive, true),
+          sql`(${userRoleAssignments.expiresAt} IS NULL OR ${userRoleAssignments.expiresAt} > NOW())`
+        )
+      );
+    
+    return roles.map(r => r.role);
+  }
+
+  async assignUserRole(userId: string, roleId: number, assignedBy: string): Promise<void> {
+    await db
+      .insert(userRoleAssignments)
+      .values({
+        userId,
+        roleId,
+        assignedBy,
+      });
+  }
+
+  async createVerificationToken(token: any): Promise<VerificationToken> {
+    const [newToken] = await db
+      .insert(verificationTokens)
+      .values(token)
+      .returning();
+    return newToken;
+  }
+
+  async verifyToken(token: string, type: string): Promise<VerificationToken | null> {
+    const [verificationToken] = await db
+      .select()
+      .from(verificationTokens)
+      .where(
+        and(
+          eq(verificationTokens.token, token),
+          eq(verificationTokens.type, type),
+          eq(verificationTokens.used, false),
+          sql`${verificationTokens.expiresAt} > NOW()`
+        )
+      );
+
+    return verificationToken || null;
   }
 
   // Leaderboard operations

@@ -46,8 +46,84 @@ export const users = pgTable("users", {
   upiId: varchar("upi_id"),
   isActive: boolean("is_active").default(true),
   role: varchar("role").default("user"), // user, admin, moderator
+  // Enhanced security fields
+  emailVerified: boolean("email_verified").default(false),
+  phoneNumber: varchar("phone_number"),
+  phoneVerified: boolean("phone_verified").default(false),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  twoFactorSecret: varchar("two_factor_secret"),
+  lastLoginAt: timestamp("last_login_at"),
+  loginCount: integer("login_count").default(0),
+  accountLocked: boolean("account_locked").default(false),
+  lockReason: varchar("lock_reason"),
+  failedLoginAttempts: integer("failed_login_attempts").default(0),
+  lastFailedLoginAt: timestamp("last_failed_login_at"),
+  passwordResetToken: varchar("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
+  preferences: jsonb("preferences").default('{}'),
+  metadata: jsonb("metadata").default('{}'),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User Sessions & Security
+export const userSessions = pgTable("user_sessions", {
+  id: varchar("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  sessionToken: varchar("session_token").unique().notNull(),
+  deviceInfo: jsonb("device_info"),
+  ipAddress: varchar("ip_address"),
+  userAgent: varchar("user_agent"),
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastAccessedAt: timestamp("last_accessed_at").defaultNow(),
+});
+
+// Security logs for audit trail
+export const securityLogs = pgTable("security_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  action: varchar("action").notNull(), // login, logout, failed_login, password_reset, etc.
+  details: jsonb("details").default('{}'),
+  ipAddress: varchar("ip_address"),
+  userAgent: varchar("user_agent"),
+  success: boolean("success").default(true),
+  riskScore: integer("risk_score").default(0), // 0-100 risk assessment
+  location: varchar("location"), // geo location
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User permissions and roles
+export const userRoles = pgTable("user_roles", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").unique().notNull(),
+  description: text("description"),
+  permissions: jsonb("permissions").default('[]'), // Array of permission strings
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userRoleAssignments = pgTable("user_role_assignments", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  roleId: integer("role_id").references(() => userRoles.id).notNull(),
+  assignedBy: varchar("assigned_by").references(() => users.id),
+  assignedAt: timestamp("assigned_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});
+
+// Email verification tokens
+export const verificationTokens = pgTable("verification_tokens", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  token: varchar("token").unique().notNull(),
+  type: varchar("type").notNull(), // email_verification, phone_verification, password_reset
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const gameEnum = pgEnum("game", ["free_fire", "bgmi", "valorant", "csgo", "pubg"]);
@@ -283,9 +359,38 @@ export const insertKycDocumentSchema = createInsertSchema(kycDocuments).omit({
   updatedAt: true,
 });
 
+// Enhanced auth schemas
+export const insertUserSessionSchema = createInsertSchema(userSessions).omit({
+  createdAt: true,
+  lastAccessedAt: true,
+});
+
+export const insertSecurityLogSchema = createInsertSchema(securityLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserRoleSchema = createInsertSchema(userRoles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertVerificationTokenSchema = createInsertSchema(verificationTokens).omit({
+  id: true,
+  used: true,
+  usedAt: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type UserSession = typeof userSessions.$inferSelect;
+export type SecurityLog = typeof securityLogs.$inferSelect;
+export type UserRole = typeof userRoles.$inferSelect;
+export type UserRoleAssignment = typeof userRoleAssignments.$inferSelect;
+export type VerificationToken = typeof verificationTokens.$inferSelect;
 export type Tournament = typeof tournaments.$inferSelect;
 export type Team = typeof teams.$inferSelect;
 export type TeamMember = typeof teamMembers.$inferSelect;
@@ -301,3 +406,7 @@ export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
 export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
 export type InsertKycDocument = z.infer<typeof insertKycDocumentSchema>;
+export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
+export type InsertSecurityLog = z.infer<typeof insertSecurityLogSchema>;
+export type InsertUserRole = z.infer<typeof insertUserRoleSchema>;
+export type InsertVerificationToken = z.infer<typeof insertVerificationTokenSchema>;

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { 
-  Flame, Zap, Menu, X, 
+  Flame, Zap, Menu, X, Search,
   Gamepad2, Trophy, Users2, BarChart3, MessageSquare, 
   Star, Gift, Calendar, Home, TrendingUp, Award, Shield, 
   Headphones, Globe, Plus, Filter, Clock, Target, 
