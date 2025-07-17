@@ -24,7 +24,7 @@ import {
   Gamepad2, Trophy, Users2, BarChart3, MessageSquare, 
   Star, Gift, Calendar, Home, TrendingUp, Award, Shield, 
   Headphones, Globe, Plus, Filter, Clock, Target, 
-  PlayCircle, Coins, Crown, Bolt, LogOut
+  PlayCircle, Coins, Crown, Bolt, LogOut, Volume2, VolumeX
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
