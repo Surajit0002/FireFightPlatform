@@ -810,149 +810,149 @@ function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: num
   };
 
   return (
-    <Card className="hover:shadow-xl transition-all duration-300 border-0 bg-white">
-      <CardHeader className="pb-3">
-        {/* Team Header */}
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-3">
-            <Avatar className="w-12 h-12">
-              <AvatarImage src={team.logoUrl} />
-              <AvatarFallback className="bg-blue-600 text-white">
-                {team.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle className="text-lg font-semibold">{team.name}</CardTitle>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500 font-mono">{team.code}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => copyTeamCode(team.code)}
-                  className="p-1 h-6 w-6"
-                >
-                  <Copy className="w-3 h-3" />
-                </Button>
+    <>
+      <Card className="hover:shadow-xl transition-all duration-300 border-0 bg-white">
+        <CardHeader className="pb-3">
+          {/* Team Header */}
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-3">
+              <Avatar className="w-12 h-12">
+                <AvatarImage src={team.logoUrl} />
+                <AvatarFallback className="bg-blue-600 text-white">
+                  {team.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <CardTitle className="text-lg font-semibold">{team.name}</CardTitle>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500 font-mono">{team.code}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyTeamCode(team.code)}
+                    className="p-1 h-6 w-6"
+                  >
+                    <Copy className="w-3 h-3" />
+                  </Button>
+                </div>
               </div>
             </div>
+            
+            {/* Three Dot Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setShowEditModal(true)}>
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Team
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowViewModal(true)}>
+                  <Eye className="w-4 h-4 mr-2" />
+                  View Team
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="text-red-600" 
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Team
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          
-          {/* Three Dot Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setShowEditModal(true)}>
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Team
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowViewModal(true)}>
-                <Eye className="w-4 h-4 mr-2" />
-                View Team
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="text-red-600" 
-                onClick={() => setShowDeleteConfirm(true)}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete Team
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {/* Team Stats */}
-        <div className="grid grid-cols-4 gap-2">
-          <div className="text-center p-2 bg-gray-50 rounded-lg">
-            <div className="flex items-center justify-center mb-1">
-              <Users className="w-4 h-4 text-blue-600" />
+        </CardHeader>
+        
+        <CardContent className="space-y-4">
+          {/* Team Stats */}
+          <div className="grid grid-cols-4 gap-2">
+            <div className="text-center p-2 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-1">
+                <Users className="w-4 h-4 text-blue-600" />
+              </div>
+              <p className="text-sm font-semibold text-gray-900">{members.length}</p>
+              <p className="text-xs text-gray-500">Members</p>
             </div>
-            <p className="text-sm font-semibold text-gray-900">{members.length}</p>
-            <p className="text-xs text-gray-500">Members</p>
-          </div>
-          
-          <div className="text-center p-2 bg-gray-50 rounded-lg">
-            <div className="flex items-center justify-center mb-1">
-              <DollarSign className="w-4 h-4 text-green-600" />
+            
+            <div className="text-center p-2 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-1">
+                <DollarSign className="w-4 h-4 text-green-600" />
+              </div>
+              <p className="text-sm font-semibold text-gray-900">₹{team.totalEarnings}</p>
+              <p className="text-xs text-gray-500">Earnings</p>
             </div>
-            <p className="text-sm font-semibold text-gray-900">₹{team.totalEarnings}</p>
-            <p className="text-xs text-gray-500">Earnings</p>
-          </div>
-          
-          <div className="text-center p-2 bg-gray-50 rounded-lg">
-            <div className="flex items-center justify-center mb-1">
-              <Gamepad2 className="w-4 h-4 text-purple-600" />
+            
+            <div className="text-center p-2 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-1">
+                <Gamepad2 className="w-4 h-4 text-purple-600" />
+              </div>
+              <p className="text-sm font-semibold text-gray-900">{team.matchesPlayed}</p>
+              <p className="text-xs text-gray-500">Matches</p>
             </div>
-            <p className="text-sm font-semibold text-gray-900">{team.matchesPlayed}</p>
-            <p className="text-xs text-gray-500">Matches</p>
-          </div>
-          
-          <div className="text-center p-2 bg-gray-50 rounded-lg">
-            <div className="flex items-center justify-center mb-1">
-              <Trophy className="w-4 h-4 text-yellow-600" />
+            
+            <div className="text-center p-2 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-1">
+                <Trophy className="w-4 h-4 text-yellow-600" />
+              </div>
+              <p className="text-sm font-semibold text-gray-900">{team.winRate}%</p>
+              <p className="text-xs text-gray-500">Win Rate</p>
             </div>
-            <p className="text-sm font-semibold text-gray-900">{team.winRate}%</p>
-            <p className="text-xs text-gray-500">Win Rate</p>
           </div>
-        </div>
 
-        {/* Team Members */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <Label className="text-sm font-medium text-gray-700">Team Members</Label>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onAddPlayer(team.id)}
-              className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700"
-            >
-              <Plus className="w-3 h-3 mr-1" />
-              Add
-            </Button>
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {members.length > 0 ? (
-              members.map((member) => {
-                const RoleIcon = getRoleIcon(member.role);
-                return (
-                  <div key={member.id} className="relative">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={member.avatarUrl || undefined} />
-                      <AvatarFallback className="text-xs">
-                        {member.username?.charAt(0)?.toUpperCase() || member.email.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    {/* Role Badge */}
-                    <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full ${getRoleColor(member.role)} flex items-center justify-center`}>
-                      <RoleIcon className="w-2 h-2" />
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
+          {/* Team Members */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-sm font-medium text-gray-700">Team Members</Label>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => onAddPlayer(team.id)}
-                className="h-8 w-8 p-0 border-dashed"
+                className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3 h-3 mr-1" />
+                Add
               </Button>
-            )}
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              {members.length > 0 ? (
+                members.map((member) => {
+                  const RoleIcon = getRoleIcon(member.role);
+                  return (
+                    <div key={member.id} className="relative">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={member.avatarUrl || undefined} />
+                        <AvatarFallback className="text-xs">
+                          {member.username?.charAt(0)?.toUpperCase() || member.email.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      {/* Role Badge */}
+                      <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full ${getRoleColor(member.role)} flex items-center justify-center`}>
+                        <RoleIcon className="w-2 h-2" />
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onAddPlayer(team.id)}
+                  className="h-8 w-8 p-0 border-dashed"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
 
     {/* Edit Team Modal */}
-    <>
-    <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
