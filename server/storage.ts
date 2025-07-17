@@ -176,14 +176,14 @@ export class DatabaseStorage implements IStorage {
   // Tournament operations
   async getTournaments(filters?: any): Promise<Tournament[]> {
     let conditions = [];
-    
+
     if (filters?.status) {
       conditions.push(eq(tournaments.status, filters.status));
     }
     if (filters?.game) {
       conditions.push(eq(tournaments.game, filters.game));
     }
-    
+
     return await db
       .select()
       .from(tournaments)
@@ -278,7 +278,7 @@ export class DatabaseStorage implements IStorage {
         .innerJoin(teamMembers, eq(teams.id, teamMembers.teamId))
         .where(eq(teamMembers.userId, userId));
     }
-    
+
     return await db.select().from(teams).orderBy(desc(teams.createdAt));
   }
 
@@ -371,7 +371,7 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(users, eq(teamMembers.userId, users.id))
       .where(eq(teamMembers.teamId, teamId))
       .orderBy(asc(teamMembers.role));
-    
+
     return results;
   }
 
@@ -415,14 +415,14 @@ export class DatabaseStorage implements IStorage {
   // Admin operations
   async getUsers(filters?: any): Promise<User[]> {
     let conditions = [];
-    
+
     if (filters?.role) {
       conditions.push(eq(users.role, filters.role));
     }
     if (filters?.kycStatus) {
       conditions.push(eq(users.kycStatus, filters.kycStatus));
     }
-    
+
     return await db
       .select()
       .from(users)
@@ -439,7 +439,7 @@ export class DatabaseStorage implements IStorage {
         eq(tournaments.status, 'upcoming'),
         eq(tournaments.status, 'live')
       ));
-    
+
     const totalPayouts = await db
       .select({ sum: sql<number>`COALESCE(SUM(${transactions.amount}), 0)` })
       .from(transactions)
@@ -526,14 +526,14 @@ export class DatabaseStorage implements IStorage {
   // KYC operations
   async getKycDocuments(userId?: string, status?: string): Promise<KycDocument[]> {
     let conditions = [];
-    
+
     if (userId) {
       conditions.push(eq(kycDocuments.userId, userId));
     }
     if (status) {
       conditions.push(eq(kycDocuments.status, status));
     }
-    
+
     return await db
       .select()
       .from(kycDocuments)
@@ -587,7 +587,7 @@ export class DatabaseStorage implements IStorage {
 
   async getSecurityLogs(userId?: string, limit: number = 100): Promise<SecurityLog[]> {
     const whereClause = userId ? eq(securityLogs.userId, userId) : undefined;
-    
+
     return await db
       .select()
       .from(securityLogs)
@@ -616,7 +616,7 @@ export class DatabaseStorage implements IStorage {
           sql`(${userRoleAssignments.expiresAt} IS NULL OR ${userRoleAssignments.expiresAt} > NOW())`
         )
       );
-    
+
     return roles.map(r => r.role);
   }
 

@@ -693,11 +693,66 @@ export default function Teams() {
 // Team Card Component
 function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: number) => void }) {
   const { toast } = useToast();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
   const { data: members = [] } = useQuery<TeamMember[]>({
     queryKey: [`/api/teams/${team.id}/members`],
     enabled: !!team.id,
     staleTime: 30000,
     retry: 1,
+  });
+
+  // Edit team form state
+  const [editForm, setEditForm] = useState({
+    name: team.name,
+    code: team.code,
+    logoUrl: team.logoUrl || "",
+  });
+
+  // Delete team mutation
+  const deleteTeamMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("DELETE", `/api/teams/${team.id}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Team deleted successfully!",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+      setShowDeleteConfirm(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete team",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update team mutation
+  const updateTeamMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest("PUT", `/api/teams/${team.id}`, data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Team updated successfully!",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+      setShowEditModal(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update team",
+        variant: "destructive",
+      });
+    },
   });
 
   const copyTeamCode = (code: string) => {
@@ -706,6 +761,42 @@ function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: num
       title: "Copied!",
       description: "Team code copied to clipboard",
     });
+  };
+
+  const handleEditTeam = () => {
+    if (!editForm.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Team name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+    updateTeamMutation.mutate(editForm);
+  };
+
+  const handleDeleteTeam = () => {
+    deleteTeamMutation.mutate();
+  };
+
+  const handleEditLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Error",
+          description: "Logo must be under 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditForm(prev => ({ ...prev, logoUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const getRoleIcon = (role: string) => {
@@ -754,15 +845,18 @@ function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: num
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowEditModal(true)}>
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Team
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowViewModal(true)}>
                 <Eye className="w-4 h-4 mr-2" />
                 View Team
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem 
+                className="text-red-600" 
+                onClick={() => setShowDeleteConfirm(true)}
+              >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete Team
               </DropdownMenuItem>
@@ -855,5 +949,241 @@ function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: num
         </div>
       </CardContent>
     </Card>
+
+    {/* Edit Team Modal */}
+    <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            <Edit className="w-5 h-5 text-blue-600" />
+            <span>Edit Team</span>
+          </DialogTitle>
+          <DialogDescription>
+            Update your team information
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          {/* Logo Upload */}
+          <div className="flex justify-center">
+            <div className="relative">
+              <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer hover:bg-gray-100">
+                {editForm.logoUrl ? (
+                  <img 
+                    src={editForm.logoUrl} 
+                    alt="Team logo" 
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <Upload className="w-8 h-8 text-gray-400" />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleEditLogoUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Team Info */}
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="editTeamName">Team Name</Label>
+              <Input
+                id="editTeamName"
+                placeholder="Enter team name"
+                value={editForm.name}
+                onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="editTeamCode">Team Code</Label>
+              <Input
+                id="editTeamCode"
+                placeholder="Team code"
+                value={editForm.code}
+                onChange={(e) => setEditForm(prev => ({ ...prev, code: e.target.value }))}
+                disabled
+                className="bg-gray-100"
+              />
+              <p className="text-xs text-gray-500 mt-1">Team code cannot be changed</p>
+            </div>
+          </div>
+
+          <div className="flex space-x-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowEditModal(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEditTeam}
+              disabled={updateTeamMutation.isPending}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {updateTeamMutation.isPending ? "Updating..." : "Update Team"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* View Team Modal */}
+    <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-3">
+            <Avatar className="w-12 h-12">
+              <AvatarImage src={team.logoUrl} />
+              <AvatarFallback className="bg-blue-600 text-white">
+                {team.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="text-xl font-bold">{team.name}</div>
+              <div className="text-sm text-gray-500">Team Code: {team.code}</div>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Team Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-2">
+                <Users className="w-5 h-5 text-blue-600" />
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{members.length}</p>
+              <p className="text-sm text-gray-500">Members</p>
+            </div>
+            
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-2">
+                <DollarSign className="w-5 h-5 text-green-600" />
+              </div>
+              <p className="text-lg font-semibold text-gray-900">₹{team.totalEarnings}</p>
+              <p className="text-sm text-gray-500">Earnings</p>
+            </div>
+            
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-2">
+                <Gamepad2 className="w-5 h-5 text-purple-600" />
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{team.matchesPlayed}</p>
+              <p className="text-sm text-gray-500">Matches</p>
+            </div>
+            
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-2">
+                <Trophy className="w-5 h-5 text-yellow-600" />
+              </div>
+              <p className="text-lg font-semibold text-gray-900">{team.winRate}%</p>
+              <p className="text-sm text-gray-500">Win Rate</p>
+            </div>
+          </div>
+
+          {/* Team Members */}
+          <div>
+            <Label className="text-lg font-semibold mb-4 block">Team Members ({members.length})</Label>
+            <div className="space-y-3">
+              {members.length > 0 ? (
+                members.map((member) => {
+                  const RoleIcon = getRoleIcon(member.role);
+                  return (
+                    <div
+                      key={member.id}
+                      className="flex items-center space-x-4 p-4 bg-white rounded-lg border"
+                    >
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage src={member.avatarUrl || undefined} />
+                        <AvatarFallback>
+                          {member.username?.charAt(0)?.toUpperCase() || member.email.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="font-medium">{member.username || member.email}</span>
+                          <Badge className={`${getRoleColor(member.role)} text-xs`}>
+                            <RoleIcon className="w-3 h-3 mr-1" />
+                            {member.role}
+                          </Badge>
+                          {member.userId === team.captainId && (
+                            <Crown className="w-4 h-4 text-yellow-500" />
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500">Game ID: {member.gameId || "Not provided"}</p>
+                        {member.contactInfo && (
+                          <p className="text-sm text-gray-500">Contact: {member.contactInfo}</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                  <p>No members in this team yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex space-x-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setShowViewModal(false)}
+              className="flex-1"
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => copyTeamCode(team.code)}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Copy Team Code
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Delete Confirmation Dialog */}
+    <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2 text-red-600">
+            <Trash2 className="w-5 h-5" />
+            <span>Delete Team</span>
+          </DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete "{team.name}"? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="flex space-x-2 pt-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowDeleteConfirm(false)}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteTeam}
+            disabled={deleteTeamMutation.isPending}
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+          >
+            {deleteTeamMutation.isPending ? "Deleting..." : "Delete Team"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

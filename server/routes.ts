@@ -23,11 +23,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUserStats(userId);
-      
+
       // Include additional security info
       const userSessions = await authService.getUserSessions(userId);
       const userRoles = await authService.getUserRoles(userId);
-      
+
       res.json({
         ...user,
         security: {
@@ -50,13 +50,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { username, phoneNumber, preferences } = req.body;
-      
+
       const updatedUser = await authService.enhanceUserProfile(userId, {
         username,
         phoneNumber,
         preferences,
       });
-      
+
       res.json(updatedUser);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -80,7 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { sessionId } = req.params;
-      
+
       await authService.revokeSession(sessionId, userId);
       res.json({ message: 'Session revoked successfully' });
     } catch (error) {
@@ -93,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const currentSessionId = req.user.sessionId;
-      
+
       await authService.revokeAllUserSessions(userId, currentSessionId);
       res.json({ message: 'All other sessions revoked successfully' });
     } catch (error) {
@@ -107,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const secret = await authService.enableTwoFactor(userId);
-      
+
       res.json({ 
         secret,
         qrCodeUrl: `otpauth://totp/FireFight:${req.user.claims.email}?secret=${secret}&issuer=FireFight`
@@ -122,7 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       await authService.disableTwoFactor(userId);
-      
+
       res.json({ message: '2FA disabled successfully' });
     } catch (error) {
       console.error("Error disabling 2FA:", error);
@@ -135,7 +135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const token = await authService.createVerificationToken(userId, 'email_verification');
-      
+
       // In a real app, send email here
       res.json({ 
         message: 'Verification email sent',
@@ -151,7 +151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const token = await authService.createVerificationToken(userId, 'phone_verification');
-      
+
       // In a real app, send SMS here
       res.json({ 
         message: 'Verification SMS sent',
@@ -167,11 +167,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { token, type } = req.body;
       const userId = await authService.verifyToken(token, type);
-      
+
       if (!userId) {
         return res.status(400).json({ message: 'Invalid or expired token' });
       }
-      
+
       res.json({ message: 'Verification successful' });
     } catch (error) {
       console.error("Error verifying token:", error);
@@ -184,7 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const limit = parseInt(req.query.limit as string) || 50;
-      
+
       const logs = await authService.getSecurityLogs(userId, limit);
       res.json(logs);
     } catch (error) {
@@ -209,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.params;
       const { reason } = req.body;
-      
+
       await authService.lockAccount(userId, reason);
       res.json({ message: 'Account locked successfully' });
     } catch (error) {
@@ -221,7 +221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/admin/users/:userId/unlock', isAuthenticated, requireRole('admin'), async (req: any, res) => {
     try {
       const { userId } = req.params;
-      
+
       await authService.unlockAccount(userId);
       res.json({ message: 'Account unlocked successfully' });
     } catch (error) {
@@ -235,7 +235,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { userId } = req.params;
       const { roleId, expiresAt } = req.body;
       const assignedBy = req.user.claims.sub;
-      
+
       await authService.assignRole(userId, roleId, assignedBy, expiresAt);
       res.json({ message: 'Role assigned successfully' });
     } catch (error) {
@@ -250,7 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const ipAddress = req.ip;
       const userAgent = req.get('User-Agent');
-      
+
       const riskScore = await authService.calculateRiskScore(userId, ipAddress, userAgent);
       res.json({ riskScore });
     } catch (error) {
@@ -341,9 +341,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...teamFields,
         captainId: req.user.claims.sub
       });
-      
+
       const team = await storage.createTeam(teamData);
-      
+
       // Add players to the team if provided
       if (players && Array.isArray(players)) {
         for (const player of players) {
@@ -360,16 +360,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
             walletBalance: '0.00',
             kycStatus: 'pending'
           });
-          
+
           // Add player to team
           await storage.addTeamMember(team.id, userId, player.role);
         }
       }
-      
+
       res.json(team);
     } catch (error) {
       console.error("Error creating team:", error);
       res.status(500).json({ message: "Failed to create team" });
+    }
+  });
+
+  // Update team
+  app.put('/api/teams/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const teamId = parseInt(req.params.id);
+      const { name, logoUrl } = req.body;
+
+      if (!name?.trim()) {
+        return res.status(400).json({ message: 'Team name is required' });
+      }
+
+      // Check if user is team captain
+      const team = await storage.getTeam(teamId);
+      if (!team || team.captainId !== req.user.claims.sub) {
+        return res.status(403).json({ message: 'Only team captain can edit team' });
+      }
+
+      const updatedTeam = await storage.updateTeam(teamId, {
+        name: name.trim(),
+        logoUrl
+      });
+
+      res.json(updatedTeam);
+    } catch (error) {
+      console.error('Error updating team:', error);
+      res.status(500).json({ message: 'Failed to update team' });
+    }
+  });
+
+  // Delete team
+  app.delete('/api/teams/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const teamId = parseInt(req.params.id);
+
+      // Check if user is team captain
+      const team = await storage.getTeam(teamId);
+      if (!team || team.captainId !== req.user.claims.sub) {
+        return res.status(403).json({ message: 'Only team captain can delete team' });
+      }
+
+      await storage.deleteTeam(teamId);
+
+      res.json({ message: 'Team deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting team:', error);
+      res.status(500).json({ message: 'Failed to delete team' });
     }
   });
 
@@ -387,7 +435,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const teamId = parseInt(req.params.id);
       const { playerName, email, phone, gameId, role } = req.body;
-      
+
       // Create user for the new player
       const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       await storage.upsertUser({
@@ -400,7 +448,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         walletBalance: '0.00',
         kycStatus: 'pending'
       });
-      
+
       // Add player to team
       await storage.addTeamMember(teamId, userId, role || 'member');
       res.json({ message: "Member added successfully" });
@@ -414,7 +462,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/players', isAuthenticated, async (req: any, res) => {
     try {
       const { playerName, email, phone, gameId, role, teamId } = req.body;
-      
+
       // Create user for the new player
       const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       await storage.upsertUser({
@@ -427,12 +475,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         walletBalance: '0.00',
         kycStatus: 'pending'
       });
-      
+
       // Add player to team if teamId is provided
       if (teamId) {
         await storage.addTeamMember(parseInt(teamId), userId, role || 'member');
       }
-      
+
       res.json({ message: "Player added successfully", userId });
     } catch (error) {
       console.error("Error adding player:", error);
@@ -498,7 +546,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { type } = req.params;
       const { game } = req.query;
-      
+
       if (type !== 'players' && type !== 'teams') {
         return res.status(400).json({ message: "Invalid leaderboard type" });
       }
@@ -662,7 +710,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   //             }
   //           });
   //           break;
-          
+
   //         case 'tournament_status_update':
   //           // Broadcast tournament status changes
   //           wss.clients.forEach((client) => {
