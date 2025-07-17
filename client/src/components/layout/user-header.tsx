@@ -139,23 +139,24 @@ export default function UserHeader() {
   }, []);
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
       isScrolled 
         ? 'bg-white shadow-xl border-b border-gray-200 backdrop-blur-md' 
         : 'bg-white shadow-lg'
     }`}>
       {/* Top notification bar */}
-      <div className="bg-gradient-to-r from-fire-red via-fire-orange to-fire-blue text-white text-sm py-1 px-4">
+      <div className="bg-gradient-to-r from-fire-red via-fire-orange to-fire-blue text-white text-xs py-1 px-2 sm:px-4 overflow-hidden">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Flame className="w-3 h-3 animate-pulse" />
-            <span className="hidden sm:inline">🔥 FireFight Championship 2024 - Register Now!</span>
-            <span className="sm:hidden">🔥 Championship Live!</span>
+          <div className="flex items-center space-x-1 sm:space-x-2 min-w-0 flex-1">
+            <Flame className="w-3 h-3 animate-pulse flex-shrink-0" />
+            <span className="hidden sm:inline truncate">🔥 FireFight Championship 2024 - Register Now!</span>
+            <span className="sm:hidden truncate">🔥 Championship Live!</span>
           </div>
-          <div className="flex items-center space-x-4 text-xs">
-            <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-2 sm:space-x-4 text-xs flex-shrink-0">
+            <div className="hidden xs:flex items-center space-x-1">
               <Clock className="w-3 h-3" />
-              <span>{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+              <span className="hidden sm:inline">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+              <span className="sm:hidden">{currentTime.toLocaleTimeString('en-US', { hour12: false }).slice(0, 5)}</span>
             </div>
             <div className="flex items-center space-x-1">
               <Globe className="w-3 h-3" />
@@ -165,125 +166,124 @@ export default function UserHeader() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Enhanced Logo */}
+      <div className="w-full px-2 sm:px-4 lg:px-6 xl:px-8">
+        <div className="flex justify-between items-center h-14 sm:h-16 overflow-hidden">
+          {/* Enhanced Logo - Responsive */}
           <Link href="/">
-            <div className="flex items-center space-x-3 cursor-pointer group">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-r from-fire-red via-fire-orange to-fire-blue rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                  <span className="text-white font-bold text-xl">F</span>
+            <div className="flex items-center space-x-2 sm:space-x-3 cursor-pointer group min-w-0">
+              <div className="relative flex-shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-fire-red rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                  <span className="text-white font-bold text-lg sm:text-xl">F</span>
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-fire-green rounded-full animate-pulse flex items-center justify-center">
-                  <Bolt className="w-2 h-2 text-white" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-fire-green rounded-full animate-pulse flex items-center justify-center">
+                  <Bolt className="w-1.5 h-1.5 sm:w-2 sm:h-2 text-white" />
                 </div>
               </div>
-              <div className="hidden sm:block">
+              <div className="hidden sm:block min-w-0">
                 <div className="flex items-center space-x-2">
-                  <span className="text-2xl font-bold bg-gradient-to-r from-fire-red via-fire-orange to-fire-blue bg-clip-text text-transparent">
+                  <span className="text-xl sm:text-2xl font-bold text-fire-red truncate">
                     FireFight
                   </span>
-                  <Badge variant="outline" className="text-xs border-fire-blue text-fire-blue">
+                  <Badge variant="outline" className="text-xs border-fire-blue text-fire-blue flex-shrink-0">
                     Pro
                   </Badge>
                 </div>
                 <div className="text-xs text-gray-500 -mt-1 flex items-center space-x-1">
-                  <span>Esports Platform</span>
-                  <div className="w-1 h-1 bg-fire-green rounded-full animate-pulse"></div>
-                  <span className="text-fire-green">Online</span>
+                  <span className="truncate">Esports Platform</span>
+                  <div className="w-1 h-1 bg-fire-green rounded-full animate-pulse flex-shrink-0"></div>
+                  <span className="text-fire-green flex-shrink-0">Online</span>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* Enhanced Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          {/* Enhanced Desktop Navigation - Solid colors when selected */}
+          <nav className="hidden lg:flex items-center space-x-1 overflow-hidden">
             {navigation.map((item) => (
               <Link key={item.name} href={item.href}>
-                <div className={`relative px-3 py-2 rounded-xl transition-all duration-300 group ${
+                <div className={`relative px-2 xl:px-3 py-2 rounded-lg transition-all duration-300 group whitespace-nowrap ${
                   item.current
-                    ? "bg-gradient-to-r from-fire-red to-fire-blue text-white shadow-lg"
-                    : "text-gray-600 hover:text-fire-red hover:bg-gray-50"
+                    ? "bg-fire-red text-white shadow-lg"
+                    : "text-gray-600 hover:text-white hover:bg-fire-red/90"
                 }`}>
-                  <div className="flex items-center space-x-2">
-                    {item.icon}
-                    <span className="font-medium text-sm">{item.name}</span>
+                  <div className="flex items-center space-x-1.5 xl:space-x-2">
+                    <div className={`${item.current ? 'text-white' : 'text-current'}`}>
+                      {item.icon}
+                    </div>
+                    <span className="font-medium text-sm xl:text-base">{item.name}</span>
                     {item.badge && (
                       <Badge 
                         variant={item.isLive ? "destructive" : "secondary"} 
                         className={`text-xs px-1 py-0 h-4 ${
-                          item.isLive ? 'animate-pulse bg-red-500' : ''
+                          item.isLive ? 'animate-pulse bg-red-500 text-white' : 
+                          item.current ? 'bg-white text-fire-red' : 'bg-gray-100'
                         }`}
                       >
                         {item.badge}
                       </Badge>
                     )}
                   </div>
-                  {item.current && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-fire-red to-fire-blue rounded-xl opacity-20 animate-pulse"></div>
-                  )}
-                  {!item.current && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-fire-red transition-all duration-300 group-hover:w-full"></div>
-                  )}
                 </div>
               </Link>
             ))}
           </nav>
 
-          {/* Enhanced Right Side */}
-          <div className="flex items-center space-x-3">
-            {/* Quick Actions */}
-            <div className="hidden xl:flex items-center space-x-2">
-              {quickActions.map((action, index) => (
+          {/* Enhanced Right Side - Responsive */}
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 min-w-0 flex-shrink-0">
+            {/* Quick Actions - Only on larger screens */}
+            <div className="hidden 2xl:flex items-center space-x-1">
+              {quickActions.slice(0, 2).map((action, index) => (
                 <Button
                   key={index}
                   size="sm"
                   variant="ghost"
                   onClick={action.action}
-                  className={`${action.color} text-white hover:opacity-90 transition-all duration-300 hover:scale-105`}
+                  className={`${action.color} text-white hover:opacity-90 transition-all duration-300 hover:scale-105 px-2 py-1`}
                 >
                   {action.icon}
-                  <span className="hidden 2xl:inline ml-1 text-xs">{action.name}</span>
+                  <span className="ml-1 text-xs">{action.name}</span>
                 </Button>
               ))}
             </div>
 
-            {/* Advanced Search */}
-            <div className={`hidden md:block relative transition-all duration-300 ${
+            {/* Advanced Search - Enhanced Responsiveness */}
+            <div className={`hidden md:block relative transition-all duration-300 flex-1 max-w-xs lg:max-w-sm xl:max-w-md ${
               isSearchFocused ? 'scale-105' : 'scale-100'
             }`}>
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="Search tournaments, teams, players..."
+                  placeholder="Search tournaments..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  className={`pl-10 pr-10 py-2 w-64 transition-all duration-300 ${
+                  className={`pl-9 pr-16 py-2 w-full transition-all duration-300 ${
                     isSearchFocused 
-                      ? 'ring-2 ring-fire-red ring-opacity-50 border-fire-red w-80' 
+                      ? 'ring-2 ring-fire-red ring-opacity-50 border-fire-red' 
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 />
-                <Search className={`w-5 h-5 absolute left-3 top-2.5 transition-colors duration-300 ${
+                <Search className={`w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
                   isSearchFocused ? 'text-fire-red' : 'text-gray-400'
                 }`} />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-gray-100"
-                >
-                  <Filter className="w-3 h-3" />
-                </Button>
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-8 top-2.5 text-gray-400 hover:text-gray-600"
+                <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="text-gray-400 hover:text-gray-600 p-1"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0 hover:bg-gray-100"
                   >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
+                    <Filter className="w-3 h-3" />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -296,17 +296,16 @@ export default function UserHeader() {
               </div>
             </div>
 
-            {/* Enhanced Wallet Button */}
+            {/* Enhanced Wallet Button - Mobile Responsive */}
             <Link href="/wallet">
-              <Button className="bg-gradient-to-r from-fire-green to-green-600 hover:from-green-600 hover:to-fire-green text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
-                <div className="flex items-center space-x-2">
-                  <Wallet className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-                  <div className="flex flex-col items-start">
-                    <span className="hidden sm:block text-xs opacity-90">Balance</span>
-                    <span className="text-sm font-bold">₹{user?.walletBalance || "1000.00"}</span>
+              <Button className="bg-fire-green hover:bg-green-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group px-2 sm:px-4">
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <Wallet className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300 flex-shrink-0" />
+                  <div className="flex flex-col items-start min-w-0">
+                    <span className="hidden lg:block text-xs opacity-90">Balance</span>
+                    <span className="text-xs sm:text-sm font-bold truncate">₹{user?.walletBalance || "1000"}</span>
                   </div>
                 </div>
-                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 rounded-md transition-opacity duration-300"></div>
               </Button>
             </Link>
 
@@ -527,35 +526,38 @@ export default function UserHeader() {
                     ))}
                   </div>
 
-                  {/* Mobile Navigation */}
-                  <div className="space-y-2">
+                  {/* Mobile Navigation - Solid colors for selected */}
+                  <div className="space-y-2 overflow-y-auto">
                     <h3 className="font-semibold text-gray-700 text-sm uppercase tracking-wide">Navigation</h3>
                     {navigation.map((item) => (
                       <Link key={item.name} href={item.href}>
                         <div 
                           className={`flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
                             item.current
-                              ? "bg-gradient-to-r from-fire-red to-fire-blue text-white shadow-lg"
-                              : "hover:bg-gray-50 text-gray-700"
+                              ? "bg-fire-red text-white shadow-lg"
+                              : "hover:bg-fire-red/10 hover:text-fire-red text-gray-700"
                           }`}
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <div className="flex items-center space-x-3">
-                            {item.icon}
-                            <div>
-                              <div className="font-medium">{item.name}</div>
-                              <div className={`text-xs ${
+                          <div className="flex items-center space-x-3 min-w-0 flex-1">
+                            <div className={`${item.current ? 'text-white' : 'text-current'} flex-shrink-0`}>
+                              {item.icon}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium truncate">{item.name}</div>
+                              <div className={`text-xs truncate ${
                                 item.current ? 'text-white/80' : 'text-gray-500'
                               }`}>
-                                {item.description}
+                                {item.description || 'Navigate to ' + item.name}
                               </div>
                             </div>
                           </div>
                           {item.badge && (
                             <Badge 
                               variant={item.isLive ? "destructive" : "secondary"} 
-                              className={`text-xs ${
-                                item.isLive ? 'animate-pulse' : ''
+                              className={`text-xs flex-shrink-0 ${
+                                item.isLive ? 'animate-pulse bg-red-500 text-white' : 
+                                item.current ? 'bg-white text-fire-red' : 'bg-gray-100'
                               }`}
                             >
                               {item.badge}
