@@ -20,11 +20,11 @@ import {
 } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { 
-  Flame, Zap, Menu, X, Search,
+  Flame, Zap, Menu, X, Search, Wallet, Bell, ChevronDown, User, Settings,
   Gamepad2, Trophy, Users2, BarChart3, MessageSquare, 
   Star, Gift, Calendar, Home, TrendingUp, Award, Shield, 
   Headphones, Globe, Plus, Filter, Clock, Target, 
-  PlayCircle, Coins, Crown, Bolt
+  PlayCircle, Coins, Crown, Bolt, LogOut
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
