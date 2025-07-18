@@ -1106,69 +1106,73 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
             </div>
             
             {members.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {members.map((member) => {
                   const RoleIcon = getRoleIcon(member.role);
                   return (
                     <div
                       key={member.id}
-                      className="group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 hover:border-blue-300"
+                      className="group relative bg-gradient-to-br from-white to-gray-50 rounded-lg border border-gray-200 p-2 hover:shadow-md hover:shadow-blue-100 transition-all duration-300 hover:border-blue-300"
                     >
                       {/* Captain Crown Badge */}
                       {member.userId === team.captainId && (
-                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
-                          <Crown className="w-4 h-4 text-white" />
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+                          <Crown className="w-3 h-3 text-white" />
                         </div>
                       )}
 
-                      <div className="flex items-start space-x-4">
+                      <div className="flex flex-col items-center space-y-2">
                         {/* Avatar */}
                         <div className="relative">
-                          <Avatar className="w-14 h-14 border-2 border-white shadow-md">
+                          <Avatar className="w-10 h-10 border-2 border-white shadow-md">
                             <AvatarImage 
                               src={member.avatarUrl || undefined} 
                               alt={`${member.username || member.email} avatar`}
                             />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold text-xs">
                               {(member.username || member.email || 'U').charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           
                           {/* Role Icon Badge */}
-                          <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${getRoleColor(member.role)} flex items-center justify-center border-2 border-white shadow-sm`}>
-                            <RoleIcon className="w-3 h-3" />
+                          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${getRoleColor(member.role)} flex items-center justify-center border-2 border-white shadow-sm`}>
+                            <RoleIcon className="w-2 h-2" />
                           </div>
                         </div>
 
                         {/* Member Info */}
-                        <div className="flex-1 min-w-0">
-                          {/* Name and Role */}
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h4 className="font-semibold text-gray-900 truncate">
-                              {member.username || member.email}
-                            </h4>
-                          </div>
+                        <div className="flex-1 min-w-0 text-center">
+                          {/* Name */}
+                          <h4 className="font-semibold text-gray-900 truncate text-sm">
+                            {(member.username || member.email).length > 10 
+                              ? (member.username || member.email).substring(0, 10) + '...' 
+                              : (member.username || member.email)}
+                          </h4>
                           
                           {/* Role Badge */}
-                          <Badge className={`${getRoleColor(member.role)} text-xs mb-3 inline-flex items-center`}>
-                            <RoleIcon className="w-3 h-3 mr-1" />
+                          <Badge className={`${getRoleColor(member.role)} text-xs mt-1 inline-flex items-center`}>
+                            <RoleIcon className="w-2 h-2 mr-1" />
                             {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                           </Badge>
 
                           {/* Game ID */}
-                          <div className="space-y-1">
-                            <div className="flex items-center text-sm">
-                              <span className="text-gray-500 font-medium mr-2">Game ID:</span>
-                              <span className={`font-mono text-xs px-2 py-1 rounded ${member.gameId ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                                {member.gameId || "Not provided"}
-                              </span>
+                          <div className="mt-1">
+                            <div className="text-xs text-gray-500">
+                              <span className="font-medium">Game ID:</span>
                             </div>
+                            <span className={`font-mono text-xs px-1 py-0.5 rounded ${member.gameId ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                              {member.gameId || "Not provided"}
+                            </span>
                             
                             {/* Contact Info */}
                             {member.contactInfo && (
-                              <div className="flex items-center text-sm">
-                                <span className="text-gray-500 font-medium mr-2">Contact:</span>
-                                <span className="text-gray-700 font-mono text-xs">{member.contactInfo}</span>
+                              <div className="mt-1 text-xs">
+                                <span className="text-gray-500 font-medium">Contact:</span>
+                                <div className="text-gray-700 font-mono text-xs truncate">
+                                  {member.contactInfo.length > 12 
+                                    ? member.contactInfo.substring(0, 12) + '...' 
+                                    : member.contactInfo}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1176,7 +1180,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                       </div>
 
                       {/* Hover Effect Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   );
                 })}
