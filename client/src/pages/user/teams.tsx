@@ -146,10 +146,15 @@ export default function Teams() {
         title: "Success",
         description: "Player added successfully!",
       });
+      // Invalidate both teams list and specific team members
       queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
       queryClient.invalidateQueries({ queryKey: [`/api/teams/${selectedTeamId}/members`] });
+      // Also invalidate all team members queries to ensure all cards update
+      queryClient.invalidateQueries({ queryKey: ["/api/teams"], type: "all" });
+      
       setShowAddPlayerModal(false);
       resetPlayerForm();
+      setSelectedTeamId(null);
     },
     onError: (error: any) => {
       toast({
@@ -551,7 +556,11 @@ export default function Teams() {
                 onAddPlayer={(teamId) => {
                   setSelectedTeamId(teamId);
                   setShowAddPlayerModal(true);
-                }} 
+                }}
+                onPlayerAdded={() => {
+                  // This will be called after successfully adding a player
+                  queryClient.invalidateQueries({ queryKey: [`/api/teams/${team.id}/members`] });
+                }}
               />
             ))}
           </div>
@@ -691,16 +700,16 @@ export default function Teams() {
 }
 
 // Team Card Component
-function TeamCard({ team, onAddPlayer }: { team: Team; onAddPlayer: (teamId: number) => void }) {
+function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlayer: (teamId: number) => void; onPlayerAdded?: () => void }) {
   const { toast } = useToast();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
-  const { data: members = [] } = useQuery<TeamMember[]>({
+  const { data: members = [], refetch: refetchMembers } = useQuery<TeamMember[]>({
     queryKey: [`/api/teams/${team.id}/members`],
     enabled: !!team.id,
-    staleTime: 30000,
+    staleTime: 5000, // Reduce stale time for faster updates
     retry: 1,
   });
 
