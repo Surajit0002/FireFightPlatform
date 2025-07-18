@@ -1121,21 +1121,21 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
           </div>
 
           {/* Enhanced Team Members Section */}
-          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-2xl">
-            <div className="flex items-center justify-between mb-8">
+          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/20 shadow-xl">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-gray-800 via-blue-800 to-purple-800 bg-clip-text text-transparent">
                   Team Roster
                 </h3>
-                <p className="text-gray-600 mt-1">Elite members of {team.name}</p>
+                <p className="text-gray-600 text-sm">Elite members of {team.name}</p>
               </div>
-              <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 text-sm font-medium">
+              <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-1 text-xs font-medium">
                 {members.length} {members.length === 1 ? 'Member' : 'Members'}
               </Badge>
             </div>
             
             {members.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {members.map((member, index) => {
                   const RoleIcon = getRoleIcon(member.role);
                   const gradients = [
@@ -1151,80 +1151,82 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                   return (
                     <div
                       key={member.id}
-                      className="group relative bg-white rounded-2xl p-5 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 border border-gray-100 overflow-hidden"
+                      className="group relative bg-white rounded-xl p-3 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border border-gray-100 overflow-hidden"
                     >
                       {/* Background Pattern */}
-                      <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${gradient} opacity-5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500`}></div>
+                      <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${gradient} opacity-5 rounded-full -translate-y-8 translate-x-8 group-hover:scale-150 transition-transform duration-300`}></div>
                       
                       {/* Captain Crown Badge */}
                       {member.userId === team.captainId && (
-                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg z-20 animate-pulse">
-                          <Crown className="w-4 h-4 text-white" />
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 rounded-full flex items-center justify-center shadow-md z-20">
+                          <Crown className="w-2.5 h-2.5 text-white" />
                         </div>
                       )}
 
                       <div className="relative z-10">
                         {/* Avatar Section */}
-                        <div className="flex flex-col items-center mb-4">
+                        <div className="flex flex-col items-center mb-2">
                           <div className="relative">
-                            <Avatar className="w-16 h-16 border-4 border-white shadow-2xl ring-4 ring-gray-100">
+                            <Avatar className="w-10 h-10 border-2 border-white shadow-lg">
                               <AvatarImage 
                                 src={member.avatarUrl || undefined} 
                                 alt={`${member.username || member.email} avatar`}
                               />
-                              <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold text-lg`}>
+                              <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold text-sm`}>
                                 {(member.username || member.email || 'U').charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             
                             {/* Role Icon Badge */}
-                            <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full ${getRoleColor(member.role)} flex items-center justify-center border-4 border-white shadow-xl`}>
-                              <RoleIcon className="w-4 h-4 text-white" />
+                            <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full ${getRoleColor(member.role)} flex items-center justify-center border-2 border-white shadow-md`}>
+                              <RoleIcon className="w-2.5 h-2.5 text-white" />
                             </div>
                           </div>
 
                           {/* Member Name */}
-                          <h4 className="font-bold text-gray-900 text-center mt-3 text-lg">
-                            {(member.username || member.email).length > 12 
-                              ? (member.username || member.email).substring(0, 12) + '...' 
+                          <h4 className="font-semibold text-gray-900 text-center mt-2 text-xs">
+                            {(member.username || member.email).length > 8 
+                              ? (member.username || member.email).substring(0, 8) + '...' 
                               : (member.username || member.email)}
                           </h4>
                         </div>
 
                         {/* Role Badge */}
-                        <div className="text-center mb-4">
-                          <Badge className={`${getRoleColor(member.role)} text-white px-4 py-2 text-sm font-medium inline-flex items-center rounded-full shadow-lg`}>
-                            <RoleIcon className="w-4 h-4 mr-2" />
+                        <div className="text-center mb-2">
+                          <Badge className={`${getRoleColor(member.role)} text-white px-2 py-1 text-xs font-medium inline-flex items-center rounded-full shadow-sm`}>
+                            <RoleIcon className="w-2.5 h-2.5 mr-1" />
                             {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                           </Badge>
                         </div>
 
                         {/* Game ID Section */}
-                        <div className="bg-gray-50 rounded-xl p-4 mb-3">
+                        <div className="bg-gray-50 rounded-lg p-2 mb-2">
                           <div className="text-center">
                             <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">
                               Game ID
                             </div>
-                            <span className={`font-mono text-sm px-3 py-1 rounded-full font-medium ${
+                            <span className={`font-mono text-xs px-2 py-1 rounded-full font-medium ${
                               member.gameId 
-                                ? 'bg-gradient-to-r from-green-400 to-green-500 text-white shadow-md' 
+                                ? 'bg-gradient-to-r from-green-400 to-green-500 text-white shadow-sm' 
                                 : 'bg-gray-200 text-gray-500'
                             }`}>
-                              {member.gameId || "Not provided"}
+                              {member.gameId 
+                                ? (member.gameId.length > 10 ? member.gameId.substring(0, 10) + '...' : member.gameId)
+                                : "Not provided"}
                             </span>
                           </div>
                         </div>
                         
                         {/* Contact Info */}
                         {member.contactInfo && (
-                          <div className="bg-blue-50 rounded-xl p-3">
+                          <div className="bg-blue-50 rounded-lg p-2">
                             <div className="text-center">
                               <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">
                                 Contact
                               </div>
-                              <div className="text-blue-800 font-mono text-sm font-medium">
-                                {member.contactInfo.length > 15 
-                                  ? member.contactInfo.substring(0, 15) + '...' 
+                              <div className="text-blue-800 font-mono text-xs font-medium">
+                                {member.contactInfo.length > 10 
+                                  ? member.contactInfo.substring(0, 10) + '...' 
                                   : member.contactInfo}
                               </div>
                             </div>
@@ -1233,18 +1235,18 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                       </div>
 
                       {/* Hover Effect Overlay */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 rounded-2xl transition-all duration-500`}></div>
+                      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 rounded-xl transition-all duration-300`}></div>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl border-2 border-dashed border-gray-200">
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center">
-                  <Users className="w-12 h-12 text-gray-400" />
+              <div className="text-center py-8 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-200">
+                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center">
+                  <Users className="w-6 h-6 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-600 mb-3">No members in this team yet</h3>
-                <p className="text-gray-500 text-lg">Add players to build your championship squad</p>
+                <h3 className="text-sm font-bold text-gray-600 mb-2">No members in this team yet</h3>
+                <p className="text-gray-500 text-xs">Add players to build your championship squad</p>
               </div>
             )}
           </div>
