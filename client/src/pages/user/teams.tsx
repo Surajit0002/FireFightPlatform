@@ -1098,52 +1098,96 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
 
           {/* Team Members */}
           <div>
-            <Label className="text-lg font-semibold mb-4 block">Team Members ({members.length})</Label>
-            <div className="space-y-3">
-              {members.length > 0 ? (
-                members.map((member) => {
+            <div className="flex items-center justify-between mb-6">
+              <Label className="text-lg font-semibold text-gray-900">Team Members ({members.length})</Label>
+              <Badge variant="outline" className="text-xs px-3 py-1">
+                {members.length} {members.length === 1 ? 'Member' : 'Members'}
+              </Badge>
+            </div>
+            
+            {members.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {members.map((member) => {
                   const RoleIcon = getRoleIcon(member.role);
                   return (
                     <div
                       key={member.id}
-                      className="flex items-center space-x-4 p-4 bg-white rounded-lg border"
+                      className="group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 hover:border-blue-300"
                     >
-                      <Avatar className="w-12 h-12">
-                        <AvatarImage 
-                          src={member.avatarUrl || undefined} 
-                          alt={`${member.username || member.email} avatar`}
-                        />
-                        <AvatarFallback className="bg-blue-500 text-white">
-                          {(member.username || member.email || 'U').charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-medium">{member.username || member.email}</span>
-                          <Badge className={`${getRoleColor(member.role)} text-xs`}>
-                            <RoleIcon className="w-3 h-3 mr-1" />
-                            {member.role}
-                          </Badge>
-                          {member.userId === team.captainId && (
-                            <Crown className="w-4 h-4 text-yellow-500" />
-                          )}
+                      {/* Captain Crown Badge */}
+                      {member.userId === team.captainId && (
+                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+                          <Crown className="w-4 h-4 text-white" />
                         </div>
-                        <p className="text-sm text-gray-500">Game ID: {member.gameId || "Not provided"}</p>
-                        {member.contactInfo && (
-                          <p className="text-sm text-gray-500">Contact: {member.contactInfo}</p>
-                        )}
+                      )}
+
+                      <div className="flex items-start space-x-4">
+                        {/* Avatar */}
+                        <div className="relative">
+                          <Avatar className="w-14 h-14 border-2 border-white shadow-md">
+                            <AvatarImage 
+                              src={member.avatarUrl || undefined} 
+                              alt={`${member.username || member.email} avatar`}
+                            />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
+                              {(member.username || member.email || 'U').charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          
+                          {/* Role Icon Badge */}
+                          <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${getRoleColor(member.role)} flex items-center justify-center border-2 border-white shadow-sm`}>
+                            <RoleIcon className="w-3 h-3" />
+                          </div>
+                        </div>
+
+                        {/* Member Info */}
+                        <div className="flex-1 min-w-0">
+                          {/* Name and Role */}
+                          <div className="flex items-center space-x-2 mb-2">
+                            <h4 className="font-semibold text-gray-900 truncate">
+                              {member.username || member.email}
+                            </h4>
+                          </div>
+                          
+                          {/* Role Badge */}
+                          <Badge className={`${getRoleColor(member.role)} text-xs mb-3 inline-flex items-center`}>
+                            <RoleIcon className="w-3 h-3 mr-1" />
+                            {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                          </Badge>
+
+                          {/* Game ID */}
+                          <div className="space-y-1">
+                            <div className="flex items-center text-sm">
+                              <span className="text-gray-500 font-medium mr-2">Game ID:</span>
+                              <span className={`font-mono text-xs px-2 py-1 rounded ${member.gameId ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                                {member.gameId || "Not provided"}
+                              </span>
+                            </div>
+                            
+                            {/* Contact Info */}
+                            {member.contactInfo && (
+                              <div className="flex items-center text-sm">
+                                <span className="text-gray-500 font-medium mr-2">Contact:</span>
+                                <span className="text-gray-700 font-mono text-xs">{member.contactInfo}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
+
+                      {/* Hover Effect Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   );
-                })
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                  <p>No members in this team yet</p>
-                </div>
-              )}
-            </div>
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">No members in this team yet</h3>
+                <p className="text-gray-500">Add players to get started with your team</p>
+              </div>
+            )}
           </div>
 
           <div className="flex space-x-2 pt-4 border-t">
