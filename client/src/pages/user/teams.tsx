@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -86,19 +85,19 @@ const PLAYER_ROLES = {
 export default function Teams() {
   const { user } = useAuth();
   const { toast } = useToast();
-  
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
-  
+
   const [createForm, setCreateForm] = useState<CreateTeamForm>({
     name: "",
     code: "",
     logoUrl: "",
     players: []
   });
-  
+
   const [playerForm, setPlayerForm] = useState({
     username: "",
     email: "",
@@ -151,7 +150,7 @@ export default function Teams() {
       queryClient.invalidateQueries({ queryKey: [`/api/teams/${selectedTeamId}/members`] });
       // Also invalidate all team members queries to ensure all cards update
       queryClient.invalidateQueries({ queryKey: ["/api/teams"], type: "all" });
-      
+
       setShowAddPlayerModal(false);
       resetPlayerForm();
       setSelectedTeamId(null);
@@ -183,7 +182,7 @@ export default function Teams() {
         });
         return;
       }
-      
+
       // Convert to base64 for demo purposes
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -228,12 +227,12 @@ export default function Teams() {
       });
       return;
     }
-    
+
     const newPlayer = {
       id: editingPlayerId || Date.now().toString(),
       ...playerForm
     };
-    
+
     if (editingPlayerId) {
       setCreateForm(prev => ({
         ...prev,
@@ -245,7 +244,7 @@ export default function Teams() {
         players: [...prev.players, newPlayer]
       }));
     }
-    
+
     resetPlayerForm();
   };
 
@@ -300,11 +299,11 @@ export default function Teams() {
       });
       return;
     }
-    
+
     if (!createForm.code) {
       generateTeamCode();
     }
-    
+
     createTeamMutation.mutate(createForm);
   };
 
@@ -381,7 +380,7 @@ export default function Teams() {
                   Create a new team and add players to it.
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="space-y-6">
                 {/* Team Logo and Basic Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -423,7 +422,7 @@ export default function Teams() {
                         onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="teamCode">Team Code</Label>
                       <div className="flex space-x-2">
@@ -475,7 +474,7 @@ export default function Teams() {
                                 {player.username.charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
-                            
+
                             <div className="flex-1">
                               <div className="flex items-center space-x-2">
                                 <span className="font-medium">{player.username}</span>
@@ -486,7 +485,7 @@ export default function Teams() {
                               </div>
                               <p className="text-sm text-gray-500">{player.gameId}</p>
                             </div>
-                            
+
                             <div className="flex space-x-1">
                               <Button
                                 size="sm"
@@ -583,7 +582,7 @@ export default function Teams() {
                 {editingPlayerId ? "Edit player details" : "Add a new player to the team"}
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               {/* Player Avatar */}
               <div className="flex justify-center">
@@ -630,7 +629,7 @@ export default function Teams() {
                       onChange={(e) => setPlayerForm(prev => ({ ...prev, gameId: e.target.value }))}
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="playerRole">Player Role</Label>
                     <Select value={playerForm.role} onValueChange={(value) => setPlayerForm(prev => ({ ...prev, role: value }))}>
@@ -662,7 +661,7 @@ export default function Teams() {
                       onChange={(e) => setPlayerForm(prev => ({ ...prev, email: e.target.value }))}
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="playerPhone">Player Phone</Label>
                     <Input
@@ -705,7 +704,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  
+
   const { data: members = [], refetch: refetchMembers } = useQuery<TeamMember[]>({
     queryKey: [`/api/teams/${team.id}/members`],
     enabled: !!team.id,
@@ -799,7 +798,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
         });
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setEditForm(prev => ({ ...prev, logoUrl: reader.result as string }));
@@ -846,7 +845,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                 </div>
               </div>
             </div>
-            
+
             {/* Three Dot Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -874,7 +873,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
             </DropdownMenu>
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           {/* Team Stats */}
           <div className="grid grid-cols-4 gap-2">
@@ -885,7 +884,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
               <p className="text-sm font-semibold text-gray-900">{members.length}</p>
               <p className="text-xs text-gray-500">Members</p>
             </div>
-            
+
             <div className="text-center p-2 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-center mb-1">
                 <DollarSign className="w-4 h-4 text-green-600" />
@@ -893,7 +892,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
               <p className="text-sm font-semibold text-gray-900">₹{team.totalEarnings}</p>
               <p className="text-xs text-gray-500">Earnings</p>
             </div>
-            
+
             <div className="text-center p-2 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-center mb-1">
                 <Gamepad2 className="w-4 h-4 text-purple-600" />
@@ -901,7 +900,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
               <p className="text-sm font-semibold text-gray-900">{team.matchesPlayed}</p>
               <p className="text-xs text-gray-500">Matches</p>
             </div>
-            
+
             <div className="text-center p-2 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-center mb-1">
                 <Trophy className="w-4 h-4 text-yellow-600" />
@@ -925,7 +924,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                 Add
               </Button>
             </div>
-            
+
             <div className="flex flex-wrap gap-2">
               {members.length > 0 ? (
                 members.map((member) => {
@@ -972,7 +971,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
             Update your team information
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           {/* Logo Upload */}
           <div className="flex justify-center">
@@ -1008,7 +1007,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                 onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
               />
             </div>
-            
+
             <div>
               <Label htmlFor="editTeamCode">Team Code</Label>
               <Input
@@ -1060,7 +1059,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
             </div>
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* Team Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1071,7 +1070,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
               <p className="text-lg font-semibold text-gray-900">{members.length}</p>
               <p className="text-sm text-gray-500">Members</p>
             </div>
-            
+
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-center mb-2">
                 <DollarSign className="w-5 h-5 text-green-600" />
@@ -1079,7 +1078,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
               <p className="text-lg font-semibold text-gray-900">₹{team.totalEarnings}</p>
               <p className="text-sm text-gray-500">Earnings</p>
             </div>
-            
+
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-center mb-2">
                 <Gamepad2 className="w-5 h-5 text-purple-600" />
@@ -1087,7 +1086,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
               <p className="text-lg font-semibold text-gray-900">{team.matchesPlayed}</p>
               <p className="text-sm text-gray-500">Matches</p>
             </div>
-            
+
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-center mb-2">
                 <Trophy className="w-5 h-5 text-yellow-600" />
@@ -1110,12 +1109,15 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                       className="flex items-center space-x-4 p-4 bg-white rounded-lg border"
                     >
                       <Avatar className="w-12 h-12">
-                        <AvatarImage src={member.avatarUrl || undefined} />
-                        <AvatarFallback>
-                          {member.username?.charAt(0)?.toUpperCase() || member.email.charAt(0).toUpperCase()}
+                        <AvatarImage 
+                          src={member.avatarUrl || undefined} 
+                          alt={`${member.username || member.email} avatar`}
+                        />
+                        <AvatarFallback className="bg-blue-500 text-white">
+                          {(member.username || member.email || 'U').charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      
+
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           <span className="font-medium">{member.username || member.email}</span>
@@ -1176,7 +1178,7 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
             Are you sure you want to delete "{team.name}"? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="flex space-x-2 pt-4">
           <Button
             variant="outline"
