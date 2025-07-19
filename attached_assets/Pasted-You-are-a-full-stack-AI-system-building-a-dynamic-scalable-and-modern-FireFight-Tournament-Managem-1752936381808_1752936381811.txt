@@ -1,0 +1,161 @@
+You are a full-stack AI system building a dynamic, scalable, and modern FireFight Tournament Management Platform for esports and gaming competitions. Use solid UI color palettes (no transparent backgrounds), PostgreSQL for data, and professional-grade front-end with dynamic backend logic.
+
+🔧 Tech Stack:
+- React + TailwindCSS + Shadcn/UI
+- Framer Motion (smooth animations)
+- Lucide Icons
+- PostgreSQL (schema-defined)
+- Node.js + Express (or Next.js App Router API)
+- File uploads (image posters) with Multer or Firebase
+- Admin-only protected routes with JWT or session
+
+---
+
+🎯 GOAL:
+Develop a complete tournament lifecycle system:
+➤ Create tournaments  
+➤ Edit/update/delete tournaments  
+➤ Manage matches, players, teams  
+➤ Auto prize pool logic  
+➤ Dynamic leaderboard  
+➤ Poster uploads  
+➤ Smart filters, modals, grid views  
+
+---
+
+🧱 DATABASE DESIGN (PostgreSQL):
+Tables:
+- tournaments
+- participants
+- teams
+- players
+- matches
+- admins
+- prize_distributions
+- audit_logs
+- media_uploads
+
+Schema must support:
+- Game info
+- Poster image upload
+- Prize pool logic (entry fee × participants)
+- Tournament visibility (Public/Private)
+- Bracket management (knockout / round robin)
+- Player stats (kills, win points, disqualified)
+- Full timestamp tracking
+- Prize breakdown (JSONB)
+
+---
+
+🖥️ FRONTEND FUNCTIONALITY:
+
+✅ Dashboard
+- Summary: Total tournaments, matches, teams, earnings
+- Grid View of tournaments
+- Filters: Game, Date, Status, Entry type
+
+✅ Tournament Card (Grid)
+- Game Icon
+- Tournament Name
+- Entry Fee / Prize Pool
+- Status Badge (Live, Upcoming, Completed)
+- Actions: View, Edit, Delete, Manage
+
+✅ Create/Edit Tournament Modal (4-step wizard)
+- Step 1: Basic Info (name, poster, game, platform, type)
+- Step 2: Schedule (start/end dates, reg windows, time zone)
+- Step 3: Entry & Rewards (entry fee, prize pool, kill points, win points)
+- Step 4: Settings (visibility, stream link, discord, guest toggle)
+- Upload poster image (drag-drop)
+- Validate all fields
+- Auto-calculate prize pool
+- Preview mode before submit
+
+✅ Tournament Details Page
+- Large banner header with poster
+- Tabs:
+  - Overview
+  - Participants (filter, sort, disqualify)
+  - Matches (create, update, score entry)
+  - Prize Distribution (auto or custom)
+  - Settings (edit, archive)
+- Leaderboard auto-updates
+
+✅ Match Management
+- Bracket generation (manual/auto)
+- Match status: Upcoming / Live / Completed
+- Real-time updates (optional socket.io)
+- Assign lobby ID, result entry
+- Auto-calculate leaderboard
+
+✅ Participants & Teams
+- View team with players
+- Filter by status (checked-in / DQ’d / confirmed)
+- Actions: Edit team, message team, disqualify
+
+✅ Prize Distribution Logic
+- Fixed or dynamic pool
+- JSONB prize breakdown
+- Auto split based on rank
+- Export results as CSV
+
+---
+
+🔐 Admin Tools:
+- Tournament action audit log
+- Admin role-based permissions
+- Revert match result option
+- Set tournament live/completed manually
+- Ban players or teams (with reason)
+- Leaderboard reset
+
+---
+
+📁 Media Uploads:
+- Posters stored in cloud with download URLs
+- Attach YouTube/Twitch/Vimeo match replays
+- Upload lobby screenshots
+- Optional: AWS S3 or Firebase storage support
+
+---
+
+📦 API ENDPOINTS:
+- POST /api/tournaments ➝ Create tournament
+- PUT /api/tournaments/:id ➝ Update tournament
+- DELETE /api/tournaments/:id ➝ Delete
+- GET /api/tournaments ➝ List all tournaments
+- GET /api/tournaments/:id ➝ Full tournament data
+- POST /api/teams ➝ Join/register team
+- POST /api/matches ➝ Add new match
+- PUT /api/matches/:id ➝ Update match score/result
+- GET /api/leaderboard/:id ➝ Get leaderboard by tournament
+
+---
+
+🎨 UI DESIGN RULES:
+- Solid dark backgrounds (slate-900, slate-800)
+- Primary = Red-600, Accent = Orange-500
+- Typography = Inter or Poppins, white text
+- Buttons = pill style, icon-left
+- Grid-based layout: 3 to 5 cards per row
+- No transparency, use depth via shadows + layering
+- All modals = shadcn/ui + smooth animations
+
+---
+
+🧠 SMART FEATURES:
+- Auto prize pool calculator
+- Bracket seeding based on past player performance
+- Leaderboard auto-refresh
+- Discord/Telegram Webhook broadcasting
+- Check-in reminders via email/WhatsApp
+- Export data (CSV, PDF)
+- Auto-disqualify if team is inactive after reg close
+
+---
+
+🚀 GOAL:
+Make this tournament system 100% production-ready, clean, responsive, and easy to scale. Use best UI/UX principles, smart automation, and secure backend logic to give admins full control.
+
+Build it like a modern pro-level esports tournament panel used by Free Fire, PUBG, Valorant, and CODM events.
+

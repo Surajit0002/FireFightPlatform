@@ -126,34 +126,57 @@ export const verificationTokens = pgTable("verification_tokens", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const gameEnum = pgEnum("game", ["free_fire", "bgmi", "valorant", "csgo", "pubg"]);
-export const tournamentStatusEnum = pgEnum("tournament_status", ["upcoming", "live", "completed", "cancelled"]);
-export const matchStatusEnum = pgEnum("match_status", ["pending", "live", "completed", "cancelled"]);
-export const transactionTypeEnum = pgEnum("transaction_type", ["deposit", "withdrawal", "prize", "entry_fee", "refund"]);
-export const transactionStatusEnum = pgEnum("transaction_status", ["pending", "completed", "failed", "cancelled"]);
+export const gameEnum = pgEnum("game", ["free_fire", "bgmi", "valorant", "csgo", "pubg", "codm", "apex_legends"]);
+export const tournamentStatusEnum = pgEnum("tournament_status", ["draft", "upcoming", "live", "completed", "cancelled", "archived"]);
+export const matchStatusEnum = pgEnum("match_status", ["pending", "live", "completed", "cancelled", "disputed"]);
+export const transactionTypeEnum = pgEnum("transaction_type", ["deposit", "withdrawal", "prize", "entry_fee", "refund", "penalty", "bonus"]);
+export const transactionStatusEnum = pgEnum("transaction_status", ["pending", "completed", "failed", "cancelled", "processing"]);
+export const tournamentTypeEnum = pgEnum("tournament_type", ["public", "private", "invite_only", "premium"]);
+export const bracketTypeEnum = pgEnum("bracket_type", ["single_elimination", "double_elimination", "round_robin", "swiss", "custom"]);
+export const participantStatusEnum = pgEnum("participant_status", ["registered", "checked_in", "confirmed", "disqualified", "withdrawn", "banned"]);
 
 export const tournaments = pgTable("tournaments", {
   id: serial("id").primaryKey(),
   title: varchar("title").notNull(),
   description: text("description"),
   game: gameEnum("game").notNull(),
+  platform: varchar("platform").default("mobile"), // mobile, pc, console
   prizePool: decimal("prize_pool", { precision: 10, scale: 2 }).notNull(),
   entryFee: decimal("entry_fee", { precision: 10, scale: 2 }).notNull(),
   maxSlots: integer("max_slots").notNull(),
   currentSlots: integer("current_slots").default(0),
   format: varchar("format").notNull(), // solo, duo, squad
   teamSize: integer("team_size").default(1),
-  status: tournamentStatusEnum("status").default("upcoming"),
+  status: tournamentStatusEnum("status").default("draft"),
+  type: tournamentTypeEnum("type").default("public"),
+  bracketType: bracketTypeEnum("bracket_type").default("single_elimination"),
   startTime: timestamp("start_time").notNull(),
   endTime: timestamp("end_time"),
+  registrationStart: timestamp("registration_start").defaultNow(),
+  registrationEnd: timestamp("registration_end").notNull(),
+  checkInStart: timestamp("check_in_start"),
+  checkInEnd: timestamp("check_in_end"),
   roomId: varchar("room_id"),
   roomPassword: varchar("room_password"),
+  streamUrl: varchar("stream_url"), // Twitch/YouTube stream
+  discordUrl: varchar("discord_url"),
   rules: text("rules"),
   mapInfo: varchar("map_info"),
-  posterUrl: varchar("poster_url"), // Tournament poster image URL
+  posterUrl: varchar("poster_url"),
+  bannerUrl: varchar("banner_url"), // Large banner for details page
+  killPoints: integer("kill_points").default(1), // Points per kill
+  winPoints: integer("win_points").default(10), // Points for winning
+  placementPoints: jsonb("placement_points").default('{}'), // Points by rank placement
+  prizeDistribution: jsonb("prize_distribution").default('{}'), // Custom prize breakdown
+  settings: jsonb("settings").default('{}'), // Additional tournament settings
   isVerified: boolean("is_verified").default(false),
   isFeatured: boolean("is_featured").default(false),
+  allowGuests: boolean("allow_guests").default(false),
+  autoStart: boolean("auto_start").default(true),
+  maxTeamsPerUser: integer("max_teams_per_user").default(1),
+  timezone: varchar("timezone").default("UTC"),
   createdBy: varchar("created_by").references(() => users.id),
+  updatedBy: varchar("updated_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -189,19 +212,27 @@ export const tournamentParticipants = pgTable("tournament_participants", {
   userId: varchar("user_id").references(() => users.id),
   teamId: integer("team_id").references(() => teams.id),
   rank: integer("rank"),
+  finalRank: integer("final_rank"), // Final tournament position
   kills: integer("kills").default(0),
   points: integer("points").default(0),
+  placementPoints: integer("placement_points").default(0),
+  totalPoints: integer("total_points").default(0), // kills + placement + bonus
   prizeWon: decimal("prize_won", { precision: 10, scale: 2 }).default("0.00"),
-  status: varchar("status").default("registered"), // registered, disqualified, winner
-  screenshotUrl: varchar("screenshot_url"),
+  status: participantStatusEnum("status").default("registered"),
+  checkInTime: timestamp("check_in_time"),
+  screenshotUrls: text("screenshot_urls").array(), // Multiple screenshots
   submittedAt: timestamp("submitted_at"),
   verifiedAt: timestamp("verified_at"),
+  disqualifiedReason: text("disqualified_reason"),
+  disqualifiedBy: varchar("disqualified_by").references(() => users.id),
   joinedAt: timestamp("joined_at").defaultNow(),
 });
 
 export const matches = pgTable("matches", {
   id: serial("id").primaryKey(),
   tournamentId: integer("tournament_id").references(() => tournaments.id).notNull(),
+  bracketRound: integer("bracket_round").default(1),
+  matchNumber: integer("match_number"),
   status: matchStatusEnum("status").default("pending"),
   startTime: timestamp("start_time").notNull(),
   endTime: timestamp("end_time"),
@@ -209,7 +240,84 @@ export const matches = pgTable("matches", {
   winnerTeamId: integer("winner_team_id").references(() => teams.id),
   roomId: varchar("room_id"),
   roomPassword: varchar("room_password"),
+  lobbyId: varchar("lobby_id"),
   mapInfo: varchar("map_info"),
+  resultScreenshots: text("result_screenshots").array(),
+  streamUrl: varchar("stream_url"),
+  replayUrl: varchar("replay_url"),
+  notes: text("notes"),
+  participantIds: jsonb("participant_ids").default('[]'), // Array of participant IDs
+  matchResults: jsonb("match_results").default('{}'), // Detailed match results
+  isDisputed: boolean("is_disputed").default(false),
+  disputeReason: text("dispute_reason"),
+  disputedBy: varchar("disputed_by").references(() => users.id),
+  disputeResolvedBy: varchar("dispute_resolved_by").references(() => users.id),
+  disputeResolvedAt: timestamp("dispute_resolved_at"),
+  createdBy: varchar("created_by").references(() => users.id),
+  updatedBy: varchar("updated_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Prize Distribution System
+export const prizeDistributions = pgTable("prize_distributions", {
+  id: serial("id").primaryKey(),
+  tournamentId: integer("tournament_id").references(() => tournaments.id).notNull(),
+  rank: integer("rank").notNull(),
+  prizeAmount: decimal("prize_amount", { precision: 10, scale: 2 }).notNull(),
+  prizeType: varchar("prize_type").default("cash"), // cash, item, credits
+  prizeDescription: text("prize_description"),
+  isDisbursed: boolean("is_disbursed").default(false),
+  disbursedAt: timestamp("disbursed_at"),
+  disbursedBy: varchar("disbursed_by").references(() => users.id),
+  recipientId: varchar("recipient_id").references(() => users.id),
+  recipientTeamId: integer("recipient_team_id").references(() => teams.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Audit Logs for Admin Actions
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  action: varchar("action").notNull(), // created, updated, deleted, banned, etc.
+  entityType: varchar("entity_type").notNull(), // tournament, match, user, team
+  entityId: varchar("entity_id").notNull(),
+  oldValues: jsonb("old_values"),
+  newValues: jsonb("new_values"),
+  reason: text("reason"),
+  ipAddress: varchar("ip_address"),
+  userAgent: varchar("user_agent"),
+  metadata: jsonb("metadata").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Media Uploads (Posters, Screenshots, etc.)
+export const mediaUploads = pgTable("media_uploads", {
+  id: serial("id").primaryKey(),
+  filename: varchar("filename").notNull(),
+  originalName: varchar("original_name").notNull(),
+  mimeType: varchar("mime_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  url: varchar("url").notNull(),
+  thumbnailUrl: varchar("thumbnail_url"),
+  entityType: varchar("entity_type"), // tournament, match, user, team
+  entityId: varchar("entity_id"),
+  uploadedBy: varchar("uploaded_by").references(() => users.id).notNull(),
+  isPublic: boolean("is_public").default(true),
+  metadata: jsonb("metadata").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Tournament Templates for Quick Creation
+export const tournamentTemplates = pgTable("tournament_templates", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  game: gameEnum("game").notNull(),
+  settings: jsonb("settings").notNull(), // Template configuration
+  isDefault: boolean("is_default").default(false),
+  isActive: boolean("is_active").default(true),
+  createdBy: varchar("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -383,6 +491,34 @@ export const insertVerificationTokenSchema = createInsertSchema(verificationToke
   createdAt: true,
 });
 
+// New table insert schemas
+export const insertMatchSchema = createInsertSchema(matches).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPrizeDistributionSchema = createInsertSchema(prizeDistributions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertMediaUploadSchema = createInsertSchema(mediaUploads).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTournamentTemplateSchema = createInsertSchema(tournamentTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -396,12 +532,23 @@ export type Team = typeof teams.$inferSelect;
 export type TeamMember = typeof teamMembers.$inferSelect;
 export type TournamentParticipant = typeof tournamentParticipants.$inferSelect;
 export type Match = typeof matches.$inferSelect;
+export type PrizeDistribution = typeof prizeDistributions.$inferSelect;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type MediaUpload = typeof mediaUploads.$inferSelect;
+export type TournamentTemplate = typeof tournamentTemplates.$inferSelect;
 export type Transaction = typeof transactions.$inferSelect;
 export type Announcement = typeof announcements.$inferSelect;
 export type SupportTicket = typeof supportTickets.$inferSelect;
 export type KycDocument = typeof kycDocuments.$inferSelect;
+
+// Insert types
 export type InsertTournament = z.infer<typeof insertTournamentSchema>;
 export type InsertTeam = z.infer<typeof insertTeamSchema>;
+export type InsertMatch = z.infer<typeof insertMatchSchema>;
+export type InsertPrizeDistribution = z.infer<typeof insertPrizeDistributionSchema>;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type InsertMediaUpload = z.infer<typeof insertMediaUploadSchema>;
+export type InsertTournamentTemplate = z.infer<typeof insertTournamentTemplateSchema>;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
 export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
