@@ -286,10 +286,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/tournaments', isAuthenticated, async (req: any, res) => {
     try {
+      const {
+        startTime,
+        endTime,
+        regOpenTime,
+        regCloseTime,
+        checkInTime,
+        registrationEnd,
+        ...otherFields
+      } = req.body;
+
       const tournamentData = insertTournamentSchema.parse({
-        ...req.body,
+        ...otherFields,
+        startTime: startTime ? new Date(startTime) : new Date(),
+        endTime: endTime ? new Date(endTime) : null,
+        registrationStart: regOpenTime ? new Date(regOpenTime) : new Date(),
+        registrationEnd: registrationEnd ? new Date(registrationEnd) : new Date(new Date(startTime || Date.now()).getTime() - 30 * 60 * 1000),
+        checkInStart: checkInTime ? new Date(checkInTime) : null,
+        checkInEnd: checkInTime ? new Date(new Date(checkInTime).getTime() + 30 * 60 * 1000) : null,
         createdBy: req.user.claims.sub
       });
+      
       const tournament = await storage.createTournament(tournamentData);
       res.json(tournament);
     } catch (error) {

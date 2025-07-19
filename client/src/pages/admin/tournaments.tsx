@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "@/components/layout/admin-layout";
 import { Button } from "@/components/ui/button";
@@ -82,6 +81,9 @@ export default function AdminTournaments() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [gameFilter, setGameFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: tournaments = [] } = useQuery<Tournament[]>({
     queryKey: ["/api/tournaments"],
@@ -153,38 +155,75 @@ export default function AdminTournaments() {
     },
   });
 
-  const onSubmit = (data: any) => {
-    const tournamentData = {
-      ...data,
-      prizePool: data.prizePool?.toString() || "0",
-      entryFee: data.entryFee?.toString() || "0",
-      maxSlots: parseInt(data.maxSlots) || 0,
-      teamSize: parseInt(data.teamSize) || 1,
-      minSlots: parseInt(data.minSlots) || 1,
-      startTime: new Date(data.startTime),
-      endTime: data.endTime ? new Date(data.endTime) : new Date(new Date(data.startTime).getTime() + 4 * 60 * 60 * 1000),
-      regOpenTime: data.regOpenTime ? new Date(data.regOpenTime) : new Date(),
-      regCloseTime: data.regCloseTime ? new Date(data.regCloseTime) : new Date(new Date(data.startTime).getTime() - 30 * 60 * 1000),
-      slug: data.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-      gameCategory: data.gameCategory || 'battle_royale',
-      platform: data.platform || 'mobile',
-      entryMode: data.entryMode || 'free',
-      prizePoolType: data.prizePoolType || 'fixed',
-      checkInRequired: data.checkInRequired || false,
-      checkInTime: data.checkInTime ? new Date(data.checkInTime) : null,
-      isPublic: data.isPublic !== false,
-      spectatorUrl: data.spectatorUrl || '',
-      prizeBreakdown: data.prizeBreakdown ? JSON.parse(data.prizeBreakdown) : {
-        first: Math.floor(parseFloat(data.prizePool || "0") * 0.5),
-        second: Math.floor(parseFloat(data.prizePool || "0") * 0.3),
-        third: Math.floor(parseFloat(data.prizePool || "0") * 0.2)
-      }
-    };
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    if (selectedTournament) {
-      updateTournamentMutation.mutate({ id: selectedTournament.id, data: tournamentData });
-    } else {
-      createTournamentMutation.mutate(tournamentData);
+  const removeImage = () => {
+    setUploadedImage(null);
+    setImagePreview("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      let posterUrl = data.posterUrl || "";
+
+      // Handle image upload if a file was selected
+      if (uploadedImage) {
+        const formData = new FormData();
+        formData.append('image', uploadedImage);
+
+        // In a real application, you would upload to a file storage service
+        // For now, we'll create a mock URL
+        posterUrl = `https://example.com/uploads/${uploadedImage.name}`;
+      }
+
+      const tournamentData = {
+        title: data.title,
+        description: data.description,
+        game: data.game,
+        prizePool: data.prizePool?.toString() || "0",
+        entryFee: data.entryFee?.toString() || "0",
+        maxSlots: parseInt(data.maxSlots) || 0,
+        teamSize: parseInt(data.teamSize) || 1,
+        format: data.format,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        regOpenTime: data.regOpenTime,
+        regCloseTime: data.regCloseTime,
+        checkInTime: data.checkInTime,
+        registrationEnd: data.regCloseTime || new Date(new Date(data.startTime).getTime() - 30 * 60 * 1000).toISOString(),
+        rules: data.rules,
+        mapInfo: data.mapInfo,
+        streamUrl: data.spectatorUrl,
+        posterUrl: posterUrl,
+        isFeatured: data.isFeatured || false,
+        isVerified: data.isVerified || false,
+        allowGuests: data.isPublic !== false,
+      };
+
+      if (selectedTournament) {
+        updateTournamentMutation.mutate({ id: selectedTournament.id, data: tournamentData });
+      } else {
+        createTournamentMutation.mutate(tournamentData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process tournament data",
+        variant: "destructive",
+      });
     }
   };
 
@@ -257,7 +296,7 @@ export default function AdminTournaments() {
               />
               {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
             </div>
-            
+
             <div>
               <Label htmlFor="slug">URL Slug (Auto-generated)</Label>
               <Input
@@ -347,7 +386,7 @@ export default function AdminTournaments() {
               </Select>
               {errors.format && <p className="text-sm text-red-600 mt-1">{errors.format.message}</p>}
             </div>
-            
+
             <div>
               <Label htmlFor="teamSize">Team Size *</Label>
               <Input
@@ -406,7 +445,7 @@ export default function AdminTournaments() {
                   new Date(selectedTournament.regOpenTime).toISOString().slice(0, 16) : ""}
               />
             </div>
-            
+
             <div>
               <Label htmlFor="regCloseTime">Registration Closes</Label>
               <Input
@@ -431,7 +470,7 @@ export default function AdminTournaments() {
               />
               {errors.startTime && <p className="text-sm text-red-600 mt-1">{errors.startTime.message}</p>}
             </div>
-            
+
             <div>
               <Label htmlFor="endTime">Expected End Time</Label>
               <Input
@@ -456,7 +495,7 @@ export default function AdminTournaments() {
               />
               {errors.minSlots && <p className="text-sm text-red-600 mt-1">{errors.minSlots.message}</p>}
             </div>
-            
+
             <div>
               <Label htmlFor="maxSlots">Max Participants *</Label>
               <Input
@@ -490,7 +529,7 @@ export default function AdminTournaments() {
               />
               <Label htmlFor="checkInRequired">Require Check-in</Label>
             </div>
-            
+
             {watch("checkInRequired") && (
               <div>
                 <Label htmlFor="checkInTime">Check-in Time</Label>
@@ -527,7 +566,7 @@ export default function AdminTournaments() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label htmlFor="entryFee">Entry Fee (₹)</Label>
               <Input
@@ -640,7 +679,7 @@ export default function AdminTournaments() {
               />
               <Label htmlFor="isPublic">🌍 Public Tournament</Label>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -650,7 +689,7 @@ export default function AdminTournaments() {
               />
               <Label htmlFor="isFeatured">⭐ Featured</Label>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -749,7 +788,7 @@ export default function AdminTournaments() {
           </Button>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {tournament.posterUrl && (
           <div className="relative rounded-lg overflow-hidden">
@@ -763,7 +802,7 @@ export default function AdminTournaments() {
             />
           </div>
         )}
-        
+
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center justify-between">
             <span className="text-gray-500 flex items-center">
@@ -772,7 +811,7 @@ export default function AdminTournaments() {
             </span>
             <span className="font-bold text-fire-green">₹{tournament.prizePool}</span>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <span className="text-gray-500 flex items-center">
               <DollarSign className="w-4 h-4 mr-1" />
@@ -782,7 +821,7 @@ export default function AdminTournaments() {
               {tournament.entryFee === "0" ? "FREE" : `₹${tournament.entryFee}`}
             </span>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <span className="text-gray-500 flex items-center">
               <Users className="w-4 h-4 mr-1" />
@@ -790,7 +829,7 @@ export default function AdminTournaments() {
             </span>
             <span className="font-bold">{tournament.currentSlots}/{tournament.maxSlots}</span>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <span className="text-gray-500 flex items-center">
               <Target className="w-4 h-4 mr-1" />
@@ -799,7 +838,7 @@ export default function AdminTournaments() {
             <span className="font-bold capitalize">{tournament.format}</span>
           </div>
         </div>
-        
+
         <div className="bg-gray-50 rounded-lg p-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600 flex items-center">
@@ -812,7 +851,7 @@ export default function AdminTournaments() {
             </span>
           </div>
         </div>
-        
+
         <div className="flex space-x-2">
           <Button
             size="sm"
@@ -858,7 +897,7 @@ export default function AdminTournaments() {
             Comprehensive tournament information and management
           </DialogDescription>
         </DialogHeader>
-        
+
         {selectedTournament && (
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
@@ -867,7 +906,7 @@ export default function AdminTournaments() {
               <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="overview" className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
@@ -898,7 +937,7 @@ export default function AdminTournaments() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
@@ -926,7 +965,7 @@ export default function AdminTournaments() {
                   </CardContent>
                 </Card>
               </div>
-              
+
               <Card>
                 <CardHeader>
                   <CardTitle>Description</CardTitle>
@@ -935,7 +974,7 @@ export default function AdminTournaments() {
                   <p className="text-gray-700">{selectedTournament.description || "No description provided"}</p>
                 </CardContent>
               </Card>
-              
+
               <div className="flex space-x-2">
                 <Button
                   onClick={() => changeStatus(selectedTournament, "live")}
@@ -969,7 +1008,7 @@ export default function AdminTournaments() {
                 </Button>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="participants">
               <Card>
                 <CardHeader>
@@ -983,7 +1022,7 @@ export default function AdminTournaments() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="settings">
               <Card>
                 <CardHeader>
@@ -1007,7 +1046,7 @@ export default function AdminTournaments() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="analytics">
               <Card>
                 <CardHeader>
@@ -1078,7 +1117,7 @@ export default function AdminTournaments() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gradient-to-r from-fire-red to-red-600 text-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -1090,7 +1129,7 @@ export default function AdminTournaments() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gradient-to-r from-fire-green to-green-600 text-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -1102,7 +1141,7 @@ export default function AdminTournaments() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -1130,7 +1169,7 @@ export default function AdminTournaments() {
                   className="pl-10"
                 />
               </div>
-              
+
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-full md:w-48">
                   <SelectValue placeholder="Filter by status" />
