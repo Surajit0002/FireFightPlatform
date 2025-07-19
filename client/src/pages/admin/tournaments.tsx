@@ -184,9 +184,27 @@ export default function AdminTournaments() {
         const formData = new FormData();
         formData.append('image', uploadedImage);
 
-        // In a real application, you would upload to a file storage service
-        // For now, we'll create a mock URL
-        posterUrl = `https://example.com/uploads/${uploadedImage.name}`;
+        try {
+          const uploadResponse = await fetch('/api/upload/tournament-poster', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error('Failed to upload image');
+          }
+
+          const uploadResult = await uploadResponse.json();
+          posterUrl = uploadResult.imageUrl;
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          toast({
+            title: "Upload Error",
+            description: "Failed to upload tournament poster. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
       }
 
       const tournamentData = {
@@ -413,23 +431,85 @@ export default function AdminTournaments() {
           </div>
 
           <div>
-            <Label htmlFor="posterUrl">Tournament Poster URL</Label>
-            <Input
-              id="posterUrl"
-              {...register("posterUrl")}
-              placeholder="https://example.com/tournament-poster.jpg"
-              defaultValue={selectedTournament?.posterUrl}
-            />
-            {watch("posterUrl") && (
-              <div className="mt-2">
-                <img 
-                  src={watch("posterUrl")} 
-                  alt="Tournament Poster Preview" 
-                  className="w-32 h-20 object-cover rounded border"
-                  onError={(e) => e.currentTarget.style.display = 'none'}
+            <Label htmlFor="posterImage">Tournament Poster Image *</Label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center space-x-2"
+                >
+                  <Image className="w-4 h-4" />
+                  <span>Upload Poster</span>
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="posterImage"
                 />
+                {uploadedImage && (
+                  <div className="flex items-center space-x-2 text-sm text-green-600">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>{uploadedImage.name}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={removeImage}
+                      className="h-6 w-6 p-0"
+                    >
+                      <XCircle className="w-3 h-3" />
+                    </Button>
+                  </div>
+                )}
               </div>
-            )}
+              
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="relative inline-block">
+                  <img 
+                    src={imagePreview} 
+                    alt="Tournament Poster Preview" 
+                    className="w-48 h-28 object-cover rounded-lg border shadow-sm"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                  >
+                    <XCircle className="w-3 h-3" />
+                  </Button>
+                </div>
+              )}
+              
+              {/* Fallback URL option */}
+              <div className="pt-2 border-t">
+                <Label htmlFor="posterUrl" className="text-sm text-gray-600">Or enter image URL (optional)</Label>
+                <Input
+                  id="posterUrl"
+                  {...register("posterUrl")}
+                  placeholder="https://example.com/tournament-poster.jpg"
+                  defaultValue={selectedTournament?.posterUrl}
+                  className="mt-1"
+                />
+                {watch("posterUrl") && !imagePreview && (
+                  <div className="mt-2">
+                    <img 
+                      src={watch("posterUrl")} 
+                      alt="Tournament Poster Preview" 
+                      className="w-32 h-20 object-cover rounded border"
+                      onError={(e) => e.currentTarget.style.display = 'none'}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </TabsContent>
 

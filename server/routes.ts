@@ -13,6 +13,43 @@ import {
   insertKycDocumentSchema 
 } from "@shared/schema";
 import { z } from "zod";
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import express from 'express';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Configure multer for image uploads
+const storageConfig = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(process.cwd(), 'uploads', 'tournament-posters');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, `tournament-poster-${uniqueSuffix}${path.extname(file.originalname)}`);
+  }
+});
+
+const upload = multer({
+  storage: storageConfig,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'));
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -259,6 +296,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // File upload route for tournament posters
+  app.post('/api/upload/tournament-poster', upload.single('image'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No image file uploaded' });
+      }
+
+      // Generate the URL for the uploaded image
+      const imageUrl = `/uploads/tournament-posters/${req.file.filename}`;
+
+      res.json({ 
+        message: 'Image uploaded successfully',
+        imageUrl: imageUrl,
+        filename: req.file.filename 
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      res.status(500).json({ message: 'Failed to upload image' });
+    }
+  });
+
+  // Serve uploaded images
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
   // Tournament routes
   app.get('/api/tournaments', async (req, res) => {
     try {
@@ -306,7 +367,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         checkInEnd: checkInTime ? new Date(new Date(checkInTime).getTime() + 30 * 60 * 1000) : null,
         createdBy: req.user.claims.sub
       });
-      
+
       const tournament = await storage.createTournament(tournamentData);
       res.json(tournament);
     } catch (error) {
