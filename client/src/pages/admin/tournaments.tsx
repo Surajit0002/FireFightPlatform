@@ -160,7 +160,25 @@ export default function AdminTournaments() {
       entryFee: data.entryFee?.toString() || "0",
       maxSlots: parseInt(data.maxSlots) || 0,
       teamSize: parseInt(data.teamSize) || 1,
+      minSlots: parseInt(data.minSlots) || 1,
       startTime: new Date(data.startTime),
+      endTime: data.endTime ? new Date(data.endTime) : new Date(new Date(data.startTime).getTime() + 4 * 60 * 60 * 1000),
+      regOpenTime: data.regOpenTime ? new Date(data.regOpenTime) : new Date(),
+      regCloseTime: data.regCloseTime ? new Date(data.regCloseTime) : new Date(new Date(data.startTime).getTime() - 30 * 60 * 1000),
+      slug: data.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      gameCategory: data.gameCategory || 'battle_royale',
+      platform: data.platform || 'mobile',
+      entryMode: data.entryMode || 'free',
+      prizePoolType: data.prizePoolType || 'fixed',
+      checkInRequired: data.checkInRequired || false,
+      checkInTime: data.checkInTime ? new Date(data.checkInTime) : null,
+      isPublic: data.isPublic !== false,
+      spectatorUrl: data.spectatorUrl || '',
+      prizeBreakdown: data.prizeBreakdown ? JSON.parse(data.prizeBreakdown) : {
+        first: Math.floor(parseFloat(data.prizePool || "0") * 0.5),
+        second: Math.floor(parseFloat(data.prizePool || "0") * 0.3),
+        third: Math.floor(parseFloat(data.prizePool || "0") * 0.2)
+      }
     };
 
     if (selectedTournament) {
@@ -215,188 +233,460 @@ export default function AdminTournaments() {
 
   const TournamentForm = () => (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="title">Tournament Title</Label>
-          <Input
-            id="title"
-            {...register("title", { required: "Title is required" })}
-            placeholder="Enter tournament title"
-            defaultValue={selectedTournament?.title}
-          />
-          {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
-        </div>
-        
-        <div>
-          <Label htmlFor="game">Game</Label>
-          <Select 
-            defaultValue={selectedTournament?.game}
-            onValueChange={(value) => setValue("game", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select game" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="free_fire">Free Fire</SelectItem>
-              <SelectItem value="bgmi">BGMI</SelectItem>
-              <SelectItem value="valorant">Valorant</SelectItem>
-              <SelectItem value="csgo">CS:GO</SelectItem>
-              <SelectItem value="pubg">PUBG</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.game && <p className="text-sm text-red-600 mt-1">{errors.game.message}</p>}
-        </div>
-      </div>
+      <Tabs defaultValue="basic" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="basic">Basic Info</TabsTrigger>
+          <TabsTrigger value="schedule">Schedule</TabsTrigger>
+          <TabsTrigger value="rewards">Rewards</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+        </TabsList>
 
-      <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          {...register("description")}
-          placeholder="Tournament description"
-          defaultValue={selectedTournament?.description}
-          rows={3}
-        />
-      </div>
+        <TabsContent value="basic" className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="title">Tournament Name *</Label>
+              <Input
+                id="title"
+                {...register("title", { required: "Tournament name is required" })}
+                placeholder="e.g., FireFight Championship 2025"
+                defaultValue={selectedTournament?.title}
+                onChange={(e) => {
+                  const slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                  setValue("slug", slug);
+                }}
+              />
+              {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
+            </div>
+            
+            <div>
+              <Label htmlFor="slug">URL Slug (Auto-generated)</Label>
+              <Input
+                id="slug"
+                {...register("slug")}
+                placeholder="auto-generated-slug"
+                defaultValue={selectedTournament?.slug}
+                readOnly
+                className="bg-gray-100"
+              />
+            </div>
+          </div>
 
-      <div>
-        <Label htmlFor="posterUrl">Tournament Poster URL</Label>
-        <Input
-          id="posterUrl"
-          {...register("posterUrl")}
-          placeholder="https://example.com/poster.jpg"
-          defaultValue={selectedTournament?.posterUrl}
-        />
-      </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="game">Game Name *</Label>
+              <Select 
+                defaultValue={selectedTournament?.game}
+                onValueChange={(value) => setValue("game", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select game" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="free_fire">🔥 Free Fire</SelectItem>
+                  <SelectItem value="bgmi">🎯 BGMI</SelectItem>
+                  <SelectItem value="valorant">⚡ Valorant</SelectItem>
+                  <SelectItem value="csgo">💥 CS:GO</SelectItem>
+                  <SelectItem value="pubg">🏆 PUBG</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.game && <p className="text-sm text-red-600 mt-1">{errors.game.message}</p>}
+            </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="prizePool">Prize Pool (₹)</Label>
-          <Input
-            id="prizePool"
-            type="number"
-            {...register("prizePool", { required: "Prize pool is required" })}
-            placeholder="0"
-            defaultValue={selectedTournament?.prizePool}
-          />
-          {errors.prizePool && <p className="text-sm text-red-600 mt-1">{errors.prizePool.message}</p>}
-        </div>
-        
-        <div>
-          <Label htmlFor="entryFee">Entry Fee (₹)</Label>
-          <Input
-            id="entryFee"
-            type="number"
-            {...register("entryFee", { required: "Entry fee is required" })}
-            placeholder="0"
-            defaultValue={selectedTournament?.entryFee}
-          />
-          {errors.entryFee && <p className="text-sm text-red-600 mt-1">{errors.entryFee.message}</p>}
-        </div>
-      </div>
+            <div>
+              <Label htmlFor="gameCategory">Game Category *</Label>
+              <Select 
+                defaultValue={selectedTournament?.gameCategory || "battle_royale"}
+                onValueChange={(value) => setValue("gameCategory", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="battle_royale">Battle Royale</SelectItem>
+                  <SelectItem value="fps">FPS</SelectItem>
+                  <SelectItem value="moba">MOBA</SelectItem>
+                  <SelectItem value="strategy">Strategy</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <Label htmlFor="maxSlots">Max Slots</Label>
-          <Input
-            id="maxSlots"
-            type="number"
-            {...register("maxSlots", { required: "Max slots is required" })}
-            placeholder="0"
-            defaultValue={selectedTournament?.maxSlots}
-          />
-          {errors.maxSlots && <p className="text-sm text-red-600 mt-1">{errors.maxSlots.message}</p>}
-        </div>
-        
-        <div>
-          <Label htmlFor="format">Format</Label>
-          <Select 
-            defaultValue={selectedTournament?.format}
-            onValueChange={(value) => setValue("format", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select format" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="solo">Solo</SelectItem>
-              <SelectItem value="duo">Duo</SelectItem>
-              <SelectItem value="squad">Squad</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.format && <p className="text-sm text-red-600 mt-1">{errors.format.message}</p>}
-        </div>
-        
-        <div>
-          <Label htmlFor="teamSize">Team Size</Label>
-          <Input
-            id="teamSize"
-            type="number"
-            {...register("teamSize", { required: "Team size is required" })}
-            placeholder="1"
-            defaultValue={selectedTournament?.teamSize}
-          />
-          {errors.teamSize && <p className="text-sm text-red-600 mt-1">{errors.teamSize.message}</p>}
-        </div>
-      </div>
+            <div>
+              <Label htmlFor="platform">Platform *</Label>
+              <Select 
+                defaultValue={selectedTournament?.platform || "mobile"}
+                onValueChange={(value) => setValue("platform", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select platform" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mobile">📱 Mobile</SelectItem>
+                  <SelectItem value="pc">💻 PC</SelectItem>
+                  <SelectItem value="console">🎮 Console</SelectItem>
+                  <SelectItem value="cross_platform">🌐 Cross-platform</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="startTime">Start Time</Label>
-          <Input
-            id="startTime"
-            type="datetime-local"
-            {...register("startTime", { required: "Start time is required" })}
-            defaultValue={selectedTournament?.startTime ? 
-              new Date(selectedTournament.startTime).toISOString().slice(0, 16) : ""}
-          />
-          {errors.startTime && <p className="text-sm text-red-600 mt-1">{errors.startTime.message}</p>}
-        </div>
-        
-        <div>
-          <Label htmlFor="mapInfo">Map Information</Label>
-          <Input
-            id="mapInfo"
-            {...register("mapInfo")}
-            placeholder="Map details"
-            defaultValue={selectedTournament?.mapInfo}
-          />
-        </div>
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="format">Tournament Type *</Label>
+              <Select 
+                defaultValue={selectedTournament?.format}
+                onValueChange={(value) => setValue("format", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select format" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="solo">👤 Solo</SelectItem>
+                  <SelectItem value="duo">👥 Duo</SelectItem>
+                  <SelectItem value="squad">👪 Squad</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.format && <p className="text-sm text-red-600 mt-1">{errors.format.message}</p>}
+            </div>
+            
+            <div>
+              <Label htmlFor="teamSize">Team Size *</Label>
+              <Input
+                id="teamSize"
+                type="number"
+                {...register("teamSize", { required: "Team size is required", min: 1, max: 10 })}
+                placeholder="1-10 players"
+                defaultValue={selectedTournament?.teamSize}
+              />
+              {errors.teamSize && <p className="text-sm text-red-600 mt-1">{errors.teamSize.message}</p>}
+            </div>
+          </div>
 
-      <div>
-        <Label htmlFor="rules">Rules & Guidelines</Label>
-        <Textarea
-          id="rules"
-          {...register("rules")}
-          placeholder="Tournament rules and guidelines"
-          rows={4}
-          defaultValue={selectedTournament?.rules}
-        />
-      </div>
+          <div>
+            <Label htmlFor="description">Description *</Label>
+            <Textarea
+              id="description"
+              {...register("description", { required: "Description is required" })}
+              placeholder="Detailed tournament description, rules overview, and what participants can expect..."
+              defaultValue={selectedTournament?.description}
+              rows={4}
+            />
+            {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>}
+          </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="isFeatured"
-            {...register("isFeatured")}
-            defaultChecked={selectedTournament?.isFeatured}
-          />
-          <Label htmlFor="isFeatured">Featured Tournament</Label>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="isVerified"
-            {...register("isVerified")}
-            defaultChecked={selectedTournament?.isVerified}
-          />
-          <Label htmlFor="isVerified">Verified Tournament</Label>
-        </div>
-      </div>
+          <div>
+            <Label htmlFor="posterUrl">Tournament Poster URL</Label>
+            <Input
+              id="posterUrl"
+              {...register("posterUrl")}
+              placeholder="https://example.com/tournament-poster.jpg"
+              defaultValue={selectedTournament?.posterUrl}
+            />
+            {watch("posterUrl") && (
+              <div className="mt-2">
+                <img 
+                  src={watch("posterUrl")} 
+                  alt="Tournament Poster Preview" 
+                  className="w-32 h-20 object-cover rounded border"
+                  onError={(e) => e.currentTarget.style.display = 'none'}
+                />
+              </div>
+            )}
+          </div>
+        </TabsContent>
 
-      <div className="flex space-x-2 pt-4">
+        <TabsContent value="schedule" className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="regOpenTime">Registration Opens</Label>
+              <Input
+                id="regOpenTime"
+                type="datetime-local"
+                {...register("regOpenTime")}
+                defaultValue={selectedTournament?.regOpenTime ? 
+                  new Date(selectedTournament.regOpenTime).toISOString().slice(0, 16) : ""}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="regCloseTime">Registration Closes</Label>
+              <Input
+                id="regCloseTime"
+                type="datetime-local"
+                {...register("regCloseTime")}
+                defaultValue={selectedTournament?.regCloseTime ? 
+                  new Date(selectedTournament.regCloseTime).toISOString().slice(0, 16) : ""}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="startTime">Tournament Start *</Label>
+              <Input
+                id="startTime"
+                type="datetime-local"
+                {...register("startTime", { required: "Start time is required" })}
+                defaultValue={selectedTournament?.startTime ? 
+                  new Date(selectedTournament.startTime).toISOString().slice(0, 16) : ""}
+              />
+              {errors.startTime && <p className="text-sm text-red-600 mt-1">{errors.startTime.message}</p>}
+            </div>
+            
+            <div>
+              <Label htmlFor="endTime">Expected End Time</Label>
+              <Input
+                id="endTime"
+                type="datetime-local"
+                {...register("endTime")}
+                defaultValue={selectedTournament?.endTime ? 
+                  new Date(selectedTournament.endTime).toISOString().slice(0, 16) : ""}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="minSlots">Min Participants *</Label>
+              <Input
+                id="minSlots"
+                type="number"
+                {...register("minSlots", { required: "Min participants is required", min: 1 })}
+                placeholder="Minimum to start"
+                defaultValue={selectedTournament?.minSlots || 4}
+              />
+              {errors.minSlots && <p className="text-sm text-red-600 mt-1">{errors.minSlots.message}</p>}
+            </div>
+            
+            <div>
+              <Label htmlFor="maxSlots">Max Participants *</Label>
+              <Input
+                id="maxSlots"
+                type="number"
+                {...register("maxSlots", { required: "Max slots is required", min: 2 })}
+                placeholder="Maximum entries"
+                defaultValue={selectedTournament?.maxSlots}
+              />
+              {errors.maxSlots && <p className="text-sm text-red-600 mt-1">{errors.maxSlots.message}</p>}
+            </div>
+
+            <div>
+              <Label htmlFor="mapInfo">Map/Arena Info</Label>
+              <Input
+                id="mapInfo"
+                {...register("mapInfo")}
+                placeholder="e.g., Bermuda, Erangel"
+                defaultValue={selectedTournament?.mapInfo}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="checkInRequired"
+                {...register("checkInRequired")}
+                defaultChecked={selectedTournament?.checkInRequired}
+              />
+              <Label htmlFor="checkInRequired">Require Check-in</Label>
+            </div>
+            
+            {watch("checkInRequired") && (
+              <div>
+                <Label htmlFor="checkInTime">Check-in Time</Label>
+                <Input
+                  id="checkInTime"
+                  type="datetime-local"
+                  {...register("checkInTime")}
+                  defaultValue={selectedTournament?.checkInTime ? 
+                    new Date(selectedTournament.checkInTime).toISOString().slice(0, 16) : ""}
+                />
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="rewards" className="space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="entryMode">Entry Mode *</Label>
+              <Select 
+                defaultValue={selectedTournament?.entryMode || "free"}
+                onValueChange={(value) => {
+                  setValue("entryMode", value);
+                  if (value === "free") setValue("entryFee", "0");
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select entry mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="free">🆓 Free</SelectItem>
+                  <SelectItem value="paid">💰 Paid</SelectItem>
+                  <SelectItem value="invite_only">🔐 Invite Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="entryFee">Entry Fee (₹)</Label>
+              <Input
+                id="entryFee"
+                type="number"
+                {...register("entryFee")}
+                placeholder="0"
+                defaultValue={selectedTournament?.entryFee}
+                disabled={watch("entryMode") === "free"}
+                className={watch("entryMode") === "free" ? "bg-gray-100" : ""}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="prizePoolType">Prize Pool Type *</Label>
+              <Select 
+                defaultValue={selectedTournament?.prizePoolType || "fixed"}
+                onValueChange={(value) => setValue("prizePoolType", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fixed">🎯 Fixed Amount</SelectItem>
+                  <SelectItem value="dynamic">📈 Dynamic (Entry-based)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="prizePool">Total Prize Pool (₹) *</Label>
+            <Input
+              id="prizePool"
+              type="number"
+              {...register("prizePool", { required: "Prize pool is required", min: 0 })}
+              placeholder="Enter total prize amount"
+              defaultValue={selectedTournament?.prizePool}
+              onChange={(e) => {
+                const total = parseFloat(e.target.value) || 0;
+                const breakdown = {
+                  first: Math.floor(total * 0.5),
+                  second: Math.floor(total * 0.3),
+                  third: Math.floor(total * 0.2)
+                };
+                setValue("prizeBreakdown", JSON.stringify(breakdown));
+              }}
+            />
+            {errors.prizePool && <p className="text-sm text-red-600 mt-1">{errors.prizePool.message}</p>}
+          </div>
+
+          <div>
+            <Label>Prize Distribution (Auto-calculated)</Label>
+            <div className="grid grid-cols-3 gap-4 mt-2">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <div className="text-sm font-medium text-yellow-800">🥇 1st Place</div>
+                <div className="text-lg font-bold text-yellow-900">
+                  ₹{Math.floor((parseFloat(watch("prizePool")) || 0) * 0.5).toLocaleString()}
+                </div>
+                <div className="text-xs text-yellow-600">50% of total</div>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                <div className="text-sm font-medium text-gray-800">🥈 2nd Place</div>
+                <div className="text-lg font-bold text-gray-900">
+                  ₹{Math.floor((parseFloat(watch("prizePool")) || 0) * 0.3).toLocaleString()}
+                </div>
+                <div className="text-xs text-gray-600">30% of total</div>
+              </div>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                <div className="text-sm font-medium text-orange-800">🥉 3rd Place</div>
+                <div className="text-lg font-bold text-orange-900">
+                  ₹{Math.floor((parseFloat(watch("prizePool")) || 0) * 0.2).toLocaleString()}
+                </div>
+                <div className="text-xs text-orange-600">20% of total</div>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="advanced" className="space-y-4">
+          <div>
+            <Label htmlFor="rules">Detailed Rules & Guidelines *</Label>
+            <Textarea
+              id="rules"
+              {...register("rules", { required: "Rules are required" })}
+              placeholder="1. Fair play policy&#10;2. No cheating or hacking&#10;3. Respectful behavior required&#10;4. Decision of admins is final..."
+              rows={6}
+              defaultValue={selectedTournament?.rules}
+            />
+            {errors.rules && <p className="text-sm text-red-600 mt-1">{errors.rules.message}</p>}
+          </div>
+
+          <div>
+            <Label htmlFor="spectatorUrl">Live Stream URL (Optional)</Label>
+            <Input
+              id="spectatorUrl"
+              {...register("spectatorUrl")}
+              placeholder="https://youtube.com/live/stream-id or https://twitch.tv/channel"
+              defaultValue={selectedTournament?.spectatorUrl}
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isPublic"
+                {...register("isPublic")}
+                defaultChecked={selectedTournament?.isPublic !== false}
+              />
+              <Label htmlFor="isPublic">🌍 Public Tournament</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isFeatured"
+                {...register("isFeatured")}
+                defaultChecked={selectedTournament?.isFeatured}
+              />
+              <Label htmlFor="isFeatured">⭐ Featured</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isVerified"
+                {...register("isVerified")}
+                defaultChecked={selectedTournament?.isVerified}
+              />
+              <Label htmlFor="isVerified">✅ Verified</Label>
+            </div>
+          </div>
+
+          <div className="bg-fire-blue/10 border border-fire-blue/20 rounded-lg p-4">
+            <h4 className="font-semibold text-fire-blue mb-2">Tournament Preview</h4>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-gray-600">Title:</span>
+                <span className="ml-2 font-medium">{watch("title") || "Tournament Name"}</span>
+              </div>
+              <div>
+                <span className="text-gray-600">Game:</span>
+                <span className="ml-2 font-medium capitalize">{watch("game")?.replace('_', ' ') || "Game"}</span>
+              </div>
+              <div>
+                <span className="text-gray-600">Type:</span>
+                <span className="ml-2 font-medium capitalize">{watch("format") || "Format"}</span>
+              </div>
+              <div>
+                <span className="text-gray-600">Prize:</span>
+                <span className="ml-2 font-medium">₹{(parseFloat(watch("prizePool")) || 0).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      <div className="flex space-x-2 pt-4 border-t">
         <Button
           type="button"
           variant="outline"
