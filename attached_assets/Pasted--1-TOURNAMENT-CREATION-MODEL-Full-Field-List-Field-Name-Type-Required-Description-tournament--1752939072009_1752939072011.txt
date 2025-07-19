@@ -1,0 +1,100 @@
+✅ 1. 🔧 TOURNAMENT CREATION MODEL – Full Field List
+Field Name	Type	Required	Description
+tournament_name	string	✅	Name of the tournament
+slug	string	✅	URL-friendly version, auto-generated
+poster_image	file	✅	Upload tournament banner/poster
+game_name	string	✅	E.g. Free Fire, BGMI, Valorant
+game_category	select	✅	E.g. Battle Royale, FPS, MOBA
+platform	select	✅	PC, Mobile, Console, Cross-platform
+tournament_type	select	✅	Solo, Duo, Squad
+description	rich text	✅	Full tournament info
+rules	rich text	✅	Match rules, fair play policies
+entry_mode	select	✅	Free / Paid / Invite-only
+entry_fee	number	❌	Applicable if entry is paid
+prize_pool_type	select	✅	Fixed / Dynamic
+total_prize	number	✅	Total prize in ₹ or coins
+prize_breakdown	dynamic JSON	✅	Auto-generated or custom edited
+min_participants	number	✅	Minimum teams/players to start
+max_participants	number	✅	Cap on entries
+reg_open_time	datetime	✅	Registration start
+reg_close_time	datetime	✅	Registration end
+start_datetime	datetime	✅	Tournament kickoff
+end_datetime	datetime	✅	Expected finish time
+check_in_required	boolean	✅	Enable/disable check-in
+check_in_time	datetime	❌	If enabled
+is_public	boolean	✅	Public/Private event
+spectator_url	url	❌	For live streaming links (optional)
+created_by	admin_id	✅	Link to admin account
+status	string	auto	Upcoming / Live / Ended / Cancelled
+
+✅ 2. 🔥 Dynamic Features to Include (Frontend + Logic)
+🧠 Smart UX/UI (Popup Form Modals)
+Drag & Drop Poster Upload with preview
+
+Prize Pool Auto-Split logic (based on number of winners)
+
+Dynamic Field Toggles (if entry mode = free, disable fee input)
+
+Live Character Counter for rules & description
+
+Date & Time Picker with local timezone auto-convert
+
+Duplicate Tournament (Quick clone & modify)
+
+Preview Before Create (Modal or page preview)
+
+Real-time Slug Generation from name
+
+Real-time Validation (Max > Min participants, Date Validations)
+
+✅ 3. PostgreSQL Schema (Core Tables)
+sql
+Copy
+Edit
+-- Tournament table
+CREATE TABLE tournaments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  poster_url TEXT,
+  game_name TEXT,
+  game_category TEXT,
+  platform TEXT,
+  tournament_type TEXT,
+  description TEXT,
+  rules TEXT,
+  entry_mode TEXT,
+  entry_fee NUMERIC DEFAULT 0,
+  prize_pool_type TEXT,
+  total_prize NUMERIC DEFAULT 0,
+  prize_breakdown JSONB,
+  min_participants INT,
+  max_participants INT,
+  reg_open_time TIMESTAMP,
+  reg_close_time TIMESTAMP,
+  start_datetime TIMESTAMP,
+  end_datetime TIMESTAMP,
+  check_in_required BOOLEAN DEFAULT FALSE,
+  check_in_time TIMESTAMP,
+  is_public BOOLEAN DEFAULT TRUE,
+  spectator_url TEXT,
+  created_by UUID REFERENCES admins(id),
+  status TEXT DEFAULT 'Upcoming',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+✅ 4. AI Prompt for Auto UI/Code Generation
+plaintext
+Copy
+Edit
+Create a full-featured tournament creation modal UI for an admin dashboard. Use modern solid colors (no transparency), grid layout, and TailwindCSS. Form should include image upload (poster preview), dynamic select dropdowns for game category, type, platform, and auto-handling of dependent fields (e.g., disable entry_fee if entry_mode is "Free"). Include datetime pickers, dynamic prize pool breakdown generator, max/min participant fields with validations, and a live preview before submission. Backend should save all data to PostgreSQL using REST API or Appwrite SDK. Auto-generate slug from tournament name. Include edit and delete logic with confirmation modals. Handle form submission with loading state, success/fail toasts, and error hints. All UI components must be mobile responsive and dark/light mode compatible.
+✅ 5. Bonus Features Suggestions
+Feature	Description
+🎯 Auto Match Generator	Auto create match brackets once minimum players reached
+🏆 Leaderboard View	Real-time leaderboard from match results
+📩 Mass Notification	Notify all registered players of updates via email/push
+⏳ Countdown Timer	Countdown to start with live update
+💬 Admin Notes	Internal notes only visible to admins
+🔁 Clone Tournament	Copy existing tournament to reuse configs
+🧾 Export CSV	Export all players, teams, results, payouts
+🔐 Private Invite Links	Auto-generated secret URLs for closed tournaments
+🔄 Registration Cap Auto-Close	Disable signups when max participants reached

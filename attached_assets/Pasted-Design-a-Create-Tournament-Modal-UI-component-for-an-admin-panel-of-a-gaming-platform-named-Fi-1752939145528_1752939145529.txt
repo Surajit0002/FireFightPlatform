@@ -1,0 +1,70 @@
+Design a **Create Tournament Modal** UI component for an admin panel of a gaming platform named **FireFight**.
+
+🎯 Objective:
+Enable admins to create a new game tournament with all required fields using a stylish, modern, and easy-to-navigate form.
+
+🧩 Modal Requirements:
+- **Modal Size:** Full-screen on mobile, large central popup on desktop
+- **Layout:** Multi-step form with tabbed or progress bar style
+- **Design Style:** Flat, solid colors (no transparent backgrounds), clean edges, consistent paddings, shadowed elements, soft radius (rounded-xl), modern typography (Poppins, Inter)
+- **Theme:** Dark mode + Light mode toggle (optional)
+- **Visual Elements:** Icons, badges, form hints, validation messages, image previews
+
+📦 **Step 1: Tournament Info**
+- Tournament Name (input, required)
+- Game Name (dropdown with game icons)
+- Category (select: FPS, Battle Royale, MOBA, etc.)
+- Platform (radio buttons: Mobile / PC / Console)
+- Tournament Type (Solo, Duo, Squad)
+
+📦 **Step 2: Schedule & Participants**
+- Start Date & Time (datetime picker)
+- End Date & Time (datetime picker)
+- Min Participants (number input)
+- Max Participants (number input)
+- Team Size (select: 1, 2, 4, Custom)
+
+📦 **Step 3: Entry & Rewards**
+- Entry Fee (₹ input)
+- Auto Prize Pool (calculated based on entries)
+- Prize Breakdown:
+  - 1st Prize, 2nd Prize, 3rd Prize (input or auto-split)
+- Custom Rules or Notes (rich text editor)
+
+📦 **Step 4: Media & Poster**
+- Upload Tournament Poster (Image file input with preview)
+- Banner/Thumbnail Upload (optional)
+- Terms & Conditions (checkbox + link)
+
+📦 **Step 5: Finalize**
+- Visibility Status (Draft / Publish toggle)
+- Create Button (with loader)
+- Cancel / Reset Buttons
+
+🛠️ **Functional Features:**
+- Form validation (required fields, number ranges)
+- Auto-calculate prize pool logic (Entry Fee × Max Participants - Platform Cut)
+- Responsive design (mobile-first, grid layout on large screens)
+- Save as Draft or Publish Now options
+- Success/Error toast messages
+
+🎨 Color Scheme:
+- Primary: #FF4500 (Fire orange)
+- Secondary: #222222 (Dark gray)
+- Accent: #00D8A3 (Mint green)
+- Text: Pure white or dark black based on theme
+- Buttons: Solid with icon+text, hover glow
+
+📱 Devices:
+- Responsive: mobile, tablet, desktop
+
+🧠 UX Goals:
+- Fast, guided creation
+- No cognitive overload
+- Visual hierarchy and clear button states
+- Smooth transitions between steps
+
+📘 Extra:
+- Include icons (trophy 🏆, clock ⏰, team 👥, gamepad 🎮)
+- Include badge system (Live, Upcoming, Closed)
+- Use soft animations for modal entry/exit and step transitions
