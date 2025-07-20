@@ -14,9 +14,15 @@ async function populateDatabase() {
   console.log('🚀 Starting database population...');
 
   try {
-    // Create sample users
-    console.log('📝 Creating sample users...');
-    const sampleUsers = await db.insert(users).values([
+    // First check if users already exist
+    const existingUsers = await db.select().from(users);
+    console.log(`Found ${existingUsers.length} existing users`);
+
+    let sampleUsers;
+    if (existingUsers.length === 0) {
+      // Create sample users
+      console.log('📝 Creating sample users...');
+      sampleUsers = await db.insert(users).values([
       {
         id: 'user1',
         username: 'FireGamer',
@@ -78,6 +84,10 @@ async function populateDatabase() {
         isActive: true
       }
     ]).returning();
+    } else {
+      console.log('✓ Using existing users');
+      sampleUsers = existingUsers;
+    }
 
     // Create sample tournaments
     console.log('🏆 Creating sample tournaments...');
@@ -94,6 +104,7 @@ async function populateDatabase() {
         teamSize: 4,
         startTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
         endTime: new Date(Date.now() + 25 * 60 * 60 * 1000), // Day after tomorrow
+        registrationEnd: new Date(Date.now() + 23 * 60 * 60 * 1000), // 1 hour before start
         status: 'upcoming',
         rules: 'Standard Free Fire rules apply. No cheating, hacking, or exploiting. Fair play only.',
         roomId: 'FF123456',
@@ -113,6 +124,7 @@ async function populateDatabase() {
         teamSize: 4,
         startTime: new Date(Date.now() + 48 * 60 * 60 * 1000), // 2 days from now
         endTime: new Date(Date.now() + 50 * 60 * 60 * 1000), // 2 days + 2 hours
+        registrationEnd: new Date(Date.now() + 47 * 60 * 60 * 1000), // 1 hour before start
         status: 'upcoming',
         rules: 'BGMI competitive rules. No third-party apps. Official version only.',
         roomId: 'BGMI789',
@@ -132,6 +144,7 @@ async function populateDatabase() {
         teamSize: 5,
         startTime: new Date(Date.now() + 72 * 60 * 60 * 1000), // 3 days from now
         endTime: new Date(Date.now() + 76 * 60 * 60 * 1000), // 3 days + 4 hours
+        registrationEnd: new Date(Date.now() + 71 * 60 * 60 * 1000), // 1 hour before start
         status: 'upcoming',
         rules: 'Valorant official competitive rules. No exploits or unauthorized modifications.',
         roomId: 'VAL456789',
@@ -151,6 +164,7 @@ async function populateDatabase() {
         teamSize: 2,
         startTime: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 hours from now
         endTime: new Date(Date.now() + 14 * 60 * 60 * 1000), // 14 hours from now
+        registrationEnd: new Date(Date.now() + 11 * 60 * 60 * 1000), // 1 hour before start
         status: 'upcoming',
         rules: 'Beginner-friendly rules. New players welcome. No smurfing allowed.',
         roomId: 'FF999',
@@ -170,6 +184,7 @@ async function populateDatabase() {
         teamSize: 4,
         startTime: new Date(Date.now() - 72 * 60 * 60 * 1000), // 3 days ago
         endTime: new Date(Date.now() - 68 * 60 * 60 * 1000), // 3 days ago + 4 hours
+        registrationEnd: new Date(Date.now() - 73 * 60 * 60 * 1000), // 1 hour before start
         status: 'completed',
         rules: 'PUBG Mobile official tournament rules applied.',
         roomId: 'PUBG123',
@@ -249,7 +264,7 @@ async function populateDatabase() {
         tournamentId: sampleTournaments[4].id, // Completed tournament
         userId: 'user1',
         teamId: sampleTeams[0].id,
-        status: 'winner',
+        status: 'confirmed',
         rank: 1,
         prizeWon: '15000.00'
       },
@@ -359,7 +374,7 @@ async function populateDatabase() {
         userId: 'user3',
         subject: 'KYC verification help',
         description: 'Need help with KYC verification process. Documents keep getting rejected.',
-        category: 'account',
+        category: 'kyc',
         priority: 'medium',
         status: 'resolved',
         createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000)

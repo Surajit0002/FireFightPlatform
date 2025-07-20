@@ -163,7 +163,7 @@ export class DatabaseStorage implements IStorage {
       .from(tournamentParticipants)
       .where(and(
         eq(tournamentParticipants.userId, userId),
-        eq(tournamentParticipants.status, 'winner')
+        sql`${tournamentParticipants.status} = 'completed'`
       ));
 
     return {
@@ -452,7 +452,7 @@ export class DatabaseStorage implements IStorage {
       .select({ count: count() })
       .from(tournamentParticipants)
       .where(and(
-        sql`${tournamentParticipants.screenshotUrl} IS NOT NULL`,
+        sql`${tournamentParticipants.screenshotUrls} IS NOT NULL`,
         sql`${tournamentParticipants.verifiedAt} IS NULL`
       ));
 
