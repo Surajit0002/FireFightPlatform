@@ -296,35 +296,37 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
             <div>
               <p className="text-xs text-gray-600">Prize Pool</p>
               <p className="font-bold text-orange-600">
-                {formatCurrency(prizePool)}
+                ₹{formatCurrency(prizePool)}
               </p>
             </div>
           </div>
 
-          {/* Entry Fee */}
-          <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-            <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
-              <Coins className="w-4 h-4 text-white" />
+          {/* Team Size */}
+          <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl">
+            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <Users className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-xs text-gray-600">Entry Fee</p>
-              <p className="font-bold text-green-600">
-                {entryFee === 0 ? "FREE" : formatCurrency(entryFee)}
+              <p className="text-xs text-gray-600">Team Size</p>
+              <p className="font-bold text-purple-600">
+                {tournament.teamSize || 4} Players
               </p>
             </div>
           </div>
         </div>
 
         {/* Slots and Progress */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
+        <div className="bg-gray-50 rounded-xl p-3">
+          <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-medium">
+              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <Users className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700">
                 {tournament.currentSlots}/{tournament.maxSlots} Players
               </span>
             </div>
-            <div className="text-right">
+            <div className="flex items-center gap-2">
               <div className="text-sm font-bold text-gray-700">
                 {slotsFillPercentage.toFixed(0)}%
               </div>
@@ -339,7 +341,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
                   ? "bg-gradient-to-r from-red-500 to-red-600"
                   : slotsFillPercentage >= 75
                     ? "bg-gradient-to-r from-orange-500 to-yellow-500"
-                    : "bg-gradient-to-r from-green-500 to-emerald-500"
+                    : "bg-gradient-to-r from-blue-500 to-emerald-500"
               }`}
               style={{ width: `${slotsFillPercentage}%` }}
             ></div>
@@ -347,14 +349,20 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
         </div>
 
         {/* Tournament Details */}
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2 text-gray-600">
-            <Calendar className="w-4 h-4" />
-            <span>{formatDate()}</span>
+        <div className="grid grid-cols-2 gap-3 text-sm bg-gray-50 rounded-xl p-3">
+          <div className="flex items-center gap-2 text-gray-700">
+            <Calendar className="w-4 h-4 text-blue-500" />
+            <div>
+              <p className="text-xs text-gray-500">Start Time</p>
+              <p className="font-medium">{formatDate()}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <MapPin className="w-4 h-4" />
-            <span>Online</span>
+          <div className="flex items-center gap-2 text-gray-700">
+            <MapPin className="w-4 h-4 text-green-500" />
+            <div>
+              <p className="text-xs text-gray-500">Mode</p>
+              <p className="font-medium">Online</p>
+            </div>
           </div>
         </div>
 
@@ -363,24 +371,20 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           <Button
             asChild
             className={`font-bold ${
-              entryFee === 0
-                ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-                : tournament.status === "live"
-                  ? "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
-                  : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
+              tournament.status === "live"
+                ? "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
+                : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
             } text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300`}
           >
             <Link href={`/tournaments/${tournament.id}`}>
-              <DollarSign className="w-4 h-4 mr-1" />
-              {entryFee === 0
-                ? "Join FREE"
-                : `Join ₹${formatCurrency(entryFee)}`}
+              <Zap className="w-4 h-4 mr-1" />
+              Join Now
             </Link>
           </Button>
 
           <Button
             variant="outline"
-            className="border-fire-blue text-fire-blue hover:bg-fire-blue hover:text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
             onClick={(e) => {
               e.preventDefault();
               setIsPrizeModalOpen(true);
