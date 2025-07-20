@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Trophy, Gamepad2 } from "lucide-react";
+import { Clock, Users, Trophy, Gamepad2, DollarSign, Gift } from "lucide-react";
 import { Link } from "wouter";
+import { useState } from "react";
+import PrizeDistributionModal from "./PrizeDistributionModal";
 import type { Tournament } from "@/types";
 
 interface TournamentCardProps {
@@ -10,6 +12,8 @@ interface TournamentCardProps {
 }
 
 export default function TournamentCard({ tournament }: TournamentCardProps) {
+  const [isPrizeModalOpen, setIsPrizeModalOpen] = useState(false);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "live":
@@ -119,18 +123,44 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           </div>
         )}
 
-        <Button asChild className={`w-full ${
-          entryFeeFloat === 0 
-            ? "bg-fire-green hover:bg-green-600" 
-            : tournament.status === "live" 
-              ? "bg-fire-red hover:bg-red-600" 
-              : "bg-fire-blue hover:bg-blue-600"
-        } text-white font-semibold`}>
-          <Link href={`/tournaments/${tournament.id}`}>
-            {tournament.status === "live" ? "Join Live" : 
-             entryFeeFloat === 0 ? "Join Free Tournament" : "Join Tournament"}
-          </Link>
-        </Button>
+        <div className="grid grid-cols-2 gap-2">
+          <Button asChild className={`${
+            entryFeeFloat === 0 
+              ? "bg-fire-green hover:bg-green-600" 
+              : tournament.status === "live" 
+                ? "bg-fire-red hover:bg-red-600" 
+                : "bg-fire-blue hover:bg-blue-600"
+          } text-white font-semibold`}>
+            <Link href={`/tournaments/${tournament.id}`}>
+              <DollarSign className="w-4 h-4 mr-1" />
+              {entryFeeFloat === 0 ? "Join FREE" : `Join ₹${entryFeeFloat}`}
+            </Link>
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            className="border-fire-blue text-fire-blue hover:bg-fire-blue hover:text-white font-semibold"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsPrizeModalOpen(true);
+            }}
+          >
+            <Gift className="w-4 h-4 mr-1" />
+            Prizes
+          </Button>
+        </div>
+
+        <PrizeDistributionModal
+          isOpen={isPrizeModalOpen}
+          onClose={() => setIsPrizeModalOpen(false)}
+          tournament={{
+            title: tournament.title,
+            prizePool: tournament.prizePool,
+            entryFee: tournament.entryFee,
+            currentParticipants: tournament.currentParticipants,
+            maxParticipants: tournament.maxParticipants
+          }}
+        />
       </CardContent>
     </Card>
   );

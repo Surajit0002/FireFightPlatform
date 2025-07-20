@@ -1,37 +1,29 @@
-
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
   Clock, 
   Users, 
   Trophy, 
-  DollarSign, 
-  Star, 
-  Calendar, 
-  Award, 
-  Play, 
-  CheckCircle2,
+  Gamepad2, 
+  Calendar,
   MapPin,
   Zap,
   Target,
-  Crown,
-  Medal,
-  Timer,
-  UserPlus,
-  Coins,
-  Gift,
-  Share2,
-  Bookmark,
-  BookmarkCheck,
-  Eye,
   Heart,
-  TrendingUp,
-  Shield,
-  Flame
+  Bookmark,
+  Share2,
+  Coins,
+  Star,
+  Medal,
+  Crown,
+  Fire,
+  DollarSign,
+  Gift
 } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
+import PrizeDistributionModal from "./tournament/PrizeDistributionModal";
 import type { Tournament } from "@shared/schema";
 
 interface TournamentCardProps {
@@ -73,28 +65,28 @@ const posterImages: Record<string, string> = {
 export default function TournamentCard({ tournament }: TournamentCardProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [viewCount] = useState(Math.floor(Math.random() * 1000) + 100);
-  const [likeCount, setLikeCount] = useState(Math.floor(Math.random() * 50) + 10);
+  const [likeCount, setLikeCount] = useState(Math.floor(Math.random() * 100) + 50);
+  const [isPrizeModalOpen, setIsPrizeModalOpen] = useState(false);
 
   const gameIcon = gameIcons[tournament.game] || "🎮";
   const gameColor = gameColors[tournament.game] || "from-gray-500 to-gray-600";
   const gameName = gameNames[tournament.game] || tournament.game.toUpperCase();
   const posterImage = posterImages[tournament.game] || "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=250&fit=crop";
-  
+
   const startTime = new Date(tournament.startTime);
   const now = new Date();
   const isLive = tournament.status === "live";
   const isUpcoming = tournament.status === "upcoming";
   const isCompleted = tournament.status === "completed";
   const timeToStart = startTime.getTime() - now.getTime();
-  
+
   const formatTimeLeft = () => {
     if (timeToStart <= 0) return "Started";
-    
+
     const days = Math.floor(timeToStart / (1000 * 60 * 60 * 24));
     const hours = Math.floor((timeToStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((timeToStart % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (days > 0) return `${days}d ${hours}h`;
     if (hours > 0) return `${hours}h ${minutes}m`;
     return `${minutes}m`;
@@ -115,12 +107,12 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
 
   const formatCurrency = (amount: number) => {
     if (amount >= 1000000) {
-      return `₹${(amount / 1000000).toFixed(1)}M`;
+      return `${(amount / 1000000).toFixed(1)}M`;
     }
     if (amount >= 1000) {
-      return `₹${(amount / 1000).toFixed(0)}k`;
+      return `${(amount / 1000).toFixed(0)}k`;
     }
-    return `₹${amount.toFixed(0)}`;
+    return `${amount.toFixed(0)}`;
   };
 
   const getStatusBadge = () => {
@@ -217,10 +209,10 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           alt={tournament.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
-        
+
         {/* Gradient Overlay */}
         <div className={`absolute inset-0 bg-gradient-to-t ${gameColor} opacity-80`}></div>
-        
+
         {/* Top Row - Status and Actions */}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
           <div className="flex gap-2">
@@ -229,7 +221,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
               {tournamentType.label}
             </Badge>
           </div>
-          
+
           <div className="flex gap-2">
             <button
               onClick={handleBookmark}
@@ -311,7 +303,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
               {getUrgencyIndicator()}
             </div>
           </div>
-          
+
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
               className={`h-2 rounded-full transition-all duration-300 ${
@@ -357,49 +349,79 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           </div>
         </div>
 
-        {/* Action Button */}
-        <Link href={`/tournaments/${tournament.id}`} className="w-full">
+        {/* Action Buttons */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
           <Button 
-            className={`w-full h-12 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl ${
-              isLive 
-                ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white' 
-                : isCompleted 
-                  ? 'bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white'
-                  : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
-            }`}
+            variant="outline" 
+            size="sm" 
+            className="text-xs"
+            onClick={handleBookmark}
           >
-            {isLive ? (
-              <>
-                <Play className="w-5 h-5 mr-2" />
-                Join Live Match
-              </>
-            ) : isCompleted ? (
-              <>
-                <Award className="w-5 h-5 mr-2" />
-                View Results
-              </>
-            ) : (
-              <>
-                <UserPlus className="w-5 h-5 mr-2" />
-                Join Tournament
-              </>
-            )}
+            <Bookmark className={`w-3 h-3 mr-1 ${isBookmarked ? 'fill-current' : ''}`} />
+            Save
           </Button>
-        </Link>
-      </CardContent>
 
-      {/* Special Effects */}
-      {isLive && (
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-red-400 to-red-500 animate-pulse"></div>
-      )}
-      
-      {prizePool >= 100000 && (
-        <div className="absolute top-2 right-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center animate-pulse">
-            <Medal className="w-4 h-4 text-white" />
-          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs"
+            onClick={handleLike}
+          >
+            <Heart className={`w-3 h-3 mr-1 ${isLiked ? 'fill-current text-red-500' : ''}`} />
+            {likeCount}
+          </Button>
+
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs"
+            onClick={handleShare}
+          >
+            <Share2 className="w-3 h-3 mr-1" />
+            Share
+          </Button>
         </div>
-      )}
+
+        {/* Main Action Buttons */}
+        <div className="grid grid-cols-2 gap-2">
+          <Button asChild className={`font-bold ${
+            entryFee === 0 
+              ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700" 
+              : tournament.status === "live" 
+                ? "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700" 
+                : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
+          } text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300`}>
+            <Link href={`/tournaments/${tournament.id}`}>
+              <DollarSign className="w-4 h-4 mr-1" />
+              {entryFee === 0 ? "Join FREE" : `Join ₹${formatCurrency(entryFee)}`}
+            </Link>
+          </Button>
+
+          <Button 
+            variant="outline" 
+            className="border-fire-blue text-fire-blue hover:bg-fire-blue hover:text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsPrizeModalOpen(true);
+            }}
+          >
+            <Gift className="w-4 h-4 mr-1" />
+            Prizes
+          </Button>
+        </div>
+</CardContent>
+
+      <PrizeDistributionModal
+        isOpen={isPrizeModalOpen}
+        onClose={() => setIsPrizeModalOpen(false)}
+        tournament={{
+          title: tournament.title,
+          prizePool: tournament.prizePool,
+          entryFee: tournament.entryFee,
+          currentParticipants: tournament.currentParticipants || 0,
+          maxParticipants: tournament.maxParticipants || 100
+        }}
+      />
     </Card>
   );
 }
