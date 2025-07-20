@@ -211,39 +211,80 @@ export default function Tournaments() {
               </Select>
             </div>
 
-            {/* Mobile Filter Button */}
+            {/* Filter Button - Both Mobile and Desktop */}
             <Sheet open={showFilters} onOpenChange={setShowFilters}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="md:hidden">
+                <Button variant="outline" className="bg-white border-gray-200 hover:bg-gray-50">
                   <Filter className="w-4 h-4 mr-2" />
                   Filters
                 </Button>
               </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Filter Tournaments</SheetTitle>
+              <SheetContent side="left" className="w-80 bg-white border-r border-gray-200">
+                <SheetHeader className="pb-6">
+                  <SheetTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Filter className="w-5 h-5" />
+                    Filter Tournaments
+                  </SheetTitle>
                 </SheetHeader>
-                <div className="space-y-4 mt-6">
+                
+                <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-120px)]">
+                  {/* Quick Filter Tags */}
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Game</label>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 block">Quick Filters</label>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant={selectedStatus === "live" ? "default" : "outline"}
+                        onClick={() => setSelectedStatus(selectedStatus === "live" ? "all" : "live")}
+                        className="text-xs"
+                      >
+                        🔴 Live Now
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={searchTerm.includes("free") ? "default" : "outline"}
+                        onClick={() => setSearchTerm(searchTerm.includes("free") ? "" : "free")}
+                        className="text-xs"
+                      >
+                        🎁 Free Entry
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={selectedStatus === "upcoming" ? "default" : "outline"}
+                        onClick={() => setSelectedStatus(selectedStatus === "upcoming" ? "all" : "upcoming")}
+                        className="text-xs"
+                      >
+                        ⏰ Starting Soon
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Game Filter */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 block">Game</label>
                     <Select value={selectedGame} onValueChange={setSelectedGame}>
-                      <SelectTrigger>
-                        <SelectValue />
+                      <SelectTrigger className="h-11 bg-gray-50 border-gray-200">
+                        <SelectValue placeholder="Select Game" />
                       </SelectTrigger>
                       <SelectContent>
                         {gameOptions.map((game) => (
                           <SelectItem key={game.value} value={game.value}>
-                            {game.icon} {game.label}
+                            <span className="flex items-center space-x-2">
+                              <span>{game.icon}</span>
+                              <span>{game.label}</span>
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Status Filter */}
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Status</label>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 block">Status</label>
                     <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                      <SelectTrigger>
-                        <SelectValue />
+                      <SelectTrigger className="h-11 bg-gray-50 border-gray-200">
+                        <SelectValue placeholder="Tournament Status" />
                       </SelectTrigger>
                       <SelectContent>
                         {statusOptions.map((status) => (
@@ -253,6 +294,64 @@ export default function Tournaments() {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  {/* Sort Options */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 block">Sort By</label>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="h-11 bg-gray-50 border-gray-200">
+                        <SelectValue placeholder="Sort By" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sortOptions.map((sort) => (
+                          <SelectItem key={sort.value} value={sort.value}>
+                            {sort.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Filter Actions */}
+                  <div className="pt-4 border-t border-gray-200 space-y-3">
+                    <Button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setSelectedGame("all");
+                        setSelectedStatus("all");
+                        setSortBy("latest");
+                      }}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Clear All Filters
+                    </Button>
+                    <Button
+                      onClick={() => setShowFilters(false)}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      Apply Filters ({filteredTournaments.length})
+                    </Button>
+                  </div>
+
+                  {/* Filter Summary */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-medium text-gray-700 mb-2">Active Filters:</h4>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      {selectedGame !== "all" && (
+                        <div>Game: {gameOptions.find(g => g.value === selectedGame)?.label}</div>
+                      )}
+                      {selectedStatus !== "all" && (
+                        <div>Status: {statusOptions.find(s => s.value === selectedStatus)?.label}</div>
+                      )}
+                      {searchTerm && (
+                        <div>Search: "{searchTerm}"</div>
+                      )}
+                      <div className="font-medium text-blue-600">
+                        {filteredTournaments.length} tournaments found
+                      </div>
+                    </div>
                   </div>
                 </div>
               </SheetContent>
