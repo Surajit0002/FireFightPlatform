@@ -19,7 +19,12 @@ import {
   Crown,
   Fire,
   DollarSign,
-  Gift
+  Gift,
+  Eye,
+  TrendingUp,
+  Timer,
+  CheckCircle2,
+  BookmarkCheck
 } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
@@ -66,6 +71,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(Math.floor(Math.random() * 100) + 50);
+  const [viewCount] = useState(Math.floor(Math.random() * 500) + 100);
   const [isPrizeModalOpen, setIsPrizeModalOpen] = useState(false);
 
   const gameIcon = gameIcons[tournament.game] || "🎮";
