@@ -301,15 +301,15 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
             </div>
           </div>
 
-          {/* Team Size */}
+          {/* Game Map */}
           <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
-              <Users className="w-4 h-4 text-white" />
+              <MapPin className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-xs text-gray-600">Team Size</p>
+              <p className="text-xs text-gray-600">Game Map</p>
               <p className="font-bold text-purple-600">
-                {tournament.teamSize || 4} Players
+                {tournament.mapInfo || "TBD"}
               </p>
             </div>
           </div>
