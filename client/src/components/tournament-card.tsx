@@ -17,7 +17,7 @@ import {
   Star,
   Medal,
   Crown,
-  Fire,
+  Flame,
   DollarSign,
   Gift,
   Eye,

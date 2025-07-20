@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import UserHeader from "@/components/layout/user-header";
@@ -39,7 +38,7 @@ import {
   Target,
   Award,
   Crown,
-  Fire,
+  Flame,
   GamepadIcon,
   Users,
   Clock,
@@ -143,7 +142,7 @@ export default function Profile() {
     { label: "Total Matches", value: matchesPlayed, icon: Target, color: "text-blue-600" },
     { label: "Matches Won", value: matchesWon, icon: Trophy, color: "text-green-600" },
     { label: "Win Rate", value: `${winRate}%`, icon: TrendingUp, color: "text-purple-600" },
-    { label: "Current Streak", value: user?.currentStreak || 0, icon: Fire, color: "text-red-600" },
+    { label: "Current Streak", value: user?.currentStreak || 0, icon: Flame, color: "text-red-600" },
     { label: "Best Streak", value: user?.bestStreak || 0, icon: Award, color: "text-yellow-600" },
     { label: "Rank Points", value: user?.rankPoints || 0, icon: Crown, color: "text-indigo-600" },
   ];
@@ -168,7 +167,7 @@ export default function Profile() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50'}`}>
       <UserHeader />
-      
+
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Dynamic Header with Floating Actions */}
         <div className="relative mb-6 lg:mb-8">
@@ -183,7 +182,7 @@ export default function Profile() {
                   Manage your gaming profile, achievements, and account preferences
                 </p>
               </div>
-              
+
               {/* Quick Actions */}
               <div className="flex flex-wrap gap-2 lg:flex-nowrap">
                 <Button
@@ -223,7 +222,7 @@ export default function Profile() {
                 <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-6 text-white relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                   <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
-                  
+
                   <div className="relative text-center">
                     <div className="relative mb-4">
                       <Avatar className="w-20 h-20 sm:w-24 sm:h-24 mx-auto ring-4 ring-white/30">
@@ -239,7 +238,7 @@ export default function Profile() {
                         <Camera className="w-4 h-4" />
                       </Button>
                     </div>
-                    
+
                     <h3 className="text-lg sm:text-xl font-bold mb-1">
                       {user?.username || "Player"}
                     </h3>
@@ -673,8 +672,7 @@ export default function Profile() {
                           { title: "SMS Notifications", icon: Phone, enabled: false },
                         ].map((method, index) => (
                           <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              <method.icon className="w-4 h-4 text-gray-600" />
+                            <div className="flex items-center gap-2">                              <method.icon className="w-4 h-4 text-gray-600" />
                               <span className="text-sm font-medium">{method.title}</span>
                             </div>
                             <Switch defaultChecked={method.enabled} />
@@ -828,14 +826,14 @@ export default function Profile() {
                               <CheckCircle className="w-5 h-5 text-white/80" />
                             </div>
                           )}
-                          
+
                           <div className="text-center">
                             <div className="text-3xl mb-2">{achievement.icon}</div>
                             <h4 className="font-semibold text-sm mb-1">{achievement.name}</h4>
                             <p className={`text-xs mb-2 ${achievement.earned ? 'text-white/80' : 'text-gray-600'}`}>
                               {achievement.description}
                             </p>
-                            
+
                             <div className="flex items-center justify-between">
                               <Badge 
                                 variant="secondary" 
