@@ -373,12 +373,14 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
             className={`font-bold ${
               tournament.status === "live"
                 ? "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
+                : entryFee === 0
+                ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
                 : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
             } text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300`}
           >
             <Link href={`/tournaments/${tournament.id}`}>
               <Zap className="w-4 h-4 mr-1" />
-              Join Now
+              {entryFee === 0 ? "Join Free" : `Join ₹${formatCurrency(entryFee)}`}
             </Link>
           </Button>
 
