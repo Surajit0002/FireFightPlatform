@@ -94,27 +94,35 @@ export async function setupAuth(app: Express) {
     verified: passport.AuthenticateCallback,
     req?: any
   ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    const ipAddress = req?.ip || req?.connection?.remoteAddress;
-    const userAgent = req?.get('User-Agent');
-    
-    await upsertUser(tokens.claims(), ipAddress, userAgent);
-    
-    // Create secure session
-    const sessionId = crypto.randomUUID();
-    await authService.createUserSession({
-      id: sessionId,
-      userId: tokens.claims()["sub"],
-      sessionToken: crypto.randomBytes(32).toString('hex'),
-      deviceInfo: { userAgent, platform: req?.get('Sec-CH-UA-Platform') },
-      ipAddress,
-      userAgent,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
-    
-    (user as any).sessionId = sessionId;
-    verified(null, user);
+    try {
+      const user = {};
+      updateUserSession(user, tokens);
+      const ipAddress = req?.ip || req?.connection?.remoteAddress;
+      const userAgent = req?.get('User-Agent');
+      
+      const claims = tokens.claims();
+      if (claims) {
+        await upsertUser(claims, ipAddress, userAgent);
+        
+        // Create secure session
+        const sessionId = crypto.randomUUID();
+        await authService.createUserSession({
+          id: sessionId,
+          userId: claims["sub"],
+          sessionToken: crypto.randomBytes(32).toString('hex'),
+          deviceInfo: { userAgent, platform: req?.get('Sec-CH-UA-Platform') },
+          ipAddress,
+          userAgent,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        });
+        
+        (user as any).sessionId = sessionId;
+      }
+      verified(null, user);
+    } catch (error) {
+      console.error('Auth verification error:', error);
+      verified(error);
+    }
   };
 
   for (const domain of process.env
@@ -135,14 +143,24 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    // Use the first configured domain if hostname doesn't match
+    const hostname = req.hostname;
+    const domains = process.env.REPLIT_DOMAINS!.split(",");
+    const domain = domains.includes(hostname) ? hostname : domains[0];
+    
+    passport.authenticate(`replitauth:${domain}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    // Use the first configured domain if hostname doesn't match
+    const hostname = req.hostname;
+    const domains = process.env.REPLIT_DOMAINS!.split(",");
+    const domain = domains.includes(hostname) ? hostname : domains[0];
+    
+    passport.authenticate(`replitauth:${domain}`, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
     })(req, res, next);
@@ -271,7 +289,7 @@ export const requireRole = (roles: string | string[]) => {
     }
 
     // Check basic role
-    if (roleArray.includes(user.role)) {
+    if (user.role && roleArray.includes(user.role)) {
       return next();
     }
 

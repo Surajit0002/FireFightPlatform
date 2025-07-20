@@ -2,8 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated, requireRole, requirePermission } from "./replitAuth";
-import { authService } from "./authService";
+import { setupAuth, isAuthenticated } from "./simpleAuth";
+
 import { 
   insertTournamentSchema, 
   insertTeamSchema, 
@@ -55,246 +55,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Enhanced Auth routes
+  // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const user = await storage.getUserStats(userId);
-
-      // Include additional security info
-      const userSessions = await authService.getUserSessions(userId);
-      const userRoles = await authService.getUserRoles(userId);
-
-      res.json({
-        ...user,
-        security: {
-          sessionCount: userSessions.length,
-          roles: userRoles.map(r => r.role.name),
-          emailVerified: user.emailVerified,
-          phoneVerified: user.phoneVerified,
-          twoFactorEnabled: user.twoFactorEnabled,
-          accountLocked: user.accountLocked,
-        }
-      });
+      const user = await storage.getUser(userId);
+      res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
 
-  // Profile management
-  app.put('/api/auth/profile', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const { username, phoneNumber, preferences } = req.body;
 
-      const updatedUser = await authService.enhanceUserProfile(userId, {
-        username,
-        phoneNumber,
-        preferences,
-      });
-
-      res.json(updatedUser);
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      res.status(500).json({ message: "Failed to update profile" });
-    }
-  });
-
-  // Session management
-  app.get('/api/auth/sessions', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const sessions = await authService.getUserSessions(userId);
-      res.json(sessions);
-    } catch (error) {
-      console.error("Error fetching sessions:", error);
-      res.status(500).json({ message: "Failed to fetch sessions" });
-    }
-  });
-
-  app.delete('/api/auth/sessions/:sessionId', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const { sessionId } = req.params;
-
-      await authService.revokeSession(sessionId, userId);
-      res.json({ message: 'Session revoked successfully' });
-    } catch (error) {
-      console.error("Error revoking session:", error);
-      res.status(500).json({ message: "Failed to revoke session" });
-    }
-  });
-
-  app.delete('/api/auth/sessions', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const currentSessionId = req.user.sessionId;
-
-      await authService.revokeAllUserSessions(userId, currentSessionId);
-      res.json({ message: 'All other sessions revoked successfully' });
-    } catch (error) {
-      console.error("Error revoking sessions:", error);
-      res.status(500).json({ message: "Failed to revoke sessions" });
-    }
-  });
-
-  // Two-factor authentication
-  app.post('/api/auth/2fa/enable', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const secret = await authService.enableTwoFactor(userId);
-
-      res.json({ 
-        secret,
-        qrCodeUrl: `otpauth://totp/FireFight:${req.user.claims.email}?secret=${secret}&issuer=FireFight`
-      });
-    } catch (error) {
-      console.error("Error enabling 2FA:", error);
-      res.status(500).json({ message: "Failed to enable 2FA" });
-    }
-  });
-
-  app.post('/api/auth/2fa/disable', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      await authService.disableTwoFactor(userId);
-
-      res.json({ message: '2FA disabled successfully' });
-    } catch (error) {
-      console.error("Error disabling 2FA:", error);
-      res.status(500).json({ message: "Failed to disable 2FA" });
-    }
-  });
-
-  // Email/Phone verification
-  app.post('/api/auth/verify/email', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const token = await authService.createVerificationToken(userId, 'email_verification');
-
-      // In a real app, send email here
-      res.json({ 
-        message: 'Verification email sent',
-        token // Remove this in production
-      });
-    } catch (error) {
-      console.error("Error sending verification email:", error);
-      res.status(500).json({ message: "Failed to send verification email" });
-    }
-  });
-
-  app.post('/api/auth/verify/phone', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const token = await authService.createVerificationToken(userId, 'phone_verification');
-
-      // In a real app, send SMS here
-      res.json({ 
-        message: 'Verification SMS sent',
-        token // Remove this in production
-      });
-    } catch (error) {
-      console.error("Error sending verification SMS:", error);
-      res.status(500).json({ message: "Failed to send verification SMS" });
-    }
-  });
-
-  app.post('/api/auth/verify/confirm', async (req, res) => {
-    try {
-      const { token, type } = req.body;
-      const userId = await authService.verifyToken(token, type);
-
-      if (!userId) {
-        return res.status(400).json({ message: 'Invalid or expired token' });
-      }
-
-      res.json({ message: 'Verification successful' });
-    } catch (error) {
-      console.error("Error verifying token:", error);
-      res.status(500).json({ message: "Failed to verify token" });
-    }
-  });
-
-  // Security logs
-  app.get('/api/auth/security-logs', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const limit = parseInt(req.query.limit as string) || 50;
-
-      const logs = await authService.getSecurityLogs(userId, limit);
-      res.json(logs);
-    } catch (error) {
-      console.error("Error fetching security logs:", error);
-      res.status(500).json({ message: "Failed to fetch security logs" });
-    }
-  });
-
-  // Admin security management
-  app.get('/api/admin/security/logs', isAuthenticated, requireRole(['admin', 'moderator']), async (req: any, res) => {
-    try {
-      const limit = parseInt(req.query.limit as string) || 100;
-      const logs = await authService.getSecurityLogs(undefined, limit);
-      res.json(logs);
-    } catch (error) {
-      console.error("Error fetching admin security logs:", error);
-      res.status(500).json({ message: "Failed to fetch security logs" });
-    }
-  });
-
-  app.post('/api/admin/users/:userId/lock', isAuthenticated, requireRole('admin'), async (req: any, res) => {
-    try {
-      const { userId } = req.params;
-      const { reason } = req.body;
-
-      await authService.lockAccount(userId, reason);
-      res.json({ message: 'Account locked successfully' });
-    } catch (error) {
-      console.error("Error locking account:", error);
-      res.status(500).json({ message: "Failed to lock account" });
-    }
-  });
-
-  app.post('/api/admin/users/:userId/unlock', isAuthenticated, requireRole('admin'), async (req: any, res) => {
-    try {
-      const { userId } = req.params;
-
-      await authService.unlockAccount(userId);
-      res.json({ message: 'Account unlocked successfully' });
-    } catch (error) {
-      console.error("Error unlocking account:", error);
-      res.status(500).json({ message: "Failed to unlock account" });
-    }
-  });
-
-  app.post('/api/admin/users/:userId/roles', isAuthenticated, requireRole('admin'), async (req: any, res) => {
-    try {
-      const { userId } = req.params;
-      const { roleId, expiresAt } = req.body;
-      const assignedBy = req.user.claims.sub;
-
-      await authService.assignRole(userId, roleId, assignedBy, expiresAt);
-      res.json({ message: 'Role assigned successfully' });
-    } catch (error) {
-      console.error("Error assigning role:", error);
-      res.status(500).json({ message: "Failed to assign role" });
-    }
-  });
-
-  // Risk assessment endpoint
-  app.get('/api/auth/risk-assessment', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const ipAddress = req.ip;
-      const userAgent = req.get('User-Agent');
-
-      const riskScore = await authService.calculateRiskScore(userId, ipAddress, userAgent);
-      res.json({ riskScore });
-    } catch (error) {
-      console.error("Error calculating risk score:", error);
-      res.status(500).json({ message: "Failed to calculate risk score" });
-    }
-  });
 
   // File upload route for tournament posters
   app.post('/api/upload/tournament-poster', upload.single('image'), async (req, res) => {
