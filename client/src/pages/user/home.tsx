@@ -404,12 +404,12 @@ export default function UserHome() {
         {/* Popular Games Grid Section */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-fire-red to-fire-blue bg-clip-text text-transparent">
+            <h2 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-fire-red to-fire-blue bg-clip-text text-transparent">
               🎮 Popular Games
             </h2>
             <Link href="/tournaments">
-              <Button variant="outline" className="hover:bg-fire-red hover:text-white transition-all duration-300">
-                View All Games
+              <Button variant="outline" className="text-xs md:text-sm px-2 md:px-4 py-1.5 md:py-2 h-8 md:h-10 hover:bg-fire-red hover:text-white transition-all duration-300 border border-gray-300">
+                View All
               </Button>
             </Link>
           </div>
