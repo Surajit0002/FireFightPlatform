@@ -334,59 +334,8 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           </div>
         </div>
 
-        {/* Social Stats */}
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleLike}
-              className="flex items-center gap-1 hover:text-red-500 transition-colors"
-            >
-              <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
-              <span>{likeCount}</span>
-            </button>
-            <div className="flex items-center gap-1">
-              <Eye className="w-4 h-4" />
-              <span>{viewCount}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1 text-green-500">
-            <TrendingUp className="w-4 h-4" />
-            <span className="text-xs">Popular</span>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-xs"
-            onClick={handleBookmark}
-          >
-            <Bookmark className={`w-3 h-3 mr-1 ${isBookmarked ? 'fill-current' : ''}`} />
-            Save
-          </Button>
-
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-xs"
-            onClick={handleLike}
-          >
-            <Heart className={`w-3 h-3 mr-1 ${isLiked ? 'fill-current text-red-500' : ''}`} />
-            {likeCount}
-          </Button>
-
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-xs"
-            onClick={handleShare}
-          >
-            <Share2 className="w-3 h-3 mr-1" />
-            Share
-          </Button>
-        </div>
+        
+       
 
         {/* Main Action Buttons */}
         <div className="grid grid-cols-2 gap-2">
