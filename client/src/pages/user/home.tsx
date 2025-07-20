@@ -42,7 +42,7 @@ function HeroSlider() {
     {
       title: "Win Big in Esports Tournaments",
       subtitle: "Join tournaments, compete with the best players, and earn real cash rewards in your favorite games",
-      bgColor: "bg-fire-red",
+      bgColor: "bg-gradient-to-br from-red-600 via-red-500 to-orange-500",
       icon: "🏆",
       cta: "Join Tournament",
       secondaryCta: "View Rankings"
@@ -50,7 +50,7 @@ function HeroSlider() {
     {
       title: "Team Up & Dominate",
       subtitle: "Create teams, invite friends, and conquer tournaments together for massive prize pools",
-      bgColor: "bg-fire-blue",
+      bgColor: "bg-gradient-to-br from-blue-600 via-blue-500 to-purple-500",
       icon: "👥",
       cta: "Create Team",
       secondaryCta: "Find Teams"
@@ -58,7 +58,7 @@ function HeroSlider() {
     {
       title: "Daily Challenges & Rewards",
       subtitle: "Complete daily missions, climb leaderboards, and unlock exclusive rewards and bonuses",
-      bgColor: "bg-fire-orange",
+      bgColor: "bg-gradient-to-br from-orange-600 via-orange-500 to-yellow-500",
       icon: "🎯",
       cta: "View Challenges",
       secondaryCta: "Check Rewards"
@@ -73,61 +73,73 @@ function HeroSlider() {
   }, []);
 
   return (
-    <div className="relative rounded-3xl overflow-hidden mb-8 shadow-2xl">
+    <div className="relative rounded-lg md:rounded-3xl overflow-hidden mb-4 md:mb-8 shadow-xl">
       <Carousel className="w-full">
-        <CarouselContent>
+        <CarouselContent className="-ml-1">
           {heroSlides.map((slide, index) => (
-            <CarouselItem key={index}>
-              <div className={`relative ${slide.bgColor} text-white py-16 px-8`}>
-                {/* Animated Background Elements */}
+            <CarouselItem key={index} className="pl-1">
+              <div className={`relative ${slide.bgColor} text-white py-8 px-4 md:py-16 md:px-8 min-h-[400px] md:min-h-[500px]`}>
+                {/* Mobile Grid Background Elements */}
                 <div className="absolute inset-0">
-                  <div className="absolute top-8 left-8 w-24 h-24 bg-white/10 rounded-full animate-pulse"></div>
-                  <div className="absolute top-20 right-16 w-16 h-16 bg-white/20 rounded-full animate-bounce"></div>
-                  <div className="absolute bottom-12 left-20 w-32 h-32 bg-white/5 rounded-full animate-ping"></div>
-                  <div className="absolute bottom-20 right-8 w-20 h-20 bg-white/15 rounded-full animate-pulse delay-300"></div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-full p-4 opacity-20">
+                    <div className="bg-white/10 rounded-xl animate-pulse"></div>
+                    <div className="bg-white/15 rounded-xl animate-pulse delay-300"></div>
+                    <div className="bg-white/10 rounded-xl animate-pulse delay-500 hidden md:block"></div>
+                    <div className="bg-white/20 rounded-xl animate-pulse delay-700"></div>
+                    <div className="bg-white/15 rounded-xl animate-pulse delay-1000"></div>
+                    <div className="bg-white/10 rounded-xl animate-pulse delay-1200 hidden md:block"></div>
+                  </div>
                 </div>
 
-                {/* Content */}
-                <div className="relative z-10 max-w-4xl mx-auto text-center">
-                  <div className="text-6xl mb-6 animate-bounce">{slide.icon}</div>
-                  <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                    {slide.title}
-                  </h1>
-                  <p className="text-lg md:text-xl mb-8 opacity-90 max-w-3xl mx-auto leading-relaxed">
-                    {slide.subtitle}
-                  </p>
+                {/* Content Grid Layout */}
+                <div className="relative z-10 h-full flex flex-col justify-center">
+                  {/* Header Section */}
+                  <div className="text-center mb-4 md:mb-6">
+                    <div className="text-3xl md:text-6xl mb-2 md:mb-4 animate-bounce">{slide.icon}</div>
+                    <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold mb-3 md:mb-6 leading-tight">
+                      {slide.title}
+                    </h1>
+                    <p className="text-sm md:text-lg lg:text-xl mb-4 md:mb-8 opacity-90 max-w-2xl mx-auto leading-relaxed px-2">
+                      {slide.subtitle}
+                    </p>
+                  </div>
                   
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link href="/tournaments">
-                      <Button className="bg-white text-fire-red hover:bg-gray-100 px-8 py-4 text-lg font-bold rounded-xl shadow-xl transform hover:scale-105 transition-all duration-300">
-                        <Play className="w-5 h-5 mr-2" />
+                  {/* Action Buttons - Mobile Optimized */}
+                  <div className="flex flex-col sm:flex-row gap-2 md:gap-4 justify-center mb-4 md:mb-8 px-4">
+                    <Link href="/tournaments" className="w-full sm:w-auto">
+                      <Button className="w-full sm:w-auto bg-white text-fire-red hover:bg-gray-100 px-4 md:px-8 py-3 md:py-4 text-sm md:text-lg font-bold rounded-lg md:rounded-xl shadow-xl transform hover:scale-105 transition-all duration-300">
+                        <Play className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                         {slide.cta}
                       </Button>
                     </Link>
-                    <Link href="/leaderboard">
+                    <Link href="/leaderboard" className="w-full sm:w-auto">
                       <Button 
                         variant="outline" 
-                        className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-fire-red px-8 py-4 text-lg font-bold rounded-xl shadow-xl transform hover:scale-105 transition-all duration-300"
+                        className="w-full sm:w-auto border-2 border-white bg-transparent text-white hover:bg-white hover:text-fire-red px-4 md:px-8 py-3 md:py-4 text-sm md:text-lg font-bold rounded-lg md:rounded-xl shadow-xl transform hover:scale-105 transition-all duration-300"
                       >
                         {slide.secondaryCta}
-                        <ArrowRight className="w-5 h-5 ml-2" />
+                        <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2" />
                       </Button>
                     </Link>
                   </div>
 
-                  {/* Stats */}
-                  <div className="flex flex-wrap justify-center gap-6 mt-12">
-                    <div className="bg-red-500 rounded-xl px-6 py-3 shadow-lg">
-                      <div className="text-2xl font-bold">50K+</div>
-                      <div className="text-sm opacity-90">Active Players</div>
+                  {/* Stats Grid - Mobile Responsive */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 px-4 max-w-4xl mx-auto">
+                    <div className="bg-red-500/80 backdrop-blur-sm rounded-lg md:rounded-xl p-2 md:p-4 text-center transform hover:scale-105 transition-all duration-300 shadow-lg">
+                      <div className="text-lg md:text-2xl font-bold">50K+</div>
+                      <div className="text-xs md:text-sm opacity-90">Active Players</div>
                     </div>
-                    <div className="bg-green-500 rounded-xl px-6 py-3 shadow-lg">
-                      <div className="text-2xl font-bold">₹50L+</div>
-                      <div className="text-sm opacity-90">Total Prizes</div>
+                    <div className="bg-green-500/80 backdrop-blur-sm rounded-lg md:rounded-xl p-2 md:p-4 text-center transform hover:scale-105 transition-all duration-300 shadow-lg">
+                      <div className="text-lg md:text-2xl font-bold">₹50L+</div>
+                      <div className="text-xs md:text-sm opacity-90">Total Prizes</div>
                     </div>
-                    <div className="bg-blue-500 rounded-xl px-6 py-3 shadow-lg">
-                      <div className="text-2xl font-bold">1000+</div>
-                      <div className="text-sm opacity-90">Daily Matches</div>
+                    <div className="bg-blue-500/80 backdrop-blur-sm rounded-lg md:rounded-xl p-2 md:p-4 text-center transform hover:scale-105 transition-all duration-300 shadow-lg">
+                      <div className="text-lg md:text-2xl font-bold">1000+</div>
+                      <div className="text-xs md:text-sm opacity-90">Daily Matches</div>
+                    </div>
+                    <div className="bg-purple-500/80 backdrop-blur-sm rounded-lg md:rounded-xl p-2 md:p-4 text-center transform hover:scale-105 transition-all duration-300 shadow-lg">
+                      <div className="text-lg md:text-2xl font-bold">24/7</div>
+                      <div className="text-xs md:text-sm opacity-90">Live Support</div>
                     </div>
                   </div>
                 </div>
@@ -135,16 +147,18 @@ function HeroSlider() {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="left-4" />
-        <CarouselNext className="right-4" />
+        
+        {/* Mobile-friendly Navigation */}
+        <CarouselPrevious className="left-2 md:left-4 w-8 h-8 md:w-10 md:h-10" />
+        <CarouselNext className="right-2 md:right-4 w-8 h-8 md:w-10 md:h-10" />
       </Carousel>
 
-      {/* Slide Indicators */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+      {/* Mobile-Optimized Slide Indicators */}
+      <div className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1 md:space-x-2 z-20">
         {heroSlides.map((_, index) => (
           <button
             key={index}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+            className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
               index === currentSlide ? 'bg-white scale-125' : 'bg-white/50'
             }`}
             onClick={() => setCurrentSlide(index)}
@@ -398,7 +412,7 @@ export default function UserHome() {
     <div className="min-h-screen bg-gray-50">
       <UserHeader />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 md:py-8">
         {/* Enhanced Hero Slider Section */}
         <HeroSlider />
 
@@ -417,19 +431,19 @@ export default function UserHome() {
           <GamesGrid />
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* Quick Actions - Mobile Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <Link key={action.title} href={action.href}>
-                <Card className="card-hover cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mb-3`}>
-                      <Icon className="w-6 h-6 text-white" />
+                <Card className="card-hover cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg">
+                  <CardContent className="p-3 md:p-4">
+                    <div className={`w-10 h-10 md:w-12 md:h-12 ${action.color} rounded-lg flex items-center justify-center mb-2 md:mb-3 mx-auto`}>
+                      <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
-                    <h3 className="font-semibold fire-gray mb-1">{action.title}</h3>
-                    <p className="text-sm text-gray-500">{action.description}</p>
+                    <h3 className="font-semibold text-fire-gray mb-1 text-sm md:text-base text-center">{action.title}</h3>
+                    <p className="text-xs md:text-sm text-gray-500 text-center leading-tight">{action.description}</p>
                   </CardContent>
                 </Card>
               </Link>
