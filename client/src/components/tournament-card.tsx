@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Clock, 
-  Users, 
-  Trophy, 
-  Gamepad2, 
+import {
+  Clock,
+  Users,
+  Trophy,
+  Gamepad2,
   Calendar,
   MapPin,
   Zap,
@@ -24,7 +24,7 @@ import {
   TrendingUp,
   Timer,
   CheckCircle2,
-  BookmarkCheck
+  BookmarkCheck,
 } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
@@ -60,9 +60,11 @@ const gameNames: Record<string, string> = {
 };
 
 const posterImages: Record<string, string> = {
-  free_fire: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=250&fit=crop",
+  free_fire:
+    "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=250&fit=crop",
   bgmi: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=250&fit=crop",
-  valorant: "https://images.unsplash.com/photo-1538481199464-7160b5f4b1c3?w=400&h=250&fit=crop",
+  valorant:
+    "https://images.unsplash.com/photo-1538481199464-7160b5f4b1c3?w=400&h=250&fit=crop",
   csgo: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=250&fit=crop",
   pubg: "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=400&h=250&fit=crop",
 };
@@ -70,14 +72,18 @@ const posterImages: Record<string, string> = {
 export default function TournamentCard({ tournament }: TournamentCardProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(Math.floor(Math.random() * 100) + 50);
+  const [likeCount, setLikeCount] = useState(
+    Math.floor(Math.random() * 100) + 50,
+  );
   const [viewCount] = useState(Math.floor(Math.random() * 500) + 100);
   const [isPrizeModalOpen, setIsPrizeModalOpen] = useState(false);
 
   const gameIcon = gameIcons[tournament.game] || "🎮";
   const gameColor = gameColors[tournament.game] || "from-gray-500 to-gray-600";
   const gameName = gameNames[tournament.game] || tournament.game.toUpperCase();
-  const posterImage = posterImages[tournament.game] || "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=250&fit=crop";
+  const posterImage =
+    posterImages[tournament.game] ||
+    "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=250&fit=crop";
 
   const startTime = new Date(tournament.startTime);
   const now = new Date();
@@ -90,7 +96,9 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
     if (timeToStart <= 0) return "Started";
 
     const days = Math.floor(timeToStart / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeToStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const hours = Math.floor(
+      (timeToStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
     const minutes = Math.floor((timeToStart % (1000 * 60 * 60)) / (1000 * 60));
 
     if (days > 0) return `${days}d ${hours}h`;
@@ -99,15 +107,16 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
   };
 
   const formatDate = () => {
-    return startTime.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return startTime.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
-  const slotsFillPercentage = (tournament.currentSlots / tournament.maxSlots) * 100;
+  const slotsFillPercentage =
+    (tournament.currentSlots / tournament.maxSlots) * 100;
   const entryFee = parseFloat(tournament.entryFee);
   const prizePool = parseFloat(tournament.prizePool);
 
@@ -175,9 +184,12 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
   };
 
   const getTournamentType = () => {
-    if (prizePool >= 100000) return { label: "MEGA", color: "from-purple-500 to-pink-600" };
-    if (prizePool >= 50000) return { label: "PREMIUM", color: "from-blue-500 to-cyan-600" };
-    if (entryFee === 0) return { label: "FREE", color: "from-green-500 to-emerald-600" };
+    if (prizePool >= 100000)
+      return { label: "MEGA", color: "from-purple-500 to-pink-600" };
+    if (prizePool >= 50000)
+      return { label: "PREMIUM", color: "from-blue-500 to-cyan-600" };
+    if (entryFee === 0)
+      return { label: "FREE", color: "from-green-500 to-emerald-600" };
     return { label: "STANDARD", color: "from-gray-500 to-gray-600" };
   };
 
@@ -193,7 +205,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
     e.preventDefault();
     e.stopPropagation();
     setIsLiked(!isLiked);
-    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+    setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
   };
 
   const handleShare = (e: React.MouseEvent) => {
@@ -202,7 +214,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
     navigator.share?.({
       title: tournament.title,
       text: `Join ${tournament.title} - ${formatCurrency(prizePool)} prize pool!`,
-      url: window.location.href
+      url: window.location.href,
     });
   };
 
@@ -210,20 +222,24 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
     <Card className="group relative w-full max-w-sm bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] border-0 overflow-hidden">
       {/* Poster Image Header */}
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={posterImage} 
+        <img
+          src={posterImage}
           alt={tournament.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
 
         {/* Gradient Overlay */}
-        <div className={`absolute inset-0 bg-gradient-to-t ${gameColor} opacity-80`}></div>
+        <div
+          className={`absolute inset-0 bg-gradient-to-t ${gameColor} opacity-80`}
+        ></div>
 
         {/* Top Row - Status and Actions */}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
           <div className="flex gap-2">
             {getStatusBadge()}
-            <Badge className={`bg-gradient-to-r ${tournamentType.color} text-white px-2 py-1 rounded-full text-xs font-medium shadow-lg`}>
+            <Badge
+              className={`bg-gradient-to-r ${tournamentType.color} text-white px-2 py-1 rounded-full text-xs font-medium shadow-lg`}
+            >
               {tournamentType.label}
             </Badge>
           </div>
@@ -249,7 +265,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
         </div>
 
         {/* Game Info */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
+        <div className="absolute top-36 right-1 transform -translate-x-1">
           <div className="flex items-center gap-2 bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full">
             <span className="text-2xl">{gameIcon}</span>
             <span className="text-white font-medium text-sm">{gameName}</span>
@@ -279,7 +295,9 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
             </div>
             <div>
               <p className="text-xs text-gray-600">Prize Pool</p>
-              <p className="font-bold text-orange-600">{formatCurrency(prizePool)}</p>
+              <p className="font-bold text-orange-600">
+                {formatCurrency(prizePool)}
+              </p>
             </div>
           </div>
 
@@ -302,20 +320,26 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-medium">{tournament.currentSlots}/{tournament.maxSlots} Players</span>
+              <span className="text-sm font-medium">
+                {tournament.currentSlots}/{tournament.maxSlots} Players
+              </span>
             </div>
             <div className="text-right">
-              <div className="text-sm font-bold text-gray-700">{slotsFillPercentage.toFixed(0)}%</div>
+              <div className="text-sm font-bold text-gray-700">
+                {slotsFillPercentage.toFixed(0)}%
+              </div>
               {getUrgencyIndicator()}
             </div>
           </div>
 
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className={`h-2 rounded-full transition-all duration-300 ${
-                slotsFillPercentage >= 90 ? 'bg-gradient-to-r from-red-500 to-red-600' : 
-                slotsFillPercentage >= 75 ? 'bg-gradient-to-r from-orange-500 to-yellow-500' : 
-                'bg-gradient-to-r from-green-500 to-emerald-500'
+                slotsFillPercentage >= 90
+                  ? "bg-gradient-to-r from-red-500 to-red-600"
+                  : slotsFillPercentage >= 75
+                    ? "bg-gradient-to-r from-orange-500 to-yellow-500"
+                    : "bg-gradient-to-r from-green-500 to-emerald-500"
               }`}
               style={{ width: `${slotsFillPercentage}%` }}
             ></div>
@@ -334,26 +358,28 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           </div>
         </div>
 
-        
-       
-
         {/* Main Action Buttons */}
         <div className="grid grid-cols-2 gap-2">
-          <Button asChild className={`font-bold ${
-            entryFee === 0 
-              ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700" 
-              : tournament.status === "live" 
-                ? "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700" 
-                : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
-          } text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300`}>
+          <Button
+            asChild
+            className={`font-bold ${
+              entryFee === 0
+                ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                : tournament.status === "live"
+                  ? "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
+                  : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
+            } text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300`}
+          >
             <Link href={`/tournaments/${tournament.id}`}>
               <DollarSign className="w-4 h-4 mr-1" />
-              {entryFee === 0 ? "Join FREE" : `Join ₹${formatCurrency(entryFee)}`}
+              {entryFee === 0
+                ? "Join FREE"
+                : `Join ₹${formatCurrency(entryFee)}`}
             </Link>
           </Button>
 
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="border-fire-blue text-fire-blue hover:bg-fire-blue hover:text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
             onClick={(e) => {
               e.preventDefault();
@@ -364,7 +390,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
             Prizes
           </Button>
         </div>
-</CardContent>
+      </CardContent>
 
       <PrizeDistributionModal
         isOpen={isPrizeModalOpen}
@@ -374,7 +400,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           prizePool: tournament.prizePool,
           entryFee: tournament.entryFee,
           currentParticipants: tournament.currentParticipants || 0,
-          maxParticipants: tournament.maxParticipants || 100
+          maxParticipants: tournament.maxParticipants || 100,
         }}
       />
     </Card>
