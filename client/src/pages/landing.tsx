@@ -117,74 +117,74 @@ export default function Landing() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="card-hover">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-fire-red rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Trophy className="w-8 h-8 text-white" />
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+            <Card className="card-hover shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-3 md:p-6 text-center">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-fire-red rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-4">
+                  <Trophy className="w-5 h-5 md:w-8 md:h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold fire-gray mb-2">Real Cash Prizes</h3>
-                <p className="text-gray-600">
+                <h3 className="text-sm md:text-xl font-semibold fire-gray mb-1 md:mb-2">Real Cash Prizes</h3>
+                <p className="text-xs md:text-base text-gray-600 leading-tight md:leading-normal">
                   Win actual money with instant withdrawals to your UPI account. No fake currencies, just real rewards.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="card-hover">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-fire-blue rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Gamepad2 className="w-8 h-8 text-white" />
+            <Card className="card-hover shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-3 md:p-6 text-center">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-fire-blue rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-4">
+                  <Gamepad2 className="w-5 h-5 md:w-8 md:h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold fire-gray mb-2">Popular Games</h3>
-                <p className="text-gray-600">
+                <h3 className="text-sm md:text-xl font-semibold fire-gray mb-1 md:mb-2">Popular Games</h3>
+                <p className="text-xs md:text-base text-gray-600 leading-tight md:leading-normal">
                   Play your favorite games including Free Fire, BGMI, Valorant, and more competitive esports titles.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="card-hover">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-fire-green rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-white" />
+            <Card className="card-hover shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-3 md:p-6 text-center">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-fire-green rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-4">
+                  <Users className="w-5 h-5 md:w-8 md:h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold fire-gray mb-2">Team Play</h3>
-                <p className="text-gray-600">
+                <h3 className="text-sm md:text-xl font-semibold fire-gray mb-1 md:mb-2">Team Play</h3>
+                <p className="text-xs md:text-base text-gray-600 leading-tight md:leading-normal">
                   Create teams, invite friends, and compete together in squad-based tournaments for bigger prizes.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="card-hover">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-fire-teal rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-8 h-8 text-white" />
+            <Card className="card-hover shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-3 md:p-6 text-center">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-fire-teal rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-4">
+                  <Zap className="w-5 h-5 md:w-8 md:h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold fire-gray mb-2">Instant Matches</h3>
-                <p className="text-gray-600">
+                <h3 className="text-sm md:text-xl font-semibold fire-gray mb-1 md:mb-2">Instant Matches</h3>
+                <p className="text-xs md:text-base text-gray-600 leading-tight md:leading-normal">
                   Join quick matches anytime or schedule tournaments. Fast-paced action with immediate results.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="card-hover">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-fire-orange rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-white" />
+            <Card className="card-hover shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-3 md:p-6 text-center">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-fire-orange rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-4">
+                  <Shield className="w-5 h-5 md:w-8 md:h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold fire-gray mb-2">Fair & Secure</h3>
-                <p className="text-gray-600">
+                <h3 className="text-sm md:text-xl font-semibold fire-gray mb-1 md:mb-2">Fair & Secure</h3>
+                <p className="text-xs md:text-base text-gray-600 leading-tight md:leading-normal">
                   Anti-cheat systems, KYC verification, and transparent result verification ensure fair competition.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="card-hover">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Star className="w-8 h-8 text-white" />
+            <Card className="card-hover shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-3 md:p-6 text-center">
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-4">
+                  <Star className="w-5 h-5 md:w-8 md:h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold fire-gray mb-2">Leaderboards</h3>
-                <p className="text-gray-600">
+                <h3 className="text-sm md:text-xl font-semibold fire-gray mb-1 md:mb-2">Leaderboards</h3>
+                <p className="text-xs md:text-base text-gray-600 leading-tight md:leading-normal">
                   Climb the rankings, earn XP points, and showcase your skills on global leaderboards.
                 </p>
               </CardContent>
