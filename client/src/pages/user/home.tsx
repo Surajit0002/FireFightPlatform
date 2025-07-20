@@ -247,69 +247,54 @@ function GamesGrid() {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4">
       {games.map((game) => (
-        <Card key={game.id} className={`group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 ${game.bgPattern} overflow-hidden`}>
+        <Card key={game.id} className={`group cursor-pointer border-0 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 ${game.bgPattern} overflow-hidden`}>
           <CardContent className="p-0">
-            {/* Game Header with Gradient */}
-            <div className={`${game.bgColor} p-6 text-white relative overflow-hidden`}>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full transform translate-x-8 -translate-y-8"></div>
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full transform -translate-x-4 translate-y-4"></div>
+            {/* Compact Game Header */}
+            <div className={`${game.bgColor} p-3 md:p-4 text-white relative overflow-hidden`}>
+              <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full transform translate-x-4 -translate-y-4"></div>
               
-              <div className="relative z-10 flex items-center space-x-4">
-                <div className={`w-16 h-16 ${game.iconBg} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                  <span className="text-2xl">{game.icon}</span>
+              <div className="relative z-10 text-center">
+                <div className={`w-10 h-10 md:w-12 md:h-12 ${game.iconBg} rounded-xl flex items-center justify-center mx-auto mb-2 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                  <span className="text-lg md:text-xl">{game.icon}</span>
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-1">{game.name}</h3>
-                  <p className="text-sm opacity-90">{game.description}</p>
-                </div>
+                <h3 className="text-sm md:text-base font-bold mb-1 leading-tight">{game.name}</h3>
+                <p className="text-xs opacity-80 hidden md:block">{game.description}</p>
               </div>
             </div>
 
-            {/* Game Stats */}
-            <div className="p-6">
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-fire-gray">{game.players}</div>
-                  <div className="text-xs text-gray-500">Players</div>
+            {/* Compact Stats */}
+            <div className="p-3">
+              <div className="grid grid-cols-1 gap-2 mb-3">
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-500">Players:</span>
+                  <span className="font-semibold text-fire-gray">{game.players}</span>
                 </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-fire-blue">{game.tournaments}</div>
-                  <div className="text-xs text-gray-500">Tournaments</div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-500">Tournaments:</span>
+                  <span className="font-semibold text-fire-blue">{game.tournaments}</span>
                 </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-fire-green">{game.prizePool}</div>
-                  <div className="text-xs text-gray-500">Prize Pool</div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-500">Prize Pool:</span>
+                  <span className="font-semibold text-fire-green">{game.prizePool}</span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex space-x-2">
-                <Link href={`/tournaments?game=${game.name.toLowerCase().replace(/\s+/g, '_')}`} className="flex-1">
-                  <Button className="w-full bg-fire-red hover:bg-red-600 text-white font-semibold py-2 rounded-lg transition-all duration-300">
-                    <Gamepad2 className="w-4 h-4 mr-2" />
-                    Play Now
-                  </Button>
-                </Link>
-                <Button 
-                  variant="outline" 
-                  className="px-4 hover:bg-gray-100 border-2 transition-all duration-300"
-                  onClick={() => {/* View game details */}}
-                >
-                  <Star className="w-4 h-4" />
+              {/* Compact Action Button */}
+              <Link href={`/tournaments?game=${game.name.toLowerCase().replace(/\s+/g, '_')}`}>
+                <Button className="w-full bg-fire-red hover:bg-red-600 text-white font-semibold py-1.5 text-xs rounded-md transition-all duration-300">
+                  <Gamepad2 className="w-3 h-3 mr-1" />
+                  Play
                 </Button>
-              </div>
+              </Link>
 
-              {/* Live Status */}
-              <div className="mt-4 flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-gray-600">Live tournaments</span>
+              {/* Compact Live Status */}
+              <div className="mt-2 flex items-center justify-center">
+                <div className="flex items-center space-x-1">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-gray-600">Live</span>
                 </div>
-                <Badge className="bg-fire-orange/10 text-fire-orange border-fire-orange/20 text-xs">
-                  Hot 🔥
-                </Badge>
               </div>
             </div>
           </CardContent>
