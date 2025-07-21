@@ -287,6 +287,22 @@ export default function Teams() {
       avatarUrl: player.avatarUrl
     });
     setEditingPlayerId(player.id);
+    setShowAddPlayerModal(true);
+  };
+
+  // Function to edit team member (for existing teams)
+  const editTeamMember = (member: TeamMember) => {
+    setPlayerForm({
+      username: member.username || "",
+      email: member.email || "",
+      phone: member.contactInfo || "",
+      role: member.role,
+      gameId: member.gameId || "",
+      avatarUrl: member.avatarUrl || ""
+    });
+    setEditingPlayerId(member.userId);
+    setSelectedTeamId(member.teamId);
+    setShowAddPlayerModal(true);
   };
 
   // Handle create team
@@ -300,11 +316,13 @@ export default function Teams() {
       return;
     }
 
-    if (!createForm.code) {
-      generateTeamCode();
-    }
+    // Generate code if not present
+    const finalForm = {
+      ...createForm,
+      code: createForm.code || `FF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+    };
 
-    createTeamMutation.mutate(createForm);
+    createTeamMutation.mutate(finalForm);
   };
 
   // Copy team code
@@ -687,7 +705,7 @@ export default function Teams() {
                   disabled={addPlayerMutation.isPending}
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  {addPlayerMutation.isPending ? "Adding..." : "Add Player"}
+                  {addPlayerMutation.isPending ? "Saving..." : (editingPlayerId ? "Update Player" : "Add Player")}
                 </Button>
               </div>
             </div>
@@ -930,8 +948,8 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                 members.map((member) => {
                   const RoleIcon = getRoleIcon(member.role);
                   return (
-                    <div key={member.id} className="relative">
-                      <Avatar className="w-8 h-8">
+                    <div key={member.id} className="relative group">
+                      <Avatar className="w-8 h-8 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all">
                         <AvatarImage src={member.avatarUrl || undefined} />
                         <AvatarFallback className="text-xs">
                           {member.username?.charAt(0)?.toUpperCase() || member.email.charAt(0).toUpperCase()}
@@ -941,6 +959,15 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                       <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full ${getRoleColor(member.role)} flex items-center justify-center`}>
                         <RoleIcon className="w-2 h-2" />
                       </div>
+                      {/* Edit Button - shows on hover */}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => editTeamMember(member)}
+                        className="absolute -bottom-1 -left-1 w-4 h-4 p-0 bg-white border border-gray-300 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+                      >
+                        <Edit className="w-2 h-2 text-gray-600" />
+                      </Button>
                     </div>
                   );
                 })
@@ -1070,6 +1097,9 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
               </div>
             </div>
           </DialogTitle>
+          <DialogDescription>
+            View detailed information about your team including stats and members
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-8 pt-6">

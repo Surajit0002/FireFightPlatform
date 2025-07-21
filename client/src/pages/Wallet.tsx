@@ -8,12 +8,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  DollarSign, 
-  Plus, 
-  Minus, 
-  TrendingUp, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DollarSign,
+  Plus,
+  Minus,
+  TrendingUp,
   TrendingDown,
   Clock,
   CheckCircle,
@@ -21,7 +27,7 @@ import {
   Download,
   Gift,
   CreditCard,
-  Smartphone
+  Smartphone,
 } from "lucide-react";
 import type { Transaction } from "@/types";
 
@@ -39,16 +45,16 @@ export default function Wallet() {
   const walletBalance = parseFloat(user?.walletBalance || "0");
 
   // Filter transactions based on selected filters
-  const filteredTransactions = transactions.filter(transaction => {
+  const filteredTransactions = transactions.filter((transaction) => {
     const matchesType = typeFilter === "all" || transaction.type === typeFilter;
-    
+
     if (!matchesType) return false;
-    
+
     if (timeFilter === "all") return true;
-    
+
     const transactionDate = new Date(transaction.createdAt);
     const now = new Date();
-    
+
     switch (timeFilter) {
       case "today":
         return transactionDate.toDateString() === now.toDateString();
@@ -97,26 +103,27 @@ export default function Wallet() {
   };
 
   const formatTransactionType = (type: string) => {
-    return type.split("_").map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(" ");
+    return type
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   const calculateStats = () => {
     const deposits = transactions
-      .filter(t => t.type === "deposit" && t.status === "completed")
+      .filter((t) => t.type === "deposit" && t.status === "completed")
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-    
+
     const withdrawals = transactions
-      .filter(t => t.type === "withdrawal" && t.status === "completed")
+      .filter((t) => t.type === "withdrawal" && t.status === "completed")
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-    
+
     const winnings = transactions
-      .filter(t => t.type === "prize_payout" && t.status === "completed")
+      .filter((t) => t.type === "prize_payout" && t.status === "completed")
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
     const pending = transactions
-      .filter(t => t.status === "pending")
+      .filter((t) => t.status === "pending")
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
     return { deposits, withdrawals, winnings, pending };
@@ -146,12 +153,14 @@ export default function Wallet() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-fire-gray mb-2">Wallet</h1>
-          <p className="text-gray-600">Manage your funds and track transactions</p>
+          <p className="text-gray-600">
+            Manage your funds and track transactions
+          </p>
         </div>
 
         {/* Wallet Overview */}
@@ -159,8 +168,12 @@ export default function Wallet() {
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
               <div>
-                <h2 className="text-sm font-medium opacity-90 mb-2">Current Balance</h2>
-                <div className="text-4xl font-bold mb-4">₹{walletBalance.toLocaleString()}</div>
+                <h2 className="text-sm font-medium opacity-90 mb-2">
+                  Current Balance
+                </h2>
+                <div className="text-4xl font-bold mb-4">
+                  ₹{walletBalance.toLocaleString()}
+                </div>
                 <div className="flex space-x-4 text-sm opacity-90">
                   <div>
                     <TrendingUp className="w-4 h-4 inline mr-1" />
@@ -172,16 +185,16 @@ export default function Wallet() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex space-x-4 mt-4 md:mt-0">
-                <Button 
+                <Button
                   onClick={() => setIsAddMoneyOpen(true)}
                   className="bg-white text-fire-blue hover:bg-gray-100"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Money
                 </Button>
-                <Button 
+                <Button
                   onClick={() => setIsWithdrawOpen(true)}
                   variant="outline"
                   className="border-white text-white hover:bg-white hover:text-fire-blue"
@@ -198,13 +211,17 @@ export default function Wallet() {
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4  gap-6 mb-8">
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Total Deposits</p>
-                      <p className="text-2xl font-bold text-fire-green">₹{stats.deposits.toLocaleString()}</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        Total Deposits
+                      </p>
+                      <p className="text-2xl font-bold text-fire-green">
+                        ₹{stats.deposits.toLocaleString()}
+                      </p>
                     </div>
                     <div className="w-12 h-12 bg-fire-green rounded-lg flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-white" />
@@ -217,8 +234,12 @@ export default function Wallet() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Total Winnings</p>
-                      <p className="text-2xl font-bold text-fire-blue">₹{stats.winnings.toLocaleString()}</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        Total Winnings
+                      </p>
+                      <p className="text-2xl font-bold text-fire-blue">
+                        ₹{stats.winnings.toLocaleString()}
+                      </p>
                     </div>
                     <div className="w-12 h-12 bg-fire-blue rounded-lg flex items-center justify-center">
                       <Gift className="w-6 h-6 text-white" />
@@ -231,8 +252,12 @@ export default function Wallet() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Pending</p>
-                      <p className="text-2xl font-bold text-orange-500">₹{stats.pending.toLocaleString()}</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        Pending
+                      </p>
+                      <p className="text-2xl font-bold text-orange-500">
+                        ₹{stats.pending.toLocaleString()}
+                      </p>
                     </div>
                     <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
                       <Clock className="w-6 h-6 text-white" />
@@ -259,7 +284,7 @@ export default function Wallet() {
                         <SelectItem value="month">This Month</SelectItem>
                       </SelectContent>
                     </Select>
-                    
+
                     <Select value={typeFilter} onValueChange={setTypeFilter}>
                       <SelectTrigger className="w-40">
                         <SelectValue />
@@ -268,8 +293,12 @@ export default function Wallet() {
                         <SelectItem value="all">All Types</SelectItem>
                         <SelectItem value="deposit">Deposits</SelectItem>
                         <SelectItem value="withdrawal">Withdrawals</SelectItem>
-                        <SelectItem value="tournament_fee">Tournament Fees</SelectItem>
-                        <SelectItem value="prize_payout">Prize Payouts</SelectItem>
+                        <SelectItem value="tournament_fee">
+                          Tournament Fees
+                        </SelectItem>
+                        <SelectItem value="prize_payout">
+                          Prize Payouts
+                        </SelectItem>
                         <SelectItem value="bonus">Bonuses</SelectItem>
                       </SelectContent>
                     </Select>
@@ -286,12 +315,19 @@ export default function Wallet() {
                   {filteredTransactions.length === 0 ? (
                     <div className="p-12 text-center">
                       <DollarSign className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-600 mb-2">No transactions found</h3>
-                      <p className="text-gray-500">Your transaction history will appear here</p>
+                      <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                        No transactions found
+                      </h3>
+                      <p className="text-gray-500">
+                        Your transaction history will appear here
+                      </p>
                     </div>
                   ) : (
                     filteredTransactions.map((transaction) => (
-                      <div key={transaction.id} className="p-6 hover:bg-gray-50">
+                      <div
+                        key={transaction.id}
+                        className="p-6 hover:bg-gray-50"
+                      >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
                             <div className="p-2 bg-gray-100 rounded-lg">
@@ -302,21 +338,38 @@ export default function Wallet() {
                                 {formatTransactionType(transaction.type)}
                               </h4>
                               <p className="text-sm text-gray-500">
-                                {transaction.description || `Transaction ${transaction.id}`}
+                                {transaction.description ||
+                                  `Transaction ${transaction.id}`}
                               </p>
                               <p className="text-xs text-gray-400">
-                                {new Date(transaction.createdAt).toLocaleString()}
+                                {new Date(
+                                  transaction.createdAt,
+                                ).toLocaleString()}
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="text-right">
-                            <div className={`text-lg font-bold ${
-                              ["deposit", "prize_payout", "bonus", "referral"].includes(transaction.type)
-                                ? "text-fire-green"
-                                : "text-fire-red"
-                            }`}>
-                              {["deposit", "prize_payout", "bonus", "referral"].includes(transaction.type) ? "+" : "-"}
+                            <div
+                              className={`text-lg font-bold ${
+                                [
+                                  "deposit",
+                                  "prize_payout",
+                                  "bonus",
+                                  "referral",
+                                ].includes(transaction.type)
+                                  ? "text-fire-green"
+                                  : "text-fire-red"
+                              }`}
+                            >
+                              {[
+                                "deposit",
+                                "prize_payout",
+                                "bonus",
+                                "referral",
+                              ].includes(transaction.type)
+                                ? "+"
+                                : "-"}
                               ₹{parseFloat(transaction.amount).toLocaleString()}
                             </div>
                             <div className="mt-1">
@@ -345,16 +398,16 @@ export default function Wallet() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button 
+                <Button
                   onClick={() => setIsAddMoneyOpen(true)}
                   className="w-full bg-fire-green text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Money
                 </Button>
-                <Button 
+                <Button
                   onClick={() => setIsWithdrawOpen(true)}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full"
                   disabled={walletBalance <= 0}
                 >
@@ -376,7 +429,9 @@ export default function Wallet() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Auto-withdraw</span>
-                  <Button variant="outline" size="sm">Configure</Button>
+                  <Button variant="outline" size="sm">
+                    Configure
+                  </Button>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">UPI ID</span>
@@ -386,7 +441,11 @@ export default function Wallet() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">KYC Status</span>
-                  <Badge variant={user?.kycStatus === "approved" ? "default" : "outline"}>
+                  <Badge
+                    variant={
+                      user?.kycStatus === "approved" ? "default" : "outline"
+                    }
+                  >
                     {user?.kycStatus || "Pending"}
                   </Badge>
                 </div>
@@ -431,13 +490,13 @@ export default function Wallet() {
       </main>
 
       {/* Modals */}
-      <AddMoneyModal 
-        isOpen={isAddMoneyOpen} 
-        onClose={() => setIsAddMoneyOpen(false)} 
+      <AddMoneyModal
+        isOpen={isAddMoneyOpen}
+        onClose={() => setIsAddMoneyOpen(false)}
       />
-      <WithdrawModal 
-        isOpen={isWithdrawOpen} 
-        onClose={() => setIsWithdrawOpen(false)} 
+      <WithdrawModal
+        isOpen={isWithdrawOpen}
+        onClose={() => setIsWithdrawOpen(false)}
       />
     </div>
   );
