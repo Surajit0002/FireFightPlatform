@@ -285,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/teams/:id/members', isAuthenticated, async (req: any, res) => {
     try {
       const teamId = parseInt(req.params.id);
-      const { playerName, email, phone, gameId, role } = req.body;
+      const { playerName, email, phone, gameId, role, avatarUrl } = req.body;
 
       // Create user for the new player
       const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -293,6 +293,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: userId,
         username: playerName,
         email: email || `${playerName}@example.com`,
+        profileImageUrl: avatarUrl,
         phoneNumber: phone,
         role: 'user',
         isActive: true,
@@ -301,7 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Add player to team
-      await storage.addTeamMember(teamId, userId, role || 'member');
+      await storage.addTeamMember(teamId, userId, role || 'player', gameId, phone);
       res.json({ message: "Member added successfully" });
     } catch (error) {
       console.error("Error adding team member:", error);

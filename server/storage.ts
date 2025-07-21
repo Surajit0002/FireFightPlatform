@@ -61,7 +61,7 @@ export interface IStorage {
   createTeam(team: InsertTeam): Promise<Team>;
   updateTeam(id: number, team: Partial<Team>): Promise<Team>;
   deleteTeam(id: number): Promise<void>;
-  addTeamMember(teamId: number, userId: string, role?: string): Promise<void>;
+  addTeamMember(teamId: number, userId: string, role?: string, gameId?: string, contactInfo?: string): Promise<void>;
   removeTeamMember(teamId: number, userId: string): Promise<void>;
   getTeamMembers(teamId: number): Promise<TeamMember[]>;
 
@@ -317,11 +317,13 @@ export class DatabaseStorage implements IStorage {
     await db.delete(teams).where(eq(teams.id, id));
   }
 
-  async addTeamMember(teamId: number, userId: string, role = 'member'): Promise<void> {
+  async addTeamMember(teamId: number, userId: string, role = 'member', gameId?: string, contactInfo?: string): Promise<void> {
     await db.insert(teamMembers).values({
       teamId,
       userId,
       role,
+      gameId,
+      contactInfo,
     });
 
     // Update team member count

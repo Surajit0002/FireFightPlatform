@@ -259,7 +259,7 @@ export default function Teams() {
       return;
     }
     addPlayerMutation.mutate({
-      username: playerForm.username,
+      playerName: playerForm.username,
       email: playerForm.email,
       phone: playerForm.phone,
       role: playerForm.role,
@@ -578,6 +578,7 @@ export default function Teams() {
                   // This will be called after successfully adding a player
                   queryClient.invalidateQueries({ queryKey: [`/api/teams/${team.id}/members`] });
                 }}
+                onEditMember={(member) => editTeamMember(member)}
               />
             ))}
           </div>
@@ -717,7 +718,12 @@ export default function Teams() {
 }
 
 // Team Card Component
-function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlayer: (teamId: number) => void; onPlayerAdded?: () => void }) {
+function TeamCard({ team, onAddPlayer, onPlayerAdded, onEditMember }: { 
+  team: Team; 
+  onAddPlayer: (teamId: number) => void; 
+  onPlayerAdded?: () => void;
+  onEditMember?: (member: TeamMember) => void;
+}) {
   const { toast } = useToast();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -960,14 +966,16 @@ function TeamCard({ team, onAddPlayer, onPlayerAdded }: { team: Team; onAddPlaye
                         <RoleIcon className="w-2 h-2" />
                       </div>
                       {/* Edit Button - shows on hover */}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => editTeamMember(member)}
-                        className="absolute -bottom-1 -left-1 w-4 h-4 p-0 bg-white border border-gray-300 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
-                      >
-                        <Edit className="w-2 h-2 text-gray-600" />
-                      </Button>
+                      {onEditMember && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => onEditMember(member)}
+                          className="absolute -bottom-1 -left-1 w-4 h-4 p-0 bg-white border border-gray-300 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+                        >
+                          <Edit className="w-2 h-2 text-gray-600" />
+                        </Button>
+                      )}
                     </div>
                   );
                 })
