@@ -53,6 +53,7 @@ interface TeamMember {
   username: string;
   email: string;
   avatarUrl: string | null;
+  profileImageUrl?: string | null;
 }
 
 interface TeamCardProps {
@@ -309,7 +310,10 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                     <div key={member.id} className="relative group/member">
                       <div className="relative">
                         <Avatar className="w-10 h-10 cursor-pointer border-2 border-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
-                          <AvatarImage src={member.avatarUrl || undefined} />
+                          <AvatarImage 
+                            src={member.avatarUrl || member.profileImageUrl || undefined} 
+                            alt={member.username || member.email}
+                          />
                           <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold text-sm`}>
                             {(member.username?.charAt(0) || member.email.charAt(0)).toUpperCase()}
                           </AvatarFallback>
@@ -539,7 +543,10 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="relative">
                             <Avatar className="w-12 h-12 border-2 border-white shadow-lg">
-                              <AvatarImage src={member.avatarUrl || undefined} />
+                              <AvatarImage 
+                                src={member.avatarUrl || member.profileImageUrl || undefined}
+                                alt={member.username || member.email}
+                              />
                               <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold`}>
                                 {(member.username || member.email || 'U').charAt(0).toUpperCase()}
                               </AvatarFallback>
