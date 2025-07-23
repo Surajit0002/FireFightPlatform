@@ -287,6 +287,21 @@ export class DatabaseStorage implements IStorage {
     return team;
   }
 
+  async getTeamByCode(code: string): Promise<Team | undefined> {
+    const [team] = await db.select().from(teams).where(eq(teams.code, code));
+    return team;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
   async createTeam(team: InsertTeam): Promise<Team> {
     const [newTeam] = await db
       .insert(teams)

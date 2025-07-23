@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -51,7 +50,7 @@ const PLAYER_ROLES = {
 export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const [currentStep, setCurrentStep] = useState(1);
   const [teamName, setTeamName] = useState("");
   const [teamCode, setTeamCode] = useState("");
@@ -75,16 +74,32 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
     },
     onSuccess: () => {
       toast({
-        title: "Team Created Successfully!",
-        description: "Your team is ready for tournaments",
+        title: "Success",
+        description: "Team created successfully!",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
       handleClose();
     },
     onError: (error: any) => {
+      let errorMessage = "Failed to create team";
+
+      if (error.status === 409) {
+        errorMessage = error.message || "Team name or code already exists";
+      } else if (error.message?.includes('duplicate key')) {
+        if (error.message.includes('username')) {
+          errorMessage = "A player with this username already exists";
+        } else if (error.message.includes('email')) {
+          errorMessage = "A player with this email already exists";
+        } else if (error.message.includes('code')) {
+          errorMessage = "Team code already exists. Please try again.";
+        } else {
+          errorMessage = "Some information already exists in the system";
+        }
+      }
+
       toast({
         title: "Error",
-        description: error.message || "Failed to create team",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -114,8 +129,10 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
   };
 
   const generateTeamCode = () => {
-    const code = `FF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    setTeamCode(code);
+    const prefix = teamName ? teamName.slice(0, 3).toUpperCase().replace(/[^A-Z]/g, '') : "TEAM";
+    const timestamp = Date.now().toString().slice(-4);
+    const random = Math.random().toString(36).substr(2, 4).toUpperCase();
+    setTeamCode(`${prefix || "TEAM"}-${timestamp}${random}`);
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -256,7 +273,7 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
               <h3 className="text-lg font-semibold mb-2">Team Information</h3>
               <p className="text-sm text-gray-500 mb-4">Set up your team details and logo</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
@@ -328,7 +345,7 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
               <h3 className="text-lg font-semibold mb-2">Add Players</h3>
               <p className="text-sm text-gray-500 mb-4">Build your team roster (2-6 players required)</p>
             </div>
-            
+
             <div className="space-y-4">
               <Button
                 onClick={() => setShowAddPlayerModal(true)}
@@ -345,7 +362,7 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
                   {players.map((player) => {
                     const RoleIcon = PLAYER_ROLES[player.role as keyof typeof PLAYER_ROLES]?.icon || Users;
                     const roleColor = PLAYER_ROLES[player.role as keyof typeof PLAYER_ROLES]?.color || "bg-gray-500 text-white";
-                    
+
                     return (
                       <div
                         key={player.id}
@@ -355,7 +372,7 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
                           <AvatarImage src={player.avatarUrl} />
                           <AvatarFallback>{player.username.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
-                        
+
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
                             <span className="font-medium">{player.username}</span>
@@ -366,7 +383,7 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
                           </div>
                           <p className="text-sm text-gray-500">{player.gameId}</p>
                         </div>
-                        
+
                         <div className="flex space-x-1">
                           <Button
                             size="sm"
@@ -401,7 +418,7 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
               <h3 className="text-lg font-semibold mb-2">Team Preview</h3>
               <p className="text-sm text-gray-500 mb-4">Review your team details before creating</p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-lg border">
               <div className="flex items-center space-x-4 mb-4">
                 <Avatar className="w-16 h-16 border-4 border-white shadow-lg">
@@ -416,12 +433,12 @@ export default function CreateTeamModal({ isOpen, onClose }: CreateTeamModalProp
                   <p className="text-sm text-gray-600">{players.length} players added</p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {players.map((player) => {
                   const RoleIcon = PLAYER_ROLES[player.role as keyof typeof PLAYER_ROLES]?.icon || Users;
                   const roleColor = PLAYER_ROLES[player.role as keyof typeof PLAYER_ROLES]?.color || "bg-gray-500 text-white";
-                  
+
                   return (
                     <div key={player.id} className="flex items-center space-x-2 p-3 bg-white rounded-lg shadow-sm">
                       <Avatar className="w-8 h-8">

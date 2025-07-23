@@ -279,8 +279,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/teams', isAuthenticated, async (req: any, res) => {
     try {
       const { players, ...teamFields } = req.body;
+      
+      // Generate unique team code if not provided or if it already exists
+      let teamCode = teamFields.code;
+      if (!teamCode) {
+        teamCode = `TEAM-${Date.now()}`;
+      }
+      
+      // Check if team code already exists and generate a unique one
+      let codeExists = true;
+      let attempts = 0;
+      while (codeExists && attempts < 10) {
+        try {
+          const existingTeam = await storage.getTeamByCode(teamCode);
+          if (!existingTeam) {
+            codeExists = false;
+          } else {
+            teamCode = `${teamFields.code || 'TEAM'}-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+            attempts++;
+          }
+        } catch (error) {
+          codeExists = false; // If error checking, assume code is unique
+        }
+      }
+
       const teamData = insertTeamSchema.parse({
         ...teamFields,
+        code: teamCode,
         captainId: req.user.claims.sub
       });
 
@@ -289,29 +314,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Add players to the team if provided
       if (players && Array.isArray(players)) {
         for (const player of players) {
-          // Create user if not exists (for demo purposes, in real app you'd invite existing users)
-          const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-          await storage.upsertUser({
-            id: userId,
-            username: player.username,
-            email: player.email || `${player.username}@example.com`,
-            profileImageUrl: player.avatar,
-            phoneNumber: player.phone,
-            role: 'user',
-            isActive: true,
-            walletBalance: '0.00',
-            kycStatus: 'pending'
-          });
+          try {
+            // Generate unique user ID
+            const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            
+            // Generate unique username if needed
+            let username = player.username || player.playerName || `Player${Date.now()}`;
+            let email = player.email;
+            
+            // If no email provided, generate one
+            if (!email) {
+              email = `${username.toLowerCase().replace(/\s+/g, '')}${Date.now()}@firefit.example.com`;
+            }
+            
+            // Ensure email is unique
+            let emailUnique = false;
+            let emailAttempts = 0;
+            while (!emailUnique && emailAttempts < 5) {
+              try {
+                const existingUser = await storage.getUserByEmail(email);
+                if (!existingUser) {
+                  emailUnique = true;
+                } else {
+                  email = `${username.toLowerCase().replace(/\s+/g, '')}${Date.now()}_${emailAttempts}@firefit.example.com`;
+                  emailAttempts++;
+                }
+              } catch (error) {
+                emailUnique = true; // If error checking, assume email is unique
+              }
+            }
+            
+            // Ensure username is unique
+            let usernameUnique = false;
+            let usernameAttempts = 0;
+            const baseUsername = username;
+            while (!usernameUnique && usernameAttempts < 5) {
+              try {
+                const existingUser = await storage.getUserByUsername(username);
+                if (!existingUser) {
+                  usernameUnique = true;
+                } else {
+                  username = `${baseUsername}_${Date.now()}_${usernameAttempts}`;
+                  usernameAttempts++;
+                }
+              } catch (error) {
+                usernameUnique = true; // If error checking, assume username is unique
+              }
+            }
 
-          // Add player to team
-          await storage.addTeamMember(team.id, userId, player.role);
+            await storage.upsertUser({
+              id: userId,
+              username: username,
+              email: email,
+              profileImageUrl: player.avatar || player.avatarUrl,
+              phoneNumber: player.phone,
+              role: 'user',
+              isActive: true,
+              walletBalance: '0.00',
+              kycStatus: 'pending'
+            });
+
+            // Add player to team
+            await storage.addTeamMember(team.id, userId, player.role || 'player', player.gameId, player.phone);
+          } catch (playerError) {
+            console.error(`Error adding player ${player.username}:`, playerError);
+            // Continue with other players if one fails
+          }
         }
       }
 
       res.json(team);
     } catch (error) {
       console.error("Error creating team:", error);
-      res.status(500).json({ message: "Failed to create team" });
+      
+      // Handle specific database constraint errors
+      if (error.code === '23505') {
+        if (error.constraint === 'teams_code_unique') {
+          return res.status(409).json({ message: "Team code already exists. Please try again." });
+        } else if (error.constraint === 'teams_name_unique') {
+          return res.status(409).json({ message: "Team name already exists. Please choose a different name." });
+        }
+      }
+      
+      res.status(500).json({ message: "Failed to create team. Please try again." });
     }
   });
 
