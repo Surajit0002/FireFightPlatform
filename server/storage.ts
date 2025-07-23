@@ -656,6 +656,29 @@ export class DatabaseStorage implements IStorage {
     return verificationToken || null;
   }
 
+  async markTokenAsUsed(tokenId: number): Promise<void> {
+    await db
+      .update(verificationTokens)
+      .set({
+        used: true,
+        usedAt: new Date()
+      })
+      .where(eq(verificationTokens.id, tokenId));
+  }
+
+  async updateUser(userId: string, updates: Partial<User>): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
+    return updatedUser;
+  }
+
   // Leaderboard operations
   async getLeaderboard(type: 'players' | 'teams', game?: string): Promise<any[]> {
     if (type === 'players') {

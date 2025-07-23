@@ -18,20 +18,21 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import express from 'express';
+import type { Request } from 'express';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configure multer for image uploads
 const storageConfig = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (req: any, file: any, cb: any) => {
     const uploadDir = path.join(process.cwd(), 'uploads', 'tournament-posters');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
     cb(null, uploadDir);
   },
-  filename: (req, file, cb) => {
+  filename: (req: any, file: any, cb: any) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, `tournament-poster-${uniqueSuffix}${path.extname(file.originalname)}`);
   }
@@ -42,7 +43,7 @@ const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: any, file: any, cb: any) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
@@ -67,10 +68,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email verification route
+  app.get('/action-code', async (req, res) => {
+    try {
+      const { mode, oobCode, apiKey, lang } = req.query;
+      
+      if (mode === 'verifyEmail' && oobCode) {
+        // Verify the email verification token
+        const verificationToken = await storage.verifyToken(oobCode as string, 'email_verification');
+        
+        if (!verificationToken) {
+          return res.status(400).send(`
+            <html>
+              <head><title>Email Verification Failed</title></head>
+              <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                <h1 style="color: #e74c3c;">Email Verification Failed</h1>
+                <p>The verification link is invalid or has expired.</p>
+                <p><a href="/" style="color: #3498db;">Return to FireFight</a></p>
+              </body>
+            </html>
+          `);
+        }
+
+        // Mark user as email verified
+        await storage.updateUser(verificationToken.userId, { 
+          emailVerified: true 
+        });
+
+        // Mark token as used
+        await storage.markTokenAsUsed(verificationToken.id);
+
+        return res.send(`
+          <html>
+            <head><title>Email Verified Successfully</title></head>
+            <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+              <h1 style="color: #27ae60;">Email Verified Successfully!</h1>
+              <p>Your email has been verified. You can now fully access your FireFight account.</p>
+              <p><a href="/" style="color: #3498db; text-decoration: none; background: #3498db; color: white; padding: 10px 20px; border-radius: 5px;">Continue to FireFight</a></p>
+            </body>
+          </html>
+        `);
+      }
+
+      // Handle other verification modes (password reset, phone verification)
+      if (mode === 'resetPassword' && oobCode) {
+        const verificationToken = await storage.verifyToken(oobCode as string, 'password_reset');
+        
+        if (!verificationToken) {
+          return res.status(400).send(`
+            <html>
+              <head><title>Password Reset Failed</title></head>
+              <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                <h1 style="color: #e74c3c;">Password Reset Failed</h1>
+                <p>The password reset link is invalid or has expired.</p>
+                <p><a href="/" style="color: #3498db;">Return to FireFight</a></p>
+              </body>
+            </html>
+          `);
+        }
+
+        // Redirect to password reset form with valid token
+        return res.redirect(`/reset-password?token=${oobCode}`);
+      }
+
+      // Default response for unhandled modes
+      res.status(400).send(`
+        <html>
+          <head><title>Invalid Request</title></head>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h1 style="color: #e74c3c;">Invalid Request</h1>
+            <p>The verification request is not valid.</p>
+            <p><a href="/" style="color: #3498db;">Return to FireFight</a></p>
+          </body>
+        </html>
+      `);
+
+    } catch (error) {
+      console.error("Error handling action code:", error);
+      res.status(500).send(`
+        <html>
+          <head><title>Error</title></head>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h1 style="color: #e74c3c;">Something went wrong</h1>
+            <p>Please try again later or contact support.</p>
+            <p><a href="/" style="color: #3498db;">Return to FireFight</a></p>
+          </body>
+        </html>
+      `);
+    }
+  });
+
 
 
   // File upload route for tournament posters
-  app.post('/api/upload/tournament-poster', upload.single('image'), async (req, res) => {
+  app.post('/api/upload/tournament-poster', upload.single('image'), async (req: any, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: 'No image file uploaded' });
