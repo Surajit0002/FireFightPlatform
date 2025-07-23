@@ -128,7 +128,7 @@ export default function AddPlayerModal({ isOpen, onClose, teamId, editingPlayer 
       return;
     }
 
-    addPlayerMutation.mutate({
+    const playerData = {
       playerName: playerForm.username,
       email: playerForm.email,
       phone: playerForm.phone,
@@ -136,7 +136,10 @@ export default function AddPlayerModal({ isOpen, onClose, teamId, editingPlayer 
       gameId: playerForm.gameId,
       avatarUrl: playerForm.avatarUrl,
       profileImageUrl: playerForm.avatarUrl
-    });
+    };
+
+    console.log('Submitting player data:', playerData);
+    addPlayerMutation.mutate(playerData);
   };
 
   return (

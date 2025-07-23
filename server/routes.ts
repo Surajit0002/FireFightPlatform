@@ -461,7 +461,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/teams/:id/members', isAuthenticated, async (req: any, res) => {
     try {
       const teamId = parseInt(req.params.id);
-      const { playerName, email, phone, gameId, role, avatarUrl } = req.body;
+      const { playerName, email, phone, gameId, role, avatarUrl, profileImageUrl } = req.body;
 
       // Create user for the new player
       const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -469,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: userId,
         username: playerName,
         email: email || `${playerName}@example.com`,
-        profileImageUrl: avatarUrl,
+        profileImageUrl: avatarUrl || profileImageUrl,
         phoneNumber: phone,
         role: 'user',
         isActive: true,
@@ -487,9 +487,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Add player API endpoint for player modal
-  app.post('/api/players', isAuthenticated, async (req: any, res) => {
+  app.post('/api/teams/:teamId/players', isAuthenticated, async (req: any, res) => {
     try {
-      const { playerName, email, phone, gameId, role, teamId } = req.body;
+      const teamId = parseInt(req.params.teamId);
+      const { playerName, email, phone, gameId, role, avatarUrl, profileImageUrl } = req.body;
 
       // Create user for the new player
       const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -497,6 +498,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: userId,
         username: playerName,
         email: email || `${playerName}@example.com`,
+        profileImageUrl: avatarUrl || profileImageUrl,
         phoneNumber: phone,
         role: 'user',
         isActive: true,
@@ -504,15 +506,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         kycStatus: 'pending'
       });
 
-      // Add player to team if teamId is provided
-      if (teamId) {
-        await storage.addTeamMember(parseInt(teamId), userId, role || 'member');
-      }
+      // Add player to team
+      await storage.addTeamMember(teamId, userId, role || 'player', gameId, phone);
 
       res.json({ message: "Player added successfully", userId });
     } catch (error) {
       console.error("Error adding player:", error);
       res.status(500).json({ message: "Failed to add player" });
+    }
+  });
+
+  // Update team member endpoint
+  app.put('/api/teams/:teamId/members/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const teamId = parseInt(req.params.teamId);
+      const userId = req.params.userId;
+      const { playerName, email, phone, gameId, role, avatarUrl, profileImageUrl } = req.body;
+
+      // Update user information
+      await storage.upsertUser({
+        id: userId,
+        username: playerName,
+        email: email,
+        profileImageUrl: avatarUrl || profileImageUrl,
+        phoneNumber: phone,
+        role: 'user',
+        isActive: true,
+        walletBalance: '0.00',
+        kycStatus: 'pending'
+      });
+
+      // Update team member information
+      await storage.updateTeamMember(teamId, userId, {
+        role: role || 'player',
+        gameId: gameId,
+        contactInfo: phone
+      });
+
+      res.json({ message: "Player updated successfully" });
+    } catch (error) {
+      console.error("Error updating player:", error);
+      res.status(500).json({ message: "Failed to update player" });
     }
   });
 

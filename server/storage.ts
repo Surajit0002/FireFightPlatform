@@ -104,6 +104,7 @@ export interface IStorage {
 
   // Leaderboard operations
   getLeaderboard(type: 'players' | 'teams', game?: string): Promise<any[]>;
+  updateTeamMember(teamId: number, userId: string, updates: { role?: string; gameId?: string; contactInfo?: string }): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -332,23 +333,35 @@ export class DatabaseStorage implements IStorage {
     await db.delete(teams).where(eq(teams.id, id));
   }
 
-  async addTeamMember(teamId: number, userId: string, role = 'member', gameId?: string, contactInfo?: string): Promise<void> {
-    await db.insert(teamMembers).values({
-      teamId,
-      userId,
-      role,
-      gameId,
-      contactInfo,
-    });
+  async addTeamMember(teamId: number, userId: string, role: string = 'member', gameId?: string, contactInfo?: string): Promise<void> {
+    try {
+      await db.insert(teamMembers).values({
+        teamId,
+        userId,
+        role,
+        gameId: gameId || null,
+        contactInfo: contactInfo || null
+      });
+    } catch (error) {
+      console.error("Error adding team member:", error);
+      throw error;
+    }
+  }
 
-    // Update team member count
-    await db
-      .update(teams)
-      .set({ 
-        totalMembers: sql`${teams.totalMembers} + 1`,
-        updatedAt: new Date()
-      })
-      .where(eq(teams.id, teamId));
+  async updateTeamMember(teamId: number, userId: string, updates: { role?: string; gameId?: string; contactInfo?: string }): Promise<void> {
+    try {
+      await db
+        .update(teamMembers)
+        .set({
+          role: updates.role,
+          gameId: updates.gameId || null,
+          contactInfo: updates.contactInfo || null
+        })
+        .where(and(eq(teamMembers.teamId, teamId), eq(teamMembers.userId, userId)));
+    } catch (error) {
+      console.error("Error updating team member:", error);
+      throw error;
+    }
   }
 
   async removeTeamMember(teamId: number, userId: string): Promise<void> {

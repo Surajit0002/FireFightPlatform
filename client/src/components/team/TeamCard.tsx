@@ -317,8 +317,11 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                       <div className="relative">
                         <Avatar className="w-10 h-10 cursor-pointer border-2 border-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
                           <AvatarImage 
-                            src={member.avatarUrl || member.profileImageUrl || undefined} 
+                            src={member.profileImageUrl || member.avatarUrl || undefined} 
                             alt={member.username || member.email}
+                            onError={(e) => {
+                              console.log('Image failed to load:', member.profileImageUrl || member.avatarUrl);
+                            }}
                           />
                           <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold text-sm`}>
                             {(member.username?.charAt(0) || member.email.charAt(0)).toUpperCase()}
@@ -554,8 +557,11 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                           <div className="relative">
                             <Avatar className="w-12 h-12 border-2 border-white shadow-lg">
                               <AvatarImage 
-                                src={member.avatarUrl || member.profileImageUrl || undefined}
+                                src={member.profileImageUrl || member.avatarUrl || undefined}
                                 alt={member.username || member.email}
+                                onError={(e) => {
+                                  console.log('Detailed view image failed to load:', member.profileImageUrl || member.avatarUrl);
+                                }}
                               />
                               <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold`}>
                                 {(member.username || member.email || 'U').charAt(0).toUpperCase()}
