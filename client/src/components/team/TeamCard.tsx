@@ -319,10 +319,16 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                       <div className="relative">
                         <Avatar className="w-10 h-10 cursor-pointer border-2 border-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
                           <AvatarImage 
-                            src={member.profileImageUrl || member.avatarUrl || undefined} 
+                            src={member.avatarUrl || member.profileImageUrl || undefined} 
                             alt={member.username || member.email}
                             onError={(e) => {
-                              console.log('Image failed to load:', member.profileImageUrl || member.avatarUrl);
+                              console.log('Avatar failed to load for member:', member.username, 'URLs:', {
+                                avatarUrl: member.avatarUrl ? `${member.avatarUrl.substring(0, 50)}...` : 'null',
+                                profileImageUrl: member.profileImageUrl ? `${member.profileImageUrl.substring(0, 50)}...` : 'null'
+                              });
+                            }}
+                            onLoad={() => {
+                              console.log('Avatar loaded successfully for:', member.username);
                             }}
                           />
                           <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold text-sm`}>

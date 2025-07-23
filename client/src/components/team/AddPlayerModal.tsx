@@ -110,9 +110,23 @@ export default function AddPlayerModal({ isOpen, onClose, teamId, editingPlayer 
   const handlePlayerAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Error",
+          description: "Image must be under 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPlayerForm(prev => ({ ...prev, avatarUrl: reader.result as string }));
+        const imageUrl = reader.result as string;
+        setPlayerForm(prev => ({ 
+          ...prev, 
+          avatarUrl: imageUrl 
+        }));
+        console.log('Image uploaded successfully, size:', imageUrl.length);
       };
       reader.readAsDataURL(file);
     }
@@ -134,11 +148,15 @@ export default function AddPlayerModal({ isOpen, onClose, teamId, editingPlayer 
       phone: playerForm.phone,
       role: playerForm.role,
       gameId: playerForm.gameId,
-      avatarUrl: playerForm.avatarUrl,
-      profileImageUrl: playerForm.avatarUrl
+      avatarUrl: playerForm.avatarUrl || null,
+      profileImageUrl: playerForm.avatarUrl || null
     };
 
-    console.log('Submitting player data:', playerData);
+    console.log('Submitting player data with avatar:', {
+      ...playerData,
+      avatarUrl: playerData.avatarUrl ? `${playerData.avatarUrl.substring(0, 50)}...` : 'null',
+      profileImageUrl: playerData.profileImageUrl ? `${playerData.profileImageUrl.substring(0, 50)}...` : 'null'
+    });
     addPlayerMutation.mutate(playerData);
   };
 

@@ -198,12 +198,16 @@ export const teams = pgTable("teams", {
 
 export const teamMembers = pgTable("team_members", {
   id: serial("id").primaryKey(),
-  teamId: integer("team_id").references(() => teams.id).notNull(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
-  role: varchar("role").default("member"), // captain, member
-  gameId: varchar("game_id"),
-  contactInfo: varchar("contact_info"),
-  joinedAt: timestamp("joined_at").defaultNow(),
+  teamId: integer("team_id").references(() => teams.id),
+  userId: text("user_id").notNull(),
+  role: text("role").notNull(),
+  gameId: text("game_id"),
+  contactInfo: text("contact_info"),
+  username: text("username").notNull(),
+  email: text("email").notNull(),
+  avatarUrl: text("avatar_url"),
+  profileImageUrl: text("profile_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const tournamentParticipants = pgTable("tournament_participants", {

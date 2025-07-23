@@ -489,8 +489,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add player API endpoint for player modal
   app.post('/api/teams/:teamId/players', isAuthenticated, async (req: any, res) => {
     try {
-      const teamId = parseInt(req.params.teamId);
-      const { playerName, email, phone, gameId, role, avatarUrl, profileImageUrl } = req.body;
+      const { teamId } = req.params;
+      const { playerName, email, phone, role, gameId, avatarUrl, profileImageUrl } = req.body;
+
+      // Validate required fields
+      if (!playerName || !gameId) {
+        return res.status(400).json({ error: "Player name and game ID are required" });
+      }
+
+      // Use the provided avatar or profile image
+      const finalAvatarUrl = avatarUrl || profileImageUrl || null;
 
       // Create user for the new player
       const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -498,7 +506,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: userId,
         username: playerName,
         email: email || `${playerName}@example.com`,
-        profileImageUrl: avatarUrl || profileImageUrl,
+        profileImageUrl: finalAvatarUrl,
         phoneNumber: phone,
         role: 'user',
         isActive: true,
@@ -519,16 +527,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update team member endpoint
   app.put('/api/teams/:teamId/members/:userId', isAuthenticated, async (req: any, res) => {
     try {
-      const teamId = parseInt(req.params.teamId);
-      const userId = req.params.userId;
+      const { teamId, userId } = req.params;
       const { playerName, email, phone, gameId, role, avatarUrl, profileImageUrl } = req.body;
+
+      // Use the provided avatar or profile image
+      const finalAvatarUrl = avatarUrl || profileImageUrl || null;
 
       // Update user information
       await storage.upsertUser({
         id: userId,
         username: playerName,
         email: email,
-        profileImageUrl: avatarUrl || profileImageUrl,
+        profileImageUrl: finalAvatarUrl,
         phoneNumber: phone,
         role: 'user',
         isActive: true,
