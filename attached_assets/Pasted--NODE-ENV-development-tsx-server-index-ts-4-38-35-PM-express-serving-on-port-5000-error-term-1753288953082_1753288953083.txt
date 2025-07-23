@@ -1,0 +1,118 @@
+> NODE_ENV=development tsx server/index.ts
+
+4:38:35 PM [express] serving on port 5000
+error: terminating connection due to administrator command
+    at /home/runner/workspace/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PGStore._asyncQuery (/home/runner/workspace/node_modules/connect-pg-simple/index.js:322:21)
+4:38:59 PM [express] GET /api/auth/user 304 in 1443ms :: {"id":"45423719","email":"ashvik.kilyan@fsi…
+4:38:59 PM [express] GET /api/tournaments 304 in 713ms :: [{"id":3,"title":"Valorant Champions Cup",…
+4:39:00 PM [express] GET /api/announcements 304 in 1397ms :: [{"id":1,"title":"New Tournament: Fire …
+4:39:00 PM [express] GET /api/leaderboard/players 304 in 1422ms :: [{"id":"user2","username":"Battle…
+4:39:00 PM [express] GET /api/leaderboard/teams 304 in 1423ms :: [{"id":1,"name":"Fire Legends","log…
+4:39:08 PM [express] GET /api/teams 304 in 706ms :: []
+Error creating team: error: duplicate key value violates unique constraint "users_username_unique"
+    at file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async NeonPreparedQuery.execute (/home/runner/workspace/node_modules/src/neon-serverless/session.ts:102:18)
+    at async DatabaseStorage.upsertUser (/home/runner/workspace/server/storage.ts:117:20)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:294:11) {
+  length: 220,
+  severity: 'ERROR',
+  code: '23505',
+  detail: 'Key (username)=(Surajit Maity) already exists.',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'users',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'users_username_unique',
+  file: 'nbtinsert.c',
+  line: '666',
+  routine: '_bt_check_unique'
+}
+4:40:43 PM [express] POST /api/teams 500 in 13173ms :: {"message":"Failed to create team"}
+Error creating team: error: duplicate key value violates unique constraint "teams_code_unique"
+    at file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async NeonPreparedQuery.execute (/home/runner/workspace/node_modules/src/neon-serverless/session.ts:102:18)
+    at async DatabaseStorage.createTeam (/home/runner/workspace/server/storage.ts:291:23)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:287:20) {
+  length: 204,
+  severity: 'ERROR',
+  code: '23505',
+  detail: 'Key (code)=(FF-TROGRP) already exists.',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'teams',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'teams_code_unique',
+  file: 'nbtinsert.c',
+  line: '666',
+  routine: '_bt_check_unique'
+}
+4:40:49 PM [express] POST /api/teams 500 in 3232ms :: {"message":"Failed to create team"}
+Error creating team: error: duplicate key value violates unique constraint "teams_code_unique"
+    at file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async NeonPreparedQuery.execute (/home/runner/workspace/node_modules/src/neon-serverless/session.ts:102:18)
+    at async DatabaseStorage.createTeam (/home/runner/workspace/server/storage.ts:291:23)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:287:20) {
+  length: 204,
+  severity: 'ERROR',
+  code: '23505',
+  detail: 'Key (code)=(FF-TROGRP) already exists.',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'teams',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'teams_code_unique',
+  file: 'nbtinsert.c',
+  line: '666',
+  routine: '_bt_check_unique'
+}
+4:41:16 PM [express] POST /api/teams 500 in 4745ms :: {"message":"Failed to create team"}
+Error creating team: error: duplicate key value violates unique constraint "users_email_unique"
+    at file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async NeonPreparedQuery.execute (/home/runner/workspace/node_modules/src/neon-serverless/session.ts:102:18)
+    at async DatabaseStorage.upsertUser (/home/runner/workspace/server/storage.ts:117:20)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:294:11) {
+  length: 214,
+  severity: 'ERROR',
+  code: '23505',
+  detail: 'Key (email)=(maity4@gmail.com) already exists.',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'users',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'users_email_unique',
+  file: 'nbtinsert.c',
+  line: '666',
+  routine: '_bt_check_unique'
+}
+4:41:41 PM [express] POST /api/teams 500 in 7084ms :: {"message":"Failed to create team"}
+4:42:20 PM [express] GET /api/auth/user 304 in 1394ms :: {"id":"45423719","email":"ashvik.kilyan@fsi…
+4:42:21 PM [express] GET /api/tournaments 304 in 708ms :: [{"id":3,"title":"Valorant Champions Cup",…
+4:42:22 PM [express] GET /api/leaderboard/players 200 in 1409ms :: [{"id":"user2","username":"Battle…
+4:42:22 PM [express] GET /api/announcements 304 in 1421ms :: [{"id":1,"title":"New Tournament: Fire …
+^C
