@@ -28,7 +28,9 @@ import {
   Target,
   Crosshair,
   Upload,
-  Star
+  Star,
+  Mail,
+  Phone
 } from "lucide-react";
 
 interface Team {
@@ -551,11 +553,11 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                     return (
                       <div
                         key={member.id}
-                        className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100"
+                        className="bg-white rounded-xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-100"
                       >
-                        <div className="flex items-center space-x-3 mb-3">
-                          <div className="relative">
-                            <Avatar className="w-12 h-12 border-2 border-white shadow-lg">
+                        <div className="flex items-start space-x-4 mb-4">
+                          <div className="relative flex-shrink-0">
+                            <Avatar className="w-16 h-16 border-3 border-white shadow-lg">
                               <AvatarImage 
                                 src={member.profileImageUrl || member.avatarUrl || undefined}
                                 alt={member.username || member.email}
@@ -563,44 +565,108 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                                   console.log('Detailed view image failed to load:', member.profileImageUrl || member.avatarUrl);
                                 }}
                               />
-                              <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold`}>
+                              <AvatarFallback className={`bg-gradient-to-br ${gradient} text-white font-bold text-lg`}>
                                 {(member.username || member.email || 'U').charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             
                             {/* Role Badge */}
-                            <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${getRoleColor(member.role)} flex items-center justify-center border-2 border-white shadow-md`}>
-                              <RoleIcon className="w-3 h-3 text-white" />
+                            <div className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full ${getRoleColor(member.role)} flex items-center justify-center border-2 border-white shadow-md`}>
+                              <RoleIcon className="w-3.5 h-3.5 text-white" />
                             </div>
 
                             {/* Captain Crown */}
                             {member.userId === team.captainId && (
-                              <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
-                                <Crown className="w-2.5 h-2.5 text-white" />
+                              <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
+                                <Crown className="w-3 h-3 text-white" />
                               </div>
                             )}
                           </div>
                           
-                          <div className="flex-1">
-                            <h4 className="font-bold text-gray-800">{member.username || member.email}</h4>
-                            <Badge className={`${getRoleColor(member.role)} text-xs mt-1`}>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h4 className="font-bold text-gray-800 text-lg truncate">{member.username || "Player"}</h4>
+                              {member.userId === team.captainId && (
+                                <Badge className="bg-yellow-500 text-white text-xs px-2 py-1">
+                                  <Crown className="w-3 h-3 mr-1" />
+                                  Captain
+                                </Badge>
+                              )}
+                            </div>
+                            <Badge className={`${getRoleColor(member.role)} text-xs mb-2`}>
+                              <RoleIcon className="w-3 h-3 mr-1" />
                               {PLAYER_ROLES[member.role as keyof typeof PLAYER_ROLES]?.label || member.role}
                             </Badge>
                           </div>
                         </div>
 
-                        <div className="space-y-2 text-sm">
-                          <div className="bg-gray-50 rounded-lg p-2">
-                            <span className="text-gray-500 font-medium">Game ID:</span>
-                            <div className="font-mono text-gray-800">{member.gameId || "Not provided"}</div>
+                        <div className="space-y-3 text-sm">
+                          {/* Player Name */}
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-100">
+                            <div className="flex items-center justify-between">
+                              <span className="text-blue-700 font-medium flex items-center">
+                                <Users className="w-4 h-4 mr-2" />
+                                Player Name:
+                              </span>
+                            </div>
+                            <div className="font-semibold text-blue-900 mt-1 break-words">
+                              {member.username || "Not provided"}
+                            </div>
+                          </div>
+
+                          {/* Email */}
+                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-100">
+                            <div className="flex items-center justify-between">
+                              <span className="text-purple-700 font-medium flex items-center">
+                                <Mail className="w-4 h-4 mr-2" />
+                                Email:
+                              </span>
+                            </div>
+                            <div className="font-mono text-purple-900 mt-1 break-all text-xs">
+                              {member.email}
+                            </div>
+                          </div>
+
+                          {/* Game ID */}
+                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-100">
+                            <div className="flex items-center justify-between">
+                              <span className="text-green-700 font-medium flex items-center">
+                                <Gamepad2 className="w-4 h-4 mr-2" />
+                                Game ID:
+                              </span>
+                            </div>
+                            <div className="font-mono text-green-900 mt-1 break-words">
+                              {member.gameId || "Not provided"}
+                            </div>
                           </div>
                           
+                          {/* Contact Information */}
                           {member.contactInfo && (
-                            <div className="bg-blue-50 rounded-lg p-2">
-                              <span className="text-blue-600 font-medium">Contact:</span>
-                              <div className="text-blue-800">{member.contactInfo}</div>
+                            <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-3 border border-orange-100">
+                              <div className="flex items-center justify-between">
+                                <span className="text-orange-700 font-medium flex items-center">
+                                  <Phone className="w-4 h-4 mr-2" />
+                                  Contact:
+                                </span>
+                              </div>
+                              <div className="font-mono text-orange-900 mt-1 break-words">
+                                {member.contactInfo}
+                              </div>
                             </div>
                           )}
+
+                          {/* Player Status */}
+                          <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg p-3 border border-gray-100">
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-700 font-medium flex items-center">
+                                <Shield className="w-4 h-4 mr-2" />
+                                Status:
+                              </span>
+                              <Badge className="bg-green-500 text-white text-xs">
+                                Active
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
