@@ -134,7 +134,8 @@ export default function AddPlayerModal({ isOpen, onClose, teamId, editingPlayer 
       phone: playerForm.phone,
       role: playerForm.role,
       gameId: playerForm.gameId,
-      avatarUrl: playerForm.avatarUrl
+      avatarUrl: playerForm.avatarUrl,
+      profileImageUrl: playerForm.avatarUrl
     });
   };
 

@@ -72,11 +72,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/action-code', async (req, res) => {
     try {
       const { mode, oobCode, apiKey, lang } = req.query;
-      
+
       if (mode === 'verifyEmail' && oobCode) {
         // Verify the email verification token
         const verificationToken = await storage.verifyToken(oobCode as string, 'email_verification');
-        
+
         if (!verificationToken) {
           return res.status(400).send(`
             <html>
@@ -113,7 +113,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Handle other verification modes (password reset, phone verification)
       if (mode === 'resetPassword' && oobCode) {
         const verificationToken = await storage.verifyToken(oobCode as string, 'password_reset');
-        
+
         if (!verificationToken) {
           return res.status(400).send(`
             <html>
@@ -279,13 +279,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/teams', isAuthenticated, async (req: any, res) => {
     try {
       const { players, ...teamFields } = req.body;
-      
+
       // Generate unique team code if not provided or if it already exists
       let teamCode = teamFields.code;
       if (!teamCode) {
         teamCode = `TEAM-${Date.now()}`;
       }
-      
+
       // Check if team code already exists and generate a unique one
       let codeExists = true;
       let attempts = 0;
@@ -317,16 +317,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           try {
             // Generate unique user ID
             const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            
+
             // Generate unique username if needed
             let username = player.username || player.playerName || `Player${Date.now()}`;
             let email = player.email;
-            
+
             // If no email provided, generate one
             if (!email) {
               email = `${username.toLowerCase().replace(/\s+/g, '')}${Date.now()}@firefit.example.com`;
             }
-            
+
             // Ensure email is unique
             let emailUnique = false;
             let emailAttempts = 0;
@@ -343,7 +343,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 emailUnique = true; // If error checking, assume email is unique
               }
             }
-            
+
             // Ensure username is unique
             let usernameUnique = false;
             let usernameAttempts = 0;
@@ -386,7 +386,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(team);
     } catch (error) {
       console.error("Error creating team:", error);
-      
+
       // Handle specific database constraint errors
       if (error.code === '23505') {
         if (error.constraint === 'teams_code_unique') {
@@ -395,7 +395,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(409).json({ message: "Team name already exists. Please choose a different name." });
         }
       }
-      
+
       res.status(500).json({ message: "Failed to create team. Please try again." });
     }
   });
