@@ -395,12 +395,12 @@ export class DatabaseStorage implements IStorage {
         username: users.username,
         email: users.email,
         avatarUrl: users.profileImageUrl,
-        phoneNumber: users.upiId, // Using upiId as phone for now
+        phoneNumber: users.phoneNumber,
       })
       .from(teamMembers)
       .innerJoin(users, eq(teamMembers.userId, users.id))
       .where(eq(teamMembers.teamId, teamId))
-      .orderBy(asc(teamMembers.role));
+      .orderBy(asc(teamMembers.joinedAt));
 
     return results;
   }

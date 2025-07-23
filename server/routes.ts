@@ -500,12 +500,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use the provided avatar or profile image
       const finalAvatarUrl = avatarUrl || profileImageUrl || null;
 
+      // Generate unique email if not provided or if email already exists
+      let finalEmail = email;
+      if (!finalEmail) {
+        finalEmail = `${playerName.toLowerCase().replace(/\s+/g, '')}${Date.now()}@firefit.example.com`;
+      }
+
+      // Check if email already exists and generate unique one if needed
+      let emailUnique = false;
+      let emailAttempts = 0;
+      while (!emailUnique && emailAttempts < 5) {
+        try {
+          const existingUser = await storage.getUserByEmail(finalEmail);
+          if (!existingUser) {
+            emailUnique = true;
+          } else {
+            finalEmail = `${playerName.toLowerCase().replace(/\s+/g, '')}${Date.now()}_${emailAttempts}@firefit.example.com`;
+            emailAttempts++;
+          }
+        } catch (error) {
+          emailUnique = true; // If error checking, assume email is unique
+        }
+      }
+
       // Create user for the new player
       const userId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       await storage.upsertUser({
         id: userId,
         username: playerName,
-        email: email || `${playerName}@example.com`,
+        email: finalEmail,
         profileImageUrl: finalAvatarUrl,
         phoneNumber: phone,
         role: 'user',
@@ -515,7 +538,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Add player to team
-      await storage.addTeamMember(teamId, userId, role || 'player', gameId, phone);
+      await storage.addTeamMember(parseInt(teamId), userId, role || 'player', gameId, phone);
 
       res.json({ message: "Player added successfully", userId });
     } catch (error) {
