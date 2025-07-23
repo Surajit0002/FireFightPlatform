@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import AddPlayerModal from "./AddPlayerModal";
 import { 
   Users, 
   DollarSign, 
@@ -77,6 +78,8 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState<TeamMember | null>(null);
 
   const { data: members = [] } = useQuery<TeamMember[]>({
     queryKey: [`/api/teams/${team.id}/members`],
@@ -285,7 +288,10 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onAddPlayer(team.id)}
+                onClick={() => {
+                  setEditingPlayer(null);
+                  setShowAddPlayerModal(true);
+                }}
                 className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
               >
                 <Plus className="w-3 h-3 mr-1" />
@@ -333,16 +339,17 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                       </div>
 
                       {/* Edit Button - shows on hover */}
-                      {onEditMember && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => onEditMember(member)}
-                          className="absolute -bottom-1 -left-1 w-4 h-4 p-0 bg-white border border-gray-300 rounded-full opacity-0 group-hover/member:opacity-100 transition-opacity hover:bg-gray-50"
-                        >
-                          <Edit className="w-2 h-2 text-gray-600" />
-                        </Button>
-                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingPlayer(member);
+                          setShowAddPlayerModal(true);
+                        }}
+                        className="absolute -bottom-1 -left-1 w-4 h-4 p-0 bg-white border border-gray-300 rounded-full opacity-0 group-hover/member:opacity-100 transition-opacity hover:bg-gray-50"
+                      >
+                        <Edit className="w-2 h-2 text-gray-600" />
+                      </Button>
 
                       {/* Tooltip */}
                       <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover/member:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
@@ -356,7 +363,10 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onAddPlayer(team.id)}
+                  onClick={() => {
+                    setEditingPlayer(null);
+                    setShowAddPlayerModal(true);
+                  }}
                   className="h-10 w-10 p-0 border-dashed border-2 hover:border-blue-400 hover:bg-blue-50"
                 >
                   <Plus className="w-4 h-4 text-gray-400" />
@@ -650,6 +660,17 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Add/Edit Player Modal */}
+      <AddPlayerModal
+        isOpen={showAddPlayerModal}
+        onClose={() => {
+          setShowAddPlayerModal(false);
+          setEditingPlayer(null);
+        }}
+        teamId={team.id}
+        editingPlayer={editingPlayer}
+      />
     </>
   );
 }

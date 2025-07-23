@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -38,13 +38,36 @@ export default function AddPlayerModal({ isOpen, onClose, teamId, editingPlayer 
   const queryClient = useQueryClient();
 
   const [playerForm, setPlayerForm] = useState({
-    username: editingPlayer?.username || "",
-    email: editingPlayer?.email || "",
-    phone: editingPlayer?.contactInfo || "",
-    role: editingPlayer?.role || "player",
-    gameId: editingPlayer?.gameId || "",
-    avatarUrl: editingPlayer?.avatarUrl || ""
+    username: "",
+    email: "",
+    phone: "",
+    role: "player",
+    gameId: "",
+    avatarUrl: ""
   });
+
+  // Update form when editingPlayer changes
+  useEffect(() => {
+    if (editingPlayer) {
+      setPlayerForm({
+        username: editingPlayer.username || "",
+        email: editingPlayer.email || "",
+        phone: editingPlayer.contactInfo || "",
+        role: editingPlayer.role || "player",
+        gameId: editingPlayer.gameId || "",
+        avatarUrl: editingPlayer.avatarUrl || editingPlayer.profileImageUrl || ""
+      });
+    } else {
+      setPlayerForm({
+        username: "",
+        email: "",
+        phone: "",
+        role: "player",
+        gameId: "",
+        avatarUrl: ""
+      });
+    }
+  }, [editingPlayer, isOpen]);
 
   const addPlayerMutation = useMutation({
     mutationFn: async (data: any) => {
