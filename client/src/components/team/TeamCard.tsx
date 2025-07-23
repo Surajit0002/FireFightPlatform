@@ -641,7 +641,7 @@ export default function TeamCard({ team, onAddPlayer, onEditMember }: TeamCardPr
               {deleteTeamMutation.isPending ? "Deleting..." : "Delete Team"}
             </Button>
           </div>
-        </div>
+        </DialogContent>
       </Dialog>
     </>
   );
